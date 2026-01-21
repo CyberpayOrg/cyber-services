@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  zile: link:../zile2
+
 importers:
 
   .:
@@ -34,17 +37,17 @@ importers:
         specifier: ^11.11.0
         version: 11.11.0
       typescript:
-        specifier: latest
+        specifier: ~5.9.3
         version: 5.9.3
       viem:
-        specifier: ^2.44.2
-        version: 2.44.2(typescript@5.9.3)(zod@4.3.5)
+        specifier: ^2.44.4
+        version: 2.44.4(typescript@5.9.3)(zod@4.3.5)
       vitest:
         specifier: latest
         version: 4.0.17(@types/node@25.0.8)(yaml@2.8.2)
       zile:
-        specifier: latest
-        version: 0.0.17(typescript@5.9.3)
+        specifier: ^0.0.19
+        version: 0.0.19(typescript@5.9.3)
       zod:
         specifier: ^4.3.5
         version: 4.3.5
@@ -1654,8 +1657,8 @@ packages:
     resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
     hasBin: true
 
-  viem@2.44.2:
-    resolution: {integrity: sha512-nHY872t/T3flLpVsnvQT/89bwbrJwxaL917FDv7Oxy4E5FWIFkokRQOKXG3P+hgl30QYVZxi9o2SUHLnebycxw==}
+  viem@2.44.4:
+    resolution: {integrity: sha512-sJDLVl2EsS5Fo7GSWZME5CXEV7QRYkUJPeBw7ac+4XI3D4ydvMw/gjulTsT5pgqcpu70BploFnOAC6DLpan1Yg==}
     peerDependencies:
       typescript: '>=5.0.4'
     peerDependenciesMeta:
@@ -1794,8 +1797,8 @@ packages:
     resolution: {integrity: sha512-CzhO+pFNo8ajLM2d2IW/R93ipy99LWjtwblvC1RsoSUMZgyLbYFr221TnSNT7GjGdYui6P459mw9JH/g/zW2ug==}
     engines: {node: '>=18'}
 
-  zile@0.0.17:
-    resolution: {integrity: sha512-gci4JwpdvN6d5/WEJSD4U+BUuevv71cDOup9gEDkoHtZMW5z+eUxm3RxdhgsCN/Mym18ISkmn34FNVhupsGtkA==}
+  zile@0.0.19:
+    resolution: {integrity: sha512-+bVNQ2hBnZcKauHo8pCP7uaK1Uid7D3bzGfEVdQl20Sn40ywh16o4tnyMc1HxhnSyNxqIg/K+oinclA4lUN2uw==}
     hasBin: true
     peerDependencies:
       '@typescript/native-preview': '>=7.0.0'
@@ -3413,7 +3416,7 @@ snapshots:
 
   uuid@10.0.0: {}
 
-  viem@2.44.2(typescript@5.9.3)(zod@4.3.5):
+  viem@2.44.4(typescript@5.9.3)(zod@4.3.5):
     dependencies:
       '@noble/curves': 1.9.1
       '@noble/hashes': 1.8.0
@@ -3525,7 +3528,7 @@ snapshots:
 
   yoctocolors@2.1.2: {}
 
-  zile@0.0.17(typescript@5.9.3):
+  zile@0.0.19(typescript@5.9.3):
     dependencies:
       '@clack/prompts': 1.0.0-alpha.9
       cac: 6.7.14

@@ -15,10 +15,10 @@
     "@vitest/coverage-v8": "^4.0.17",
     "prool": "^0.2.2",
     "testcontainers": "^11.11.0",
-    "typescript": "latest",
-    "viem": "^2.44.2",
+    "typescript": "~5.9.3",
+    "viem": "^2.44.4",
     "vitest": "latest",
-    "zile": "latest",
+    "zile": "^0.0.19",
     "zod": "^4.3.5"
   },
   "packageManager": "pnpm@10.28.0",
@@ -45,7 +45,7 @@
     }
   },
   "peerDependencies": {
-    "viem": ">=2.44.2"
+    "viem": ">=2.44.4"
   },
   "peerDependenciesMeta": {
     "viem": {
