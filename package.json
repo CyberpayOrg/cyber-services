@@ -12,6 +12,7 @@
     "@biomejs/biome": "latest",
     "@changesets/cli": "latest",
     "@types/node": "latest",
+    "@vitest/coverage-v8": "^4.0.17",
     "prool": "^0.2.2",
     "testcontainers": "^11.11.0",
     "typescript": "latest",
@@ -37,14 +38,15 @@
       "src": "./src/index.ts",
       "default": "./dist/index.js"
     },
-    "./server": {
-      "types": "./dist/server/index.d.ts",
-      "src": "./src/server/index.ts",
-      "default": "./dist/server/index.js"
+    "./tempo": {
+      "types": "./dist/methods/tempo/index.d.ts",
+      "src": "./src/methods/tempo/index.ts",
+      "default": "./dist/methods/tempo/index.js"
     }
   },
   "dependencies": {
-    "@standard-schema/spec": "^1.1.0"
+    "@standard-schema/spec": "^1.1.0",
+    "ox": "^0.11.3"
   },
   "sideEffects": false,
   "module": "./dist/index.js",

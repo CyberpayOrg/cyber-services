@@ -1,24 +1,24 @@
-import type { StandardSchemaV1 as SS } from '@standard-schema/spec'
 import type * as Credential from './Credential.js'
-import * as SchemaLib from './internal/Schema.js'
+import type * as Receipt from './Receipt.js'
+import * as S from './Schema.js'
 
-export { ValidationError } from './internal/Schema.js'
+export { ValidationError } from './Schema.js'
 
-type Schema = {
-  request: SS
-  credentialPayload: SS
+export class VerificationError extends Error {
+  override readonly name = 'Intent.VerificationError'
 }
 
-export type VerifyResult = {
-  /** Receipt data for Payment-Receipt header */
-  receipt: {
-    /** Payment status: "success" or "failed" */
-    status: 'success' | 'failed'
-    /** ISO 8601 settlement timestamp */
-    timestamp: string
-    /** Method-specific reference (e.g., transaction hash) */
-    reference: string
+export class InvalidCredentialTypeError extends Error {
+  override readonly name = 'Intent.InvalidCredentialTypeError'
+
+  constructor(type: string) {
+    super(`Invalid credential type: ${type}`)
   }
+}
+
+type Schema = {
+  request: S.Schema
+  credentialPayload: S.Schema
 }
 
 export type Intent<schema extends Schema> = {
@@ -30,14 +30,24 @@ export type Intent<schema extends Schema> = {
    * Create a well-formed request payload.
    * Validates input against the request schema and returns the typed output.
    */
-  request(input: SS.InferInput<schema['request']>): Promise<SS.InferOutput<schema['request']>>
+  request(
+    input: S.Schema.InferInput<schema['request']>,
+  ): Promise<S.Schema.InferOutput<schema['request']>>
 
   /**
    * Verifies a Payment credential.
    */
   verify(
-    credential: Credential.Credential<SS.InferOutput<schema['credentialPayload']>>,
-  ): Promise<VerifyResult>
+    credential: Credential.Credential<S.Schema.InferOutput<schema['credentialPayload']>>,
+    request: S.Schema.InferOutput<schema['request']>,
+  ): Promise<verify.ReturnValue>
+}
+
+export declare namespace verify {
+  type ReturnValue = {
+    /** Receipt data for Payment-Receipt header. */
+    receipt: Receipt.Receipt
+  }
 }
 
 /**
@@ -89,20 +99,20 @@ export function define<const schema extends Schema>(
 
     async request(input) {
       const result = await schema.request['~standard'].validate(input)
-      return SchemaLib.unwrap(result, 'request')
+      return S.unwrap(result, 'request')
     },
 
-    async verify(credential) {
+    async verify(credential, request) {
       const result = await schema.credentialPayload['~standard'].validate(credential.payload)
-      const payload = SchemaLib.unwrap(result, 'credentialPayload')
-      return verify({ ...credential, payload })
+      const payload = S.unwrap(result, 'credentialPayload')
+      return verify({ ...credential, payload }, request)
     },
   }
 }
 
 export declare namespace define {
   type Options<schema extends Schema> = {
-    /** Schemas for request and credential validation */
+    /** Schemas for request and credential validation. */
     schema: schema
 
     /** Verifies a credential. */

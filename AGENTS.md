@@ -2,16 +2,25 @@
 
 TypeScript implementation of the "Payment" HTTP Authentication Scheme (402 Protocol).
 
-## Purpose
+## Vision
 
-mpay provides server-side abstractions for implementing payment-gated HTTP resources using HTTP 402 "Payment Required". It enables:
+mpay provides abstractions for the complete HTTP 402 payment flow — both client and server. The architecture has three layers:
 
-- Defining payment **intents** (charge, authorize, subscription) with type-safe schemas
-- Validating payment **challenges** (WWW-Authenticate request data)
-- Verifying payment **credentials** (Authorization header payloads)
-- Generating **receipts** for successful payments
+### Core Abstractions
 
-The library is payment-method agnostic—the core abstractions work with any registered payment method (Tempo, Stripe, etc.) through schema-based validation.
+1. **`Mpay`** — Top-level abstraction over the HTTP payment spec. Handles challenge/credential parsing, header serialization, and the 402/401 response flow. This is the protocol skeleton that works with any payment network.
+
+2. **`PaymentMethod`** — Extensible adapters for specific payment networks (Tempo, Stripe, x402, Lightning, etc.). Each method defines its own request/payload schemas and verification logic. Consumers can build custom methods to plug into `Mpay`.
+
+3. **`Intent`** — Actions that hang off a `PaymentMethod`. Standard intents include `charge`, `authorize`, and `subscription`. Each intent defines what the server requests and what the client must prove.
+
+### Hierarchy
+
+```
+Mpay
+  └── PaymentMethod (tempo, stripe, x402, ...)
+        └── Intent (charge, authorize, subscription, ...)
+```
 
 ## Commands
 
@@ -26,13 +35,17 @@ pnpm test           # Run tests with vitest
 
 Load these skills for specialized guidance:
 
-### `402-spec`
+### `payment-auth-scheme-author`
 
-**Use when**: Implementing payment intents, understanding the 402 protocol flow, working with Tempo/Stripe payment method schemas.
+**Use when**: Implementing payment intents, understanding the 402 protocol flow, working with Tempo/Stripe payment method schemas, or referencing the IETF spec.
 
-### `tooling-engineering`
+### `typescript-library-best-practices`
 
-**Use when**: Building new modules, writing tests, following library patterns.
+**Use when**: Building new modules, structuring exports, or following library patterns.
+
+### `typescript-style-guide`
+
+**Use when**: Writing or reviewing TypeScript code for style and conventions.
 
 ### `tempo-developer`
 
