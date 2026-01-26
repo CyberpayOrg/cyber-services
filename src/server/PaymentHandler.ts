@@ -191,10 +191,13 @@ function createIntentFn<intent extends MethodIntent.MethodIntent>(
     const result = await handleFetch(fetchRequest, options)
 
     if (result.status === 402) {
+      // 402: write full response and end—caller should not continue
       response.writeHead(402, Object.fromEntries(result.challenge.headers))
       const body = await result.challenge.text()
       if (body) response.write(body)
+      response.end()
     } else {
+      // 200: set receipt header—caller handles body and calls res.end()
       const wrapped = result.withReceipt(new globalThis.Response())
       // biome-ignore lint/style/noNonNullAssertion: _
       response.setHeader('Payment-Receipt', wrapped.headers.get('Payment-Receipt')!)

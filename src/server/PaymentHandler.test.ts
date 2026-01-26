@@ -211,7 +211,7 @@ describe('intent function (Node.js)', () => {
   test('behavior: writes 402 when no Authorization header', async () => {
     const { server, port } = await startServer(async (req, res) => {
       await handler.charge(req, res, requestOptions)
-      res.end()
+      // 402 response is ended by handler, no need to call res.end()
     })
 
     try {
