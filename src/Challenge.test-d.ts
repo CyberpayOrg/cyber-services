@@ -1,16 +1,18 @@
 import { assertType, describe, expectTypeOf, test } from 'vitest'
 import * as Challenge from './Challenge.js'
-import * as PaymentHandler from './server/PaymentHandler.js'
+import * as core_Method from './Method.js'
+import * as Method from './server/Method.js'
 import * as Intents from './tempo/Intents.js'
 
-const handler = PaymentHandler.from({
-  method: 'tempo',
-  realm: 'api.example.com',
-  secretKey: 'test',
+const fooMethod = core_Method.from({
+  name: 'tempo',
   intents: {
     charge: Intents.charge,
     authorize: Intents.authorize,
   },
+})
+
+const method = Method.toServer(fooMethod, {
   async verify() {
     return {
       method: 'tempo',
@@ -21,9 +23,9 @@ const handler = PaymentHandler.from({
   },
 })
 
-describe('FromHandler', () => {
-  test('extracts method and intent from handler', () => {
-    type Result = Challenge.FromHandler<typeof handler>
+describe('FromMethod', () => {
+  test('extracts method and intent from method', () => {
+    type Result = Challenge.FromMethod<typeof method>
 
     assertType<Result['method']>('tempo' as const)
     assertType<Result['intent']>('charge' as 'charge' | 'authorize')
@@ -34,7 +36,7 @@ describe('FromHandler', () => {
 })
 
 describe('from', () => {
-  test('without handler returns generic Challenge', () => {
+  test('without method returns generic Challenge', () => {
     const challenge = Challenge.from({
       id: 'test',
       intent: 'charge',
@@ -47,7 +49,7 @@ describe('from', () => {
     expectTypeOf(challenge.intent).toBeString()
   })
 
-  test('with handler narrows to FromHandler type', () => {
+  test('with method narrows to FromMethod type', () => {
     const challenge = Challenge.from(
       {
         id: 'test',
@@ -56,7 +58,7 @@ describe('from', () => {
         realm: 'api.example.com',
         request: { amount: '1000' },
       },
-      { handler },
+      { method },
     )
 
     assertType<'tempo'>(challenge.method)
@@ -67,7 +69,7 @@ describe('from', () => {
 })
 
 describe('fromResponse', () => {
-  test('behavior: without handler returns generic Challenge', () => {
+  test('behavior: without method returns generic Challenge', () => {
     const response = new Response(null, { status: 402 })
     const challenge = Challenge.fromResponse(response)
     expectTypeOf(challenge.method).toEqualTypeOf<string>()
@@ -77,9 +79,9 @@ describe('fromResponse', () => {
     }>()
   })
 
-  test('behavior: handler narrows type', () => {
+  test('behavior: method narrows type', () => {
     const response = new Response(null, { status: 402 })
-    const challenge = Challenge.fromResponse(response, { handler })
+    const challenge = Challenge.fromResponse(response, { method })
     expectTypeOf(challenge.method).toEqualTypeOf<'tempo'>()
     expectTypeOf(challenge.intent).toEqualTypeOf<'charge' | 'authorize'>()
     expectTypeOf(challenge.request).toHaveProperty('amount')

@@ -12,36 +12,27 @@ import { tempo as tempo_chain } from 'viem/chains'
 import { Abis, Transaction } from 'viem/tempo'
 import { z } from 'zod/mini'
 import type { OneOf } from '../../internal/types.js'
-import * as PaymentHandler from '../../server/PaymentHandler.js'
-import * as Intents from '../Intents.js'
+import * as Method from '../../server/Method.js'
+import { tempo as tempoMethod } from './../Method.js'
 
 const transfer = AbiFunction.from('function transfer(address to, uint256 amount) returns (bool)')
 const transferSelector = AbiFunction.getSelector(transfer)
 
 /**
- * Creates a Tempo server-side payment handler.
+ * Creates a Tempo payment method.
  *
  * @example
  * ```ts
- * import { PaymentHandler } from 'mpay/tempo/server'
+ * import { Method } from 'mpay/server'
  *
- * const payment = PaymentHandler.tempo({
+ * const method = Method.tempo({
+ *   rpcUrl: 'https://rpc.tempo.xyz',
  *   chainId: 42431,
- *   rpcUrl: 'https://rpc.testnet.tempo.xyz',
- *   realm: 'api.example.com',
- *   secretKey: process.env.PAYMENT_SECRET_KEY,
- * })
- *
- * // Or with a viem client
- * const payment = PaymentHandler.tempo({
- *   client,
- *   realm: 'api.example.com',
- *   secretKey: process.env.PAYMENT_SECRET_KEY,
  * })
  * ```
  */
 export function tempo(parameters: tempo.Parameters) {
-  const { feePayer, realm, secretKey } = parameters
+  const { feePayer } = parameters
 
   const client = (() => {
     if (parameters.client) return parameters.client
@@ -54,21 +45,13 @@ export function tempo(parameters: tempo.Parameters) {
     })
   })()
 
-  return PaymentHandler.from({
+  return Method.toServer(tempoMethod, {
     context: z._default(
       z.object({
         feePayer: z.optional(z.custom<Account>()),
       }),
       { feePayer },
     ),
-    intents: {
-      // TODO: add support for authorize
-      // authorize: Intents.authorize,
-      charge: Intents.charge,
-    },
-    method: 'tempo',
-    realm,
-    secretKey,
     async verify({ context, credential }) {
       const { feePayer } = context
       const { challenge } = credential
@@ -206,10 +189,6 @@ export declare namespace tempo {
   type Parameters = {
     /** Optional fee payer account for covering transaction fees. */
     feePayer?: Account | undefined
-    /** Server realm (e.g., hostname). */
-    realm: string
-    /** Secret key for HMAC-bound challenge IDs. */
-    secretKey: string
   } & OneOf<
     | {
         /** Viem Client. */

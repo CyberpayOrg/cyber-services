@@ -1,1 +1,1 @@
-export * as PaymentHandler from './PaymentHandler.js'
+export * as Method from './Method.js'

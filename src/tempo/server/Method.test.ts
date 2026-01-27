@@ -8,15 +8,18 @@ import { accounts, asset, chain, client } from '~test/tempo/viem.js'
 import * as Challenge from '../../Challenge.js'
 import * as Credential from '../../Credential.js'
 import * as Receipt from '../../Receipt.js'
-import * as PaymentHandler from './PaymentHandler.js'
+import * as PaymentHandler from '../../server/PaymentHandler.js'
+import { tempo } from './Method.js'
 
 const realm = 'api.example.com'
 const secretKey = 'test-secret-key'
 
-const handler = PaymentHandler.tempo({
-  chainId: chain.id,
+const handler = PaymentHandler.create({
+  method: tempo({
+    chainId: chain.id,
+    rpcUrl,
+  }),
   realm,
-  rpcUrl,
   secretKey,
 })
 
@@ -39,9 +42,7 @@ describe('tempo', () => {
       const response = await fetch(server.url)
       expect(response.status).toBe(402)
 
-      const challenge = Challenge.fromResponse(response, {
-        handler,
-      })
+      const challenge = Challenge.fromResponse(response, { method: handler.method })
 
       const { receipt } = await Actions.token.transferSync(client, {
         account: accounts[1],
@@ -98,7 +99,7 @@ describe('tempo', () => {
       const response = await fetch(server.url)
       expect(response.status).toBe(402)
 
-      const challenge = Challenge.fromResponse(response, { handler })
+      const challenge = Challenge.fromResponse(response, { method: handler.method })
 
       const { receipt } = await Actions.token.transferSync(client, {
         account: accounts[1],
@@ -140,7 +141,7 @@ describe('tempo', () => {
       const response = await fetch(server.url)
       expect(response.status).toBe(402)
 
-      const challenge = Challenge.fromResponse(response, { handler })
+      const challenge = Challenge.fromResponse(response, { method: handler.method })
 
       const { receipt } = await Actions.token.transferSync(client, {
         account: accounts[1],
@@ -184,7 +185,7 @@ describe('tempo', () => {
       const response = await fetch(server.url)
       expect(response.status).toBe(402)
 
-      const challenge = Challenge.fromResponse(response, { handler })
+      const challenge = Challenge.fromResponse(response, { method: handler.method })
 
       const prepared = await prepareTransactionRequest(client, {
         account: accounts[1],
@@ -243,7 +244,7 @@ describe('tempo', () => {
       const response = await fetch(server.url)
       expect(response.status).toBe(402)
 
-      const challenge = Challenge.fromResponse(response, { handler })
+      const challenge = Challenge.fromResponse(response, { method: handler.method })
       if (challenge.intent !== 'charge') throw new Error()
 
       const prepared = await prepareTransactionRequest(client, {
@@ -306,7 +307,7 @@ describe('tempo', () => {
       const response = await fetch(server.url)
       expect(response.status).toBe(402)
 
-      const challenge = Challenge.fromResponse(response, { handler })
+      const challenge = Challenge.fromResponse(response, { method: handler.method })
 
       const serializedTransaction = await signTransaction(client, {
         account: accounts[1],
@@ -354,7 +355,7 @@ describe('tempo', () => {
       const response = await fetch(server.url)
       expect(response.status).toBe(402)
 
-      const challenge = Challenge.fromResponse(response, { handler })
+      const challenge = Challenge.fromResponse(response, { method: handler.method })
 
       const serializedTransaction = await signTransaction(client, {
         account: accounts[1],
@@ -407,7 +408,7 @@ describe('tempo', () => {
       const response = await fetch(server.url)
       expect(response.status).toBe(402)
 
-      const challenge = Challenge.fromResponse(response, { handler })
+      const challenge = Challenge.fromResponse(response, { method: handler.method })
 
       const wrongCurrency = '0x0000000000000000000000000000000000000001'
       const serializedTransaction = await signTransaction(client, {
@@ -458,7 +459,7 @@ describe('tempo', () => {
       const response = await fetch(server.url)
       expect(response.status).toBe(402)
 
-      const challenge = Challenge.fromResponse(response, { handler })
+      const challenge = Challenge.fromResponse(response, { method: handler.method })
 
       const credential = Credential.from({
         challenge,

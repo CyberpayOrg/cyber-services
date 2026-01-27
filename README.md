@@ -37,11 +37,13 @@ npm i mpay
 ### Server
 
 ```ts
-import { PaymentHandler } from 'mpay/server'
+import { PaymentHandler, tempo } from 'mpay/server'
 
-const payment = PaymentHandler.tempo({
+const payment = PaymentHandler.create({
+  method: tempo({
+    rpcUrl: 'https://rpc.tempo.xyz',
+  }),
   realm: 'api.example.com',
-  rpcUrl: 'https://rpc.tempo.xyz',
 })
 
 export async function handler(request: Request) {
@@ -143,12 +145,16 @@ For more control, you can manually create credentials:
 
 ```ts
 import { Challenge } from 'mpay' 
-import { PaymentHandler } from 'mpay/client'
+import { PaymentHandler, tempo } from 'mpay/client'
 import { privateKeyToAccount } from 'viem/accounts'
 
-const payment = PaymentHandler.tempo({
-  account: privateKeyToAccount('0x...'),
-  rpcUrl: 'https://rpc.testnet.tempo.xyz',
+const payment = PaymentHandler.create({
+  methods: [
+    tempo({
+      account: privateKeyToAccount('0x...'),
+      rpcUrl: 'https://rpc.testnet.tempo.xyz',
+    })
+  ]
 })
 
 const res = await fetch('https://api.example.com/resource')

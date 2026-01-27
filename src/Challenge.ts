@@ -2,6 +2,7 @@ import { hmac } from '@noble/hashes/hmac.js'
 import { sha256 } from '@noble/hashes/sha2.js'
 import { Base64, Bytes } from 'ox'
 import type { OneOf } from './internal/types.js'
+import type * as Method from './Method.js'
 import type * as MethodIntent from './MethodIntent.js'
 import * as PaymentRequest from './PaymentRequest.js'
 import * as z from './zod.js'
@@ -62,10 +63,10 @@ export type Challenge<
 }
 
 /**
- * Extracts the union of challenge types from a payment handler's intents.
+ * Extracts the union of challenge types from a method's intents.
  */
-export type FromHandler<handler> = handler extends {
-  method: infer M extends string
+export type FromMethod<method> = method extends {
+  name: infer M extends string
   intents: infer I extends Record<string, { name: string; schema: { request: unknown } }>
 }
   ? {
@@ -115,27 +116,38 @@ export type FromHandler<handler> = handler extends {
  */
 export function from<
   const parameters extends from.Parameters,
-  const handler extends { method: string } | undefined = undefined,
->(parameters: parameters, options?: from.Options<handler>): from.ReturnType<parameters, handler> {
+  const method extends Method.Method | undefined = undefined,
+>(parameters: parameters, options?: from.Options<method>): from.ReturnType<parameters, method> {
   void options
-  const { description, digest, expires, method, intent, realm, request, secretKey } = parameters
+  const {
+    description,
+    digest,
+    expires,
+    method: methodName,
+    intent,
+    realm,
+    request,
+    secretKey,
+  } = parameters
   const id = secretKey ? computeId(parameters, { secretKey }) : (parameters as { id: string }).id
 
   return Schema.parse({
     id,
     realm,
-    method,
+    method: methodName,
     intent,
     request,
     ...(description && { description }),
     ...(digest && { digest }),
     ...(expires && { expires }),
-  }) as from.ReturnType<parameters, handler>
+  }) as from.ReturnType<parameters, method>
 }
 
 export declare namespace from {
-  type Options<handler extends { method: string } | undefined = undefined> = {
-    handler?: handler
+  type Options<
+    method extends Method.Method | undefined = undefined,
+  > = {
+    method?: method
   }
 
   type Parameters = OneOf<
@@ -166,8 +178,8 @@ export declare namespace from {
 
   type ReturnType<
     parameters extends Parameters,
-    handler extends { method: string } | undefined = undefined,
-  > = handler extends { method: string } ? FromHandler<handler> : Challenge<parameters['request']>
+    method extends Method.Method | undefined = undefined,
+  > = method extends { name: string } ? FromMethod<method> : Challenge<parameters['request']>
 }
 
 /**
@@ -290,18 +302,17 @@ export function serialize(challenge: Challenge): string {
  *
  * const challenge = Challenge.deserialize(header)
  *
- * // With handler for type narrowing
- * const challenge = Challenge.deserialize(header, { handler })
+ * // With method for type narrowing
+ * const challenge = Challenge.deserialize(header, { method })
  * ```
  *
  * @param header - The WWW-Authenticate header value.
  * @param options - Optional settings to narrow the challenge type.
  * @returns The deserialized challenge.
  */
-export function deserialize<const handler extends { method: string } | undefined = undefined>(
-  value: string,
-  options?: from.Options<handler>,
-): from.ReturnType<from.Parameters, handler> {
+export function deserialize<
+  const method extends Method.Method | undefined = undefined,
+>(value: string, options?: from.Options<method>): from.ReturnType<from.Parameters, method> {
   const prefixMatch = value.match(/^Payment\s+(.+)$/i)
   if (!prefixMatch?.[1]) throw new Error('Missing Payment scheme.')
 
@@ -339,14 +350,13 @@ export function deserialize<const handler extends { method: string } | undefined
  *
  * const challenge = Challenge.fromHeaders(response.headers)
  *
- * // With handler for type narrowing
- * const challenge = Challenge.fromHeaders(response.headers, { handler })
+ * // With method for type narrowing
+ * const challenge = Challenge.fromHeaders(response.headers, { method })
  * ```
  */
-export function fromHeaders<const handler extends { method: string } | undefined = undefined>(
-  headers: Headers,
-  options?: from.Options<handler>,
-): from.ReturnType<from.Parameters, handler> {
+export function fromHeaders<
+  const method extends Method.Method | undefined = undefined,
+>(headers: Headers, options?: from.Options<method>): from.ReturnType<from.Parameters, method> {
   const header = headers.get('WWW-Authenticate')
   if (!header) throw new Error('Missing WWW-Authenticate header.')
   return deserialize(header, options)
@@ -367,14 +377,13 @@ export function fromHeaders<const handler extends { method: string } | undefined
  * if (response.status === 402)
  *   const challenge = Challenge.fromResponse(response)
  *
- * // With handler for type narrowing
- * const challenge = Challenge.fromResponse(response, { handler })
+ * // With method for type narrowing
+ * const challenge = Challenge.fromResponse(response, { method })
  * ```
  */
-export function fromResponse<const handler extends { method: string } | undefined = undefined>(
-  response: Response,
-  options?: from.Options<handler>,
-): from.ReturnType<from.Parameters, handler> {
+export function fromResponse<
+  const method extends Method.Method | undefined = undefined,
+>(response: Response, options?: from.Options<method>): from.ReturnType<from.Parameters, method> {
   if (response.status !== 402) throw new Error('Response status is not 402.')
   return fromHeaders(response.headers, options)
 }
