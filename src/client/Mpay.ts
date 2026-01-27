@@ -22,8 +22,7 @@ export type Mpay<methods extends readonly AnyClient[] = readonly AnyClient[]> = 
  *
  * @example
  * ```ts
- * import { Mpay } from 'mpay/client'
- * import { tempo } from 'mpay/tempo/client'
+ * import { Mpay, tempo } from 'mpay/client'
  *
  * const mpay = Mpay.create({
  *   methods: [

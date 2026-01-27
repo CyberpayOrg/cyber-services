@@ -193,8 +193,7 @@ export declare namespace from {
  *
  * @example
  * ```ts
- * import { Method } from 'mpay'
- * import { tempo } from 'mpay/tempo'
+ * import { Method, tempo } from 'mpay'
  *
  * const method = Method.toServer(tempo, {
  *   async verify({ credential }) {
@@ -247,8 +246,7 @@ export declare namespace toServer {
  *
  * @example
  * ```ts
- * import { Method } from 'mpay'
- * import { tempo } from 'mpay/tempo'
+ * import { Method, tempo } from 'mpay'
  *
  * const method = Method.toClient(tempo, {
  *   async createCredential({ challenge }) {
