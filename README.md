@@ -39,7 +39,7 @@ npm i mpay
 ```ts
 import { Mpay, tempo } from 'mpay/server'
 
-const payment = Mpay.create({
+const mpay = Mpay.create({
   method: tempo({
     rpcUrl: 'https://rpc.tempo.xyz',
   }),
@@ -47,7 +47,7 @@ const payment = Mpay.create({
 })
 
 export async function handler(request: Request) {
-  const response = await payment.charge({
+  const response = await mpay.charge({
     request: {
       amount: '1000000',
       currency: '0x20c0000000000000000000000000000000000001',
@@ -148,7 +148,7 @@ import { Challenge } from 'mpay'
 import { Mpay, tempo } from 'mpay/client'
 import { privateKeyToAccount } from 'viem/accounts'
 
-const payment = Mpay.create({
+const mpay = Mpay.create({
   methods: [
     tempo({
       account: privateKeyToAccount('0x...'),
@@ -160,7 +160,7 @@ const payment = Mpay.create({
 const res = await fetch('https://api.example.com/resource')
 if (res.status !== 402) return
 
-const credential = await payment.createCredential(res)
+const credential = await mpay.createCredential(res)
 
 // Retry with credential
 const res2 = await fetch('https://api.example.com/resource', {
