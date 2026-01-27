@@ -66,9 +66,13 @@
     }
   },
   "peerDependencies": {
+    "@modelcontextprotocol/sdk": ">=1.25.0",
     "viem": ">=2.44.4"
   },
   "peerDependenciesMeta": {
+    "@modelcontextprotocol/sdk": {
+      "optional": true
+    },
     "viem": {
       "optional": true
     }
