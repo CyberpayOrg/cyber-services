@@ -1,10 +1,9 @@
 import { assertType, describe, expectTypeOf, test } from 'vitest'
 import * as Challenge from './Challenge.js'
-import * as core_Method from './Method.js'
-import * as Method from './server/Method.js'
+import * as Method from './Method.js'
 import * as Intents from './tempo/Intents.js'
 
-const fooMethod = core_Method.from({
+const fooMethod = Method.from({
   name: 'tempo',
   intents: {
     charge: Intents.charge,

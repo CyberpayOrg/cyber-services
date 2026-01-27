@@ -1,9 +1,8 @@
 import { assertType, describe, expectTypeOf, test } from 'vitest'
 import * as Intent from '../Intent.js'
-import * as core_Method from '../Method.js'
+import * as Method from '../Method.js'
 import * as MethodIntent from '../MethodIntent.js'
 import * as z from '../zod.js'
-import * as Method from './Method.js'
 import * as PaymentHandler from './PaymentHandler.js'
 
 const fooCharge = MethodIntent.fromIntent(Intent.charge, {
@@ -27,7 +26,7 @@ const fooAuthorize = MethodIntent.fromIntent(Intent.authorize, {
   },
 })
 
-const fooMethod = core_Method.from({
+const fooMethod = Method.from({
   name: 'test',
   intents: { charge: fooCharge },
 })
@@ -56,7 +55,7 @@ describe('PaymentHandler', () => {
   })
 
   test('has intent functions matching method intents', () => {
-    const baseMethod = core_Method.from({
+    const baseMethod = Method.from({
       name: 'test',
       intents: {
         authorize: fooAuthorize,

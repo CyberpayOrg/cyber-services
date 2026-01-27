@@ -5,14 +5,14 @@ import * as Credential from '../Credential.js'
 import * as Errors from '../Errors.js'
 import type * as MethodIntent from '../MethodIntent.js'
 import * as Receipt from '../Receipt.js'
-import type * as Method from './Method.js'
+import type * as Method from '../Method.js'
 import * as Request from './Request.js'
 import * as Response from './Response.js'
 
 /**
  * Payment handler.
  */
-export type PaymentHandler<method extends Method.Method<any, any, any> = Method.Method> = {
+export type PaymentHandler<method extends Method.Server<any, any, any> = Method.Server> = {
   /** The payment method. */
   method: method
   /** Server realm (e.g., hostname). */
@@ -42,7 +42,7 @@ export type PaymentHandler<method extends Method.Method<any, any, any> = Method.
  * })
  * ```
  */
-export function create<const method extends Method.Method<any, any, any>>(
+export function create<const method extends Method.Server<any, any, any>>(
   config: create.Config<method>,
 ): PaymentHandler<method> {
   const { method, realm, secretKey } = config
@@ -61,7 +61,7 @@ export function create<const method extends Method.Method<any, any, any>>(
 }
 
 export declare namespace create {
-  type Config<method extends Method.Method<any, any, any> = Method.Method> = {
+  type Config<method extends Method.Server<any, any, any> = Method.Server> = {
     /** Payment method (e.g., tempo({ ... })). */
     method: method
     /** Server realm (e.g., hostname). */

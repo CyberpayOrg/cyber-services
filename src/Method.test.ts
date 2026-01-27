@@ -1,9 +1,8 @@
 import { describe, expect, test } from 'vitest'
-import * as Intent from '../Intent.js'
-import * as Method from '../Method.js'
-import * as MethodIntent from '../MethodIntent.js'
-import * as z from '../zod.js'
-import * as ServerMethod from './Method.js'
+import * as Intent from './Intent.js'
+import * as Method from './Method.js'
+import * as MethodIntent from './MethodIntent.js'
+import * as z from './zod.js'
 
 const fooCharge = MethodIntent.fromIntent(Intent.charge, {
   method: 'test',
@@ -24,7 +23,7 @@ const fooMethod = Method.from({
 
 describe('toServer', () => {
   test('default', () => {
-    const method = ServerMethod.toServer(fooMethod, {
+    const method = Method.toServer(fooMethod, {
       async verify() {
         return {
           method: 'test',
@@ -41,7 +40,7 @@ describe('toServer', () => {
   })
 
   test('behavior: with context schema', () => {
-    const method = ServerMethod.toServer(fooMethod, {
+    const method = Method.toServer(fooMethod, {
       context: z.object({ apiKey: z.string() }),
       async verify() {
         return {
@@ -75,7 +74,7 @@ describe('toServer', () => {
       },
     })
 
-    const method = ServerMethod.toServer(baseMethod, {
+    const method = Method.toServer(baseMethod, {
       async verify() {
         return {
           method: 'test',

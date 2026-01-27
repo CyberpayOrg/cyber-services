@@ -12,8 +12,8 @@ import { tempo as tempo_chain } from 'viem/chains'
 import { Abis, Transaction } from 'viem/tempo'
 import { z } from 'zod/mini'
 import type { OneOf } from '../../internal/types.js'
-import * as Method from '../../server/Method.js'
-import { tempo as tempoMethod } from './../Method.js'
+import * as Method from '../../Method.js'
+import * as Methods from './../Method.js'
 
 const transfer = AbiFunction.from('function transfer(address to, uint256 amount) returns (bool)')
 const transferSelector = AbiFunction.getSelector(transfer)
@@ -45,7 +45,7 @@ export function tempo(parameters: tempo.Parameters) {
     })
   })()
 
-  return Method.toServer(tempoMethod, {
+  return Method.toServer(Methods.tempo, {
     context: z._default(
       z.object({
         feePayer: z.optional(z.custom<Account>()),

@@ -1,9 +1,8 @@
 import { assertType, describe, expectTypeOf, test } from 'vitest'
-import * as Intent from '../Intent.js'
-import * as core_Method from '../Method.js'
-import * as MethodIntent from '../MethodIntent.js'
-import * as zod from '../zod.js'
+import * as Intent from './Intent.js'
 import * as Method from './Method.js'
+import * as MethodIntent from './MethodIntent.js'
+import * as zod from './zod.js'
 
 const fooCharge = MethodIntent.fromIntent(Intent.charge, {
   method: 'test',
@@ -26,14 +25,14 @@ const fooAuthorize = MethodIntent.fromIntent(Intent.authorize, {
   },
 })
 
-const fooMethod = core_Method.from({
+const fooMethod = Method.from({
   name: 'test',
   intents: { charge: fooCharge },
 })
 
 describe('NameOf', () => {
   test('extracts method name', () => {
-    const baseMethod = core_Method.from({
+    const baseMethod = Method.from({
       name: 'tempo',
       intents: { charge: fooCharge },
     })
@@ -56,7 +55,7 @@ describe('NameOf', () => {
 
 describe('IntentsOf', () => {
   test('extracts intents map', () => {
-    const baseMethod = core_Method.from({
+    const baseMethod = Method.from({
       name: 'test',
       intents: {
         authorize: fooAuthorize,
@@ -119,7 +118,7 @@ describe('ContextOf', () => {
 
 describe('toServer', () => {
   test('infers name as literal', () => {
-    const baseMethod = core_Method.from({
+    const baseMethod = Method.from({
       name: 'custom',
       intents: { charge: fooCharge },
     })
@@ -139,7 +138,7 @@ describe('toServer', () => {
   })
 
   test('infers intents correctly', () => {
-    const baseMethod = core_Method.from({
+    const baseMethod = Method.from({
       name: 'test',
       intents: {
         authorize: fooAuthorize,
