@@ -40,16 +40,14 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.pnpm-store
-          key: pnpm-store-${{ runner.os }}-${{ hashFiles('mpp/pnpm-lock.yaml') }}
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             pnpm-store-${{ runner.os }}-
 
       - name: Install dependencies
-        working-directory: mpp
         run: pnpm install
 
       - name: Build site
-        working-directory: mpp
         run: pnpm run build
 
       - name: Deploy to Cloudflare
@@ -57,7 +55,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: mpp
+          workingDirectory: .
           command: deploy
 
   build-preview:
@@ -85,16 +83,14 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.pnpm-store
-          key: pnpm-store-${{ runner.os }}-${{ hashFiles('mpp/pnpm-lock.yaml') }}
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             pnpm-store-${{ runner.os }}-
 
       - name: Install dependencies
-        working-directory: mpp
         run: pnpm install
 
       - name: Build site
-        working-directory: mpp
         run: pnpm run build
 
       - name: Upload Preview Version
@@ -103,7 +99,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: mpp
+          workingDirectory: .
           command: versions upload
 
       - name: Post Preview Comment
