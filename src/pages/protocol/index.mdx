@@ -4,7 +4,7 @@ The Machine Payments Protocol (MPP) is an internet-native protocol for machine-t
 
 This section provides a developer-friendly overview. For the normative specification, see [paymentauth.tempo.xyz](https://paymentauth.tempo.xyz).
 
-## The Flow
+## Flow
 
 ```mermaid
 sequenceDiagram
@@ -27,13 +27,40 @@ sequenceDiagram
 
 ## Core Concepts
 
-| Concept | Description |
-|---------|-------------|
-| [HTTP 402](/protocol/http-402) | The status code that signals payment is required |
-| [Challenges](/protocol/challenges) | Server-issued payment requirements in `WWW-Authenticate` |
-| [Credentials](/protocol/credentials) | Client-submitted payment proofs in `Authorization` |
-| [Receipts](/protocol/receipts) | Server acknowledgment of successful payment |
-| [Transports](/protocol/transports) | HTTP and MCP transport bindings |
+import { Card, Cards } from 'vocs'
+
+<Cards>
+  <Card
+    description="The status code that signals payment is required"
+    icon="lucide:alert-circle"
+    title="HTTP 402"
+    to="/protocol/http-402"
+  />
+  <Card
+    description="Server-issued payment requirements in WWW-Authenticate"
+    icon="lucide:file-question"
+    title="Challenges"
+    to="/protocol/challenges"
+  />
+  <Card
+    description="Client-submitted payment proofs in Authorization"
+    icon="lucide:key"
+    title="Credentials"
+    to="/protocol/credentials"
+  />
+  <Card
+    description="Server acknowledgment of successful payment"
+    icon="lucide:receipt"
+    title="Receipts"
+    to="/protocol/receipts"
+  />
+  <Card
+    description="HTTP and MCP transport bindings"
+    icon="lucide:network"
+    title="Transports"
+    to="/protocol/transports"
+  />
+</Cards>
 
 ## Payment Method Agnostic
 

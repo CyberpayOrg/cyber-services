@@ -12,21 +12,27 @@ The HTTP transport is the primary binding for MPP, using standard HTTP headers f
 
 ## Example Flow
 
-### 1. Initial Request
+:::steps
+
+### (Client) Request Resource
 
 ```http
 GET /api/data HTTP/1.1
 Host: api.example.com
 ```
 
-### 2. Payment Challenge
+### (Server) Payment Challenge
+
+Returns the `WWW-Authenticate` header with a `Payment` challenge.
 
 ```http
 HTTP/1.1 402 Payment Required
 WWW-Authenticate: Payment id="abc123", method="tempo", intent="charge", request="..."
 ```
 
-### 3. Request with Credential
+### (Client) Request with Credential
+
+Fulfills with the `Authorization` header.
 
 ```http
 GET /api/data HTTP/1.1
@@ -34,7 +40,9 @@ Host: api.example.com
 Authorization: Payment eyJjaGFsbGVuZ2UiOnsiaWQiOiJhYmMxMjMi...
 ```
 
-### 4. Success with Receipt
+### (Server) Success with Receipt
+
+Returns the `Payment-Receipt` header with a success receipt.
 
 ```http
 HTTP/1.1 200 OK
@@ -43,6 +51,8 @@ Content-Type: application/json
 
 {"data": "..."}
 ```
+
+:::
 
 ## Header Encoding
 

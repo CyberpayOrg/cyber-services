@@ -1,8 +1,8 @@
 # HTTP 402 Payment Required
 
-HTTP 402 "Payment Required" was reserved in HTTP/1.1 but never standardized. MPP gives 402 its semantics by pairing it with the Payment authentication scheme.
+MPP gives the HTTP/1.1 `402` "Payment Required" status code its semantics by pairing it with the HTTP `Payment` authentication scheme.
 
-## When Servers Return 402
+## Overview
 
 Servers respond with 402 when:
 
@@ -23,26 +23,31 @@ WWW-Authenticate: Payment id="abc123",
 Servers MUST include a `WWW-Authenticate` header with at least one Payment challenge when returning 402.
 :::
 
-## Relationship to Other Status Codes
+## Status Code Comparison
 
 | Condition | Status Code |
 |-----------|-------------|
-| Resource requires payment | **402** |
-| Client lacks authentication | 401 |
-| Client authenticated but unauthorized | 403 |
-| Resource doesn't exist | 404 |
+| Resource requires payment | **`402`** |
+| Client lacks authentication | `401` |
+| Client authenticated but unauthorized | `403` |
+| Resource doesn't exist | `404` |
 
-MPP uses 402 consistently for all payment-related challenges, including when a credential fails validation. This differs from other HTTP authentication schemes that use 401 for failed credentials.
+MPP uses `402` consistently for all payment-related challenges, including when a credential fails validation. This differs from other HTTP authentication schemes that use `401` for failed credentials.
 
-## Interaction with Authentication
+## Token Authentication
 
-When a resource requires both authentication and payment, servers should:
+When a resource requires both **token** and **payment** authentication, servers should:
 
-1. First verify authentication credentials
-2. Return 401 if authentication fails
-3. Return 402 with a Payment challenge only after successful authentication
+1. Verify authentication credentials
+2. Return `401` if token authentication fails
+3. Return `402` with a `Payment <challenge>` only after successful token authentication
 
 This ordering prevents leaking payment requirements to unauthenticated clients.
+
+:::info
+It is recommended for servers to store authentication tokens in a [HTTP-only cookie](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#httponly-attribute) to prevent 
+them from conflicting with the payment `Authorization` header and more importantly, to avoid the token from being exposed to the client.
+:::
 
 ## Error Responses
 
@@ -68,4 +73,13 @@ Error types include:
 
 ## Learn More
 
-- [Full HTTP 402 Specification](https://paymentauth.tempo.xyz/core/payment-auth#usage-of-402) – Normative details on 402 usage
+import { Card, Cards } from 'vocs'
+
+<Cards>
+  <Card
+    description='The "Payment" HTTP Authentication Scheme'
+    icon="lucide:file-text"
+    title="Full Specification"
+    to="https://paymentauth.tempo.xyz/draft-httpauth-payment-00"
+  />
+</Cards>
