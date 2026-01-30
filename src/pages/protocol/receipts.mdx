@@ -1,32 +1,36 @@
 # Receipts
 
-A **receipt** is the server's acknowledgment of successful payment. Receipts are returned in the `Payment-Receipt` header on successful responses.
+A **Receipt** is the server's acknowledgment of successful payment. Receipts are returned in the `Payment-Receipt` header on successful responses.
 
-## Receipt Header
+:::info
+The `Payment-Receipt` header is optional. Servers SHOULD include it for auditability, but Clients MUST NOT require it for correct operation.
+:::
+
+## Header
 
 ```http
 HTTP/1.1 200 OK
 Payment-Receipt: eyJzdGF0dXMiOiJzdWNjZXNzIiwibWV0aG9kIjoidGVtcG8iLCJ0aW1lc3RhbXAiOiIyMDI1LTAxLTE1VDEyOjAwOjAwWiJ9
 Content-Type: application/json
 
-{"data": "..."}
+{ "data": "Thanks for your payment!" }
 ```
 
 The receipt is a base64url-encoded JSON object.
 
-## Receipt Structure
+## Structure
 
 ```json
 {
-  "status": "success",
   "challengeId": "qB3wErTyU7iOpAsD9fGhJk",
   "method": "tempo",
-  "timestamp": "2025-01-15T12:00:00Z",
   "reference": "0xtx789abc...",
   "settlement": {
     "amount": "1000",
     "currency": "usd"
-  }
+  },
+  "status": "success",
+  "timestamp": "2025-01-15T12:00:00Z"
 }
 ```
 
@@ -34,18 +38,14 @@ The receipt is a base64url-encoded JSON object.
 
 | Field | Description |
 |-------|-------------|
-| `status` | Payment outcome (`success`) |
 | `challengeId` | The challenge this receipt responds to |
 | `method` | Payment method used |
-| `timestamp` | When the payment was processed |
 | `reference` | Method-specific payment reference (transaction hash, invoice ID, etc.) |
 | `settlement` | Actual amount and currency settled |
+| `status` | Payment outcome (`success`) |
+| `timestamp` | When the payment was processed |
 
-## Optional Receipt
-
-The `Payment-Receipt` header is optional. Servers SHOULD include it for auditability, but clients MUST NOT require it for correct operation.
-
-## Receipt Uses
+## Use Cases
 
 Receipts enable:
 
@@ -53,7 +53,7 @@ Receipts enable:
 - **Dispute resolution** – Reference IDs link to payment network records
 - **Reconciliation** – Match payments to requests
 
-## Method-Specific References
+## Payment Method References
 
 | Payment Method | Reference Format |
 |----------------|------------------|
@@ -63,4 +63,13 @@ Receipts enable:
 
 ## Learn More
 
-- [Full Receipt Specification](https://paymentauth.tempo.xyz/core/payment-auth#payment-receipt-header) – Normative receipt format
+import { Card, Cards } from 'vocs'
+
+<Cards>
+  <Card
+    description="Normative receipt format"
+    icon="lucide:file-text"
+    title="Specification"
+    to="https://paymentauth.tempo.xyz/draft-httpauth-payment-00#name-payment-receipt-header"
+  />
+</Cards>

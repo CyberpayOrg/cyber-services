@@ -1,10 +1,10 @@
 # Challenges
 
-A **challenge** is a payment requirement issued by the server in response to a request. Challenges are sent in the `WWW-Authenticate` header using the Payment authentication scheme.
+A **Challenge** is a payment requirement issued by the server in response to a request. Challenges are sent in the `WWW-Authenticate` header using the Payment authentication scheme.
 
-## Challenge Structure
+## Structure
 
-```http [WWW-Authenticate Header]
+```http
 WWW-Authenticate: Payment id="qB3wErTyU7iOpAsD9fGhJk",
     realm="mpp.dev",
     method="tempo",
@@ -30,7 +30,7 @@ WWW-Authenticate: Payment id="qB3wErTyU7iOpAsD9fGhJk",
 | `expires` | ISO 8601 timestamp when the challenge expires |
 | `description` | Human-readable description of what's being paid for |
 
-## The Request Object
+## `request` Object
 
 The `request` parameter contains method-specific payment details encoded as base64url JSON:
 
@@ -74,7 +74,23 @@ Typical binding includes:
 - Hash of the `request` object
 - `expires` timestamp
 
+It is highly recommended to use a [HMAC-bound](https://en.wikipedia.org/wiki/HMAC) challenge ID to prevent clients from reusing a challenge ID with modified payment terms.
+
 ## Learn More
 
-- [Full Challenge Specification](https://paymentauth.tempo.xyz/core/payment-auth#challenge-www-authenticate) – Normative challenge format
-- [Payment Methods](https://paymentauth.tempo.xyz/methods) – Method-specific request schemas
+import { Card, Cards } from 'vocs'
+
+<Cards>
+  <Card
+    description="Normative challenge format"
+    icon="lucide:file-text"
+    title="Specification"
+    to="https://paymentauth.tempo.xyz/draft-httpauth-payment-00#name-challenge-www-authenticate"
+  />
+  <Card
+    description="Method-specific request schemas"
+    icon="lucide:credit-card"
+    title="Payment Methods"
+    to="/payment-methods"
+  />
+</Cards>
