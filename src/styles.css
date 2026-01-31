@@ -63,3 +63,139 @@ nav[aria-label="Pagination"],
 .vocs_Outline {
 	contain: layout style;
 }
+
+/* Mermaid SVG Diagram Styles - Light Mode */
+/* Use svg.animated-mermaid-svg since the class is on the SVG element itself */
+svg.animated-mermaid-svg {
+	max-width: 100%;
+	height: auto;
+}
+
+svg.animated-mermaid-svg .actor {
+	fill: #ffffff !important;
+	stroke: #3b82f6 !important;
+	stroke-width: 2px !important;
+	rx: 8px !important;
+	filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.1)) !important;
+}
+
+svg.animated-mermaid-svg text.actor-box,
+svg.animated-mermaid-svg .actor text,
+svg.animated-mermaid-svg .actor tspan {
+	fill: #3b82f6 !important;
+	font-family: var(--vocs-fontFamily_default) !important;
+	font-size: 14px !important;
+	font-weight: 600 !important;
+	letter-spacing: 0.02em !important;
+}
+
+svg.animated-mermaid-svg .actor-line {
+	stroke: #3b82f6 !important;
+	stroke-width: 2px !important;
+	stroke-dasharray: 6, 4 !important;
+	opacity: 0.3 !important;
+}
+
+svg.animated-mermaid-svg .messageLine0 {
+	stroke: #6b7280 !important;
+	stroke-width: 2px !important;
+	fill: none !important;
+}
+
+svg.animated-mermaid-svg .messageLine1 {
+	stroke: #6b7280 !important;
+	stroke-width: 2px !important;
+	fill: none !important;
+	stroke-dasharray: 6, 4 !important;
+}
+
+svg.animated-mermaid-svg .messageText,
+svg.animated-mermaid-svg .messageText tspan {
+	fill: #1f2937 !important;
+	font-family: var(--vocs-fontFamily_mono) !important;
+	font-size: 12px !important;
+	font-weight: 500 !important;
+}
+
+svg.animated-mermaid-svg .note {
+	fill: transparent !important;
+	stroke: transparent !important;
+	stroke-width: 0 !important;
+	filter: none !important;
+}
+
+svg.animated-mermaid-svg .noteText,
+svg.animated-mermaid-svg .noteText tspan {
+	fill: #374151 !important;
+	font-family: var(--vocs-fontFamily_default) !important;
+	font-size: 12px !important;
+	font-weight: 500 !important;
+}
+
+svg.animated-mermaid-svg #arrowhead path,
+svg.animated-mermaid-svg marker path {
+	fill: #6b7280 !important;
+	stroke: #6b7280 !important;
+}
+
+/* Mermaid SVG Diagram Styles - Dark Mode */
+:root.dark svg.animated-mermaid-svg .actor,
+.dark svg.animated-mermaid-svg .actor {
+	fill: #1e293b !important;
+	stroke: #60a5fa !important;
+	filter: drop-shadow(0 2px 4px rgba(96, 165, 250, 0.15)) !important;
+}
+
+:root.dark svg.animated-mermaid-svg text.actor-box,
+:root.dark svg.animated-mermaid-svg .actor text,
+:root.dark svg.animated-mermaid-svg .actor tspan,
+.dark svg.animated-mermaid-svg text.actor-box,
+.dark svg.animated-mermaid-svg .actor text,
+.dark svg.animated-mermaid-svg .actor tspan {
+	fill: #60a5fa !important;
+}
+
+:root.dark svg.animated-mermaid-svg .actor-line,
+.dark svg.animated-mermaid-svg .actor-line {
+	stroke: #60a5fa !important;
+	opacity: 0.25 !important;
+}
+
+:root.dark svg.animated-mermaid-svg .messageLine0,
+.dark svg.animated-mermaid-svg .messageLine0 {
+	stroke: #9ca3af !important;
+}
+
+:root.dark svg.animated-mermaid-svg .messageLine1,
+.dark svg.animated-mermaid-svg .messageLine1 {
+	stroke: #9ca3af !important;
+}
+
+:root.dark svg.animated-mermaid-svg .messageText,
+:root.dark svg.animated-mermaid-svg .messageText tspan,
+.dark svg.animated-mermaid-svg .messageText,
+.dark svg.animated-mermaid-svg .messageText tspan {
+	fill: #e5e7eb !important;
+}
+
+:root.dark svg.animated-mermaid-svg .note,
+.dark svg.animated-mermaid-svg .note {
+	fill: transparent !important;
+	stroke: transparent !important;
+	filter: none !important;
+}
+
+:root.dark svg.animated-mermaid-svg .noteText,
+:root.dark svg.animated-mermaid-svg .noteText tspan,
+.dark svg.animated-mermaid-svg .noteText,
+.dark svg.animated-mermaid-svg .noteText tspan {
+	fill: #e5e7eb !important;
+}
+
+:root.dark svg.animated-mermaid-svg #arrowhead path,
+:root.dark svg.animated-mermaid-svg marker path,
+.dark svg.animated-mermaid-svg #arrowhead path,
+.dark svg.animated-mermaid-svg marker path {
+	fill: #9ca3af !important;
+	stroke: #9ca3af !important;
+}

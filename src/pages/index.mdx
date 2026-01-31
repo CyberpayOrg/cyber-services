@@ -1,4 +1,5 @@
 import { Card, Cards } from 'vocs'
+import { MppFlowDiagram } from '../components/MppFlowDiagram'
 
 # Machine Payments Protocol
 
@@ -22,18 +23,7 @@ Check out the [Quickstart](/quickstart) to build your first payment-enabled API.
 
 ## Flow
 
-```mermaid
-sequenceDiagram
-    participant Client
-    participant Server
-
-    Client->>Server: (1) GET /resource
-    Server-->>Client: (2) 402 Payment Required<br/>WWW-Authenticate: Payment <challenge>
-    Note over Client: (3) Client fulfills payment challenge<br/>(signs transaction, pays invoice, etc.)
-    Client->>Server: (4) GET /resource<br/>Authorization: Payment <credential>
-    Note over Server: (5) Server verifies and settles
-    Server-->>Client: (6) 200 OK<br/>Payment-Receipt: <receipt>
-```
+<MppFlowDiagram />
 
 ## Use cases
 

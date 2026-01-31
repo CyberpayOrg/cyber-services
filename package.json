@@ -10,7 +10,8 @@
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"dev": "vite dev",
-		"build": "vite build && node scripts/patch-cf.ts",
+		"build": "pnpm diagrams:build && vite build && node scripts/patch-cf.ts",
+		"diagrams:build": "npx tsx scripts/build-diagrams.ts",
 		"deploy": "wrangler deploy",
 		"gen:types": "wrangler types",
 		"postinstall": "pnpm gen:types",
@@ -30,6 +31,7 @@
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.13",
 		"@hiogawa/node-loader-cloudflare": "^0.0.2",
+		"@mermaid-js/mermaid-cli": "^11.4.2",
 		"@types/node": "^22",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",

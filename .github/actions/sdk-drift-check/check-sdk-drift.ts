@@ -493,7 +493,10 @@ function formatConsoleOutput(result: DriftResult): string {
 /**
  * Emit GitHub Actions annotations for all errors and warnings
  */
-function emitWorkflowAnnotations(result: DriftResult, vocsConfigPath: string): void {
+function emitWorkflowAnnotations(
+	result: DriftResult,
+	vocsConfigPath: string,
+): void {
 	if (!isGitHubActions()) return;
 
 	for (const error of result.errors) {
