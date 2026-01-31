@@ -13,7 +13,8 @@ const baseUrl = (() => {
 export default defineConfig({
 	accentColor: "light-dark(#9333EA, #A855F7)",
 	baseUrl,
-	description: "Machine Payments Protocol - Internet-native payments for machine-to-machine transactions",
+	description:
+		"Machine Payments Protocol - Internet-native payments for machine-to-machine transactions",
 	checkDeadlinks: true,
 	iconUrl: {
 		light: "/icon-light.png",
@@ -47,7 +48,7 @@ export default defineConfig({
 	},
 	socials: [
 		{ icon: "github", link: "https://github.com/wevm/mpay" },
-		{ icon: "x", link: "https://twitter.com/tempo" }
+		{ icon: "x", link: "https://twitter.com/tempo" },
 	],
 	title: "MPP",
 	titleTemplate: "%s | MPP",

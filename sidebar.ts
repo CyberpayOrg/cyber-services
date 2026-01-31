@@ -1,4 +1,4 @@
-import type { Config } from 'vocs/config'
+import type { Config } from "vocs/config";
 
 export const sidebar = {
 	"/": [
@@ -325,4 +325,4 @@ export const sidebar = {
 			items: [{ text: "Building with AI", link: "/guide/building-with-ai" }],
 		},
 	],
-} as const satisfies Config['sidebar']
+} as const satisfies Config["sidebar"];

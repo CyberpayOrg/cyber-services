@@ -61,7 +61,7 @@ function postProcessSvg(svgContent: string): string {
 	);
 
 	// Remove inline style attributes BUT preserve text-anchor for centering
-	processed = processed.replace(/\s+style="([^"]*)"/g, (match, styles) => {
+	processed = processed.replace(/\s+style="([^"]*)"/g, (_match, styles) => {
 		// Keep text-anchor if present
 		const textAnchor = styles.match(/text-anchor:\s*([^;]+)/);
 		if (textAnchor) {

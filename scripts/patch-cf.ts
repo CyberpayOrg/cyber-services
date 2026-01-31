@@ -1,7 +1,6 @@
 // Patches the build output for Cloudflare Workers compatibility.
 // TODO: upstream compat patches to vocs
 
-import { execSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
@@ -40,10 +39,7 @@ if (fs.existsSync(vocsConfigSrc)) {
 			// Remove the import and prepend the inlined sidebar
 			configContent = configContent
 				.replace(sidebarImportMatch[0], "")
-				.replace(
-					/export\s+default/,
-					`${sidebarStripped}\nexport default`,
-				);
+				.replace(/export\s+default/, `${sidebarStripped}\nexport default`);
 			console.log("✓ Inlined sidebar into vocs.config.js");
 		}
 	}

@@ -374,12 +374,11 @@ export function AnimatedMermaid({
 						gap: "6px",
 						marginTop: "0.75rem",
 					}}
-					role="group"
-					aria-label="Animation steps"
 				>
 					{steps.map((step, i) => (
 						<button
 							type="button"
+							// biome-ignore lint/suspicious/noArrayIndexKey: steps are static animation frames
 							key={`dot-${i}`}
 							onClick={() => {
 								setIsPlaying(false);
