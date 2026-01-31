@@ -2,16 +2,16 @@
 
 MPP defines how the Payment authentication scheme operates over different transport protocols. The core protocol targets HTTP, with extensions for other transports like MCP.
 
-## Available Transports
+## Available transports
 
 | Transport | Use Case | Spec |
 |-----------|----------|------|
 | [HTTP](/protocol/transports/http) | REST APIs, web resources | [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110#section-11) |
 | [MCP](/protocol/transports/mcp) | AI tool calls via Model Context Protocol | [MCP Transport Spec](https://paymentauth.tempo.xyz/transports/mcp) |
 
-## Transport-Agnostic Design
+## Transport-agnostic design
 
-The core concepts—challenges, credentials, and receipts—remain the same across transports. Only the encoding and delivery mechanism changes:
+The core concepts—challenges, credentials, and receipts—remain the same across transports. The encoding and delivery mechanism changes:
 
 - **HTTP** uses standard headers (`WWW-Authenticate`, `Authorization`, `Payment-Receipt`)
 - **MCP** uses JSON-RPC error codes and `_meta` fields

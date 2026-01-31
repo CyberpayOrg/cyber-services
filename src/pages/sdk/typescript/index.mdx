@@ -1,12 +1,12 @@
-# Getting Started
+# Getting started
 
 ## Overview
 
-The `mpay` TypeScript library provides an intuitive interface over the Machine Payments Protocol, from high-level abstractions to low-level primitives & building blocks.
+The `mpay` TypeScript library provides an intuitive interface over the Machine Payments Protocol, from high-level abstractions to low-level primitives and building blocks.
 
 ## Skills
 
-Get up and running quickly by using your coding agent (Claude Code, Cursor, Amp, etc.) with [Agent Skills](https://skills.sh). Once installed, your agent will have context on how to properly integrate `mpay` with your chosen framework.
+Get up and running quickly by using your coding agent (Claude Code, Cursor, Amp, and similar tools) with [Agent Skills](https://skills.sh). After you install it, your agent has context on how to properly integrate `mpay` with your chosen framework.
 
 Use the [`skills` CLI](https://github.com/vercel-labs/skills) to install skills for your coding agent:
 
@@ -21,7 +21,7 @@ npx skills install wevm/mpay --skill mpay-hono
 npx skills install wevm/mpay -g
 ```
 
-:::note[Available Skills]
+:::note[Available skills]
 - [`mpay-bun`](https://github.com/wevm/mpay/tree/main/skills/mpay-bun) - [Bun](https://bun.sh) HTTP server integration
 - [`mpay-client`](https://github.com/wevm/mpay/tree/main/skills/mpay-client) - Client-side payment integration
 - [`mpay-cloudflare`](https://github.com/wevm/mpay/tree/main/skills/mpay-cloudflare) - [Cloudflare Workers](https://workers.cloudflare.com) integration
@@ -48,11 +48,11 @@ bun add mpay
 ```
 :::
 
-## Quick Start
+## Quick start
 
-This quick start guide will demonstrate how to use `mpay` with the [`tempo` Payment Method](#TODO).
+This quick start guide shows you how to use `mpay` with the [`tempo` payment method](#TODO).
 
-The same usage patterns can be applied to [other Payment Methods](#TODO).
+You can apply the same patterns to [other payment methods](#TODO).
 
 - If you want to **consume a Payment-enabled service**, follow the [Client](#client) quick start.
 - If you want to **protect a service** with Payment, follow the [Server](#server) quick start.
@@ -62,9 +62,9 @@ The same usage patterns can be applied to [other Payment Methods](#TODO).
 
 ::::steps
 
-#### Install Peer Dependencies
+#### Install peer dependencies
 
-For this example, we will be using the `viem` library to instantiate a Tempo Account.
+In this example, you use the `viem` library to instantiate a Tempo account.
 
 :::code-group
 ```bash [npm]
@@ -78,12 +78,12 @@ bun add viem
 ```
 :::
 
-#### Define a Tempo Account
+#### Define a Tempo account
 
-First, we will define an Tempo Account that we will use to make payments.
+Define a Tempo account you use to make payments.
 
-For this example, we will use a simple [Secp256k1 (Private Key)](https://viem.sh/tempo/accounts/account.fromSecp256k1) Account. 
-There are [other types](https://viem.sh/tempo/accounts) of Accounts you can use as well (e.g. Passkey, WebCrypto, etc).
+This example uses a simple [Secp256k1 (Private Key)](https://viem.sh/tempo/accounts/account.fromSecp256k1) account. 
+There are [other types](https://viem.sh/tempo/accounts) of accounts you can use as well (for example, passkeys or WebCrypto).
 
 ```ts twoslash [example.ts]
 import { Account } from 'viem/tempo'
@@ -92,12 +92,11 @@ const privateKey = '0xabc…123'
 const account = Account.fromSecp256k1(privateKey)
 ```
 
-#### Instantiate a Payment-enabled `fetch`
+#### Create a payment-enabled `fetch`
 
-Next, we will instantiate a Payment-enabled `fetch` instance that will be used to automatically
-handle requests that require payment. 
+Create a payment-enabled `fetch` instance to handle requests that require payment. 
 
-We will pass our Tempo `account` to the `fetch` instance, and also specify the Payment `method`(s) we want to use.
+Pass your Tempo `account` to the `fetch` instance and specify the payment `method`(s) you want to use.
 
 ```ts twoslash [example.ts]
 import { Account } from 'viem/tempo'
@@ -118,7 +117,7 @@ const fetch = Fetch.from({ // [!code focus]
 ```
 
 :::tip
-You can also polyfill the global `fetch` instance if you are feeling ambitious.
+You can also polyfill the global `fetch` instance.
 
 ```ts 
 Fetch.polyfill({
@@ -131,21 +130,21 @@ Fetch.polyfill({
   ]
 })
 
-// Now, the global `fetch` instance will be payment-enabled.
+// Now, the global `fetch` instance is payment-enabled.
 const response = await fetch('https://mpp.dev/ping/paid')
 ```
 :::
 
-#### Use on Resources
+#### Request protected resources
 
-Now, we can use our `fetch` instance to make requests to resources that require payment.
+Use your `fetch` instance to make requests to resources that require payment.
 
 ```ts [example.ts]
 const response = await fetch('https://mpp.dev/ping/paid')
 ```
 
 :::tip
-We can also define accounts on a per-request basis under `context`.
+You can also define accounts on a per-request basis under `context`.
 
 ```ts 
 const fetch = Fetch.from({ 
@@ -172,10 +171,9 @@ const response = await fetch('https://mpp.dev/ping/paid', {
 
 ::::steps
 
-#### Define an `Mpay` Instance
+#### Create an `Mpay` instance
 
-First, we will define an `Mpay` instance that we will use to request for payment
-on our protected resources.
+Create an `Mpay` instance to request payment for protected resources.
 
 ```ts twoslash [example.ts]
 import { Mpay, tempo } from 'mpay/server'
@@ -189,9 +187,9 @@ const mpay = Mpay.create({
 })
 ```
 
-#### Use on Request Handlers
+#### Use in request handlers
 
-Next, we will use the `mpay` instance to request payment from the client.
+Use the `mpay` instance to request payment from the client.
 
 The intent handler accepts a [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)-compatible request object, and returns a `Response` object.
 
@@ -201,7 +199,7 @@ The Fetch API is compatible with most server frameworks, including:
 - [Cloudflare Workers](https://workers.dev)
 - [Next.js](https://nextjs.org)
 - [Bun](https://bun.sh)
-- and more...
+- other Fetch API-compatible frameworks
 
 ```ts twoslash [example.ts]
 import { Mpay, tempo } from 'mpay/server' // [!code collapse:7 collapsed]
@@ -224,19 +222,18 @@ export async function handler(request: Request) {
     }, 
   })(request) 
 
-  // Payment required — send 402 response with challenge 
+  // Payment required: send 402 response with challenge 
   if (response.status === 402) return response.challenge 
 
-  // Payment verified — attach receipt and return resource 
+  // Payment verified: attach receipt and return resource 
   return response.withReceipt(Response.json({ data: '...' })) 
 } 
 ```
 
 :::tip
-If you are using a framework that does not support the Fetch API (e.g. Express or Node.js), then it
-is likely you are interfacing with the [Node.js Request Listener API](https://nodejs.org/api/http.html#httpcreateserveroptions-requestlistener).
+If your framework doesn't support the Fetch API (for example, Express or Node.js), you're likely interfacing with the [Node.js Request Listener API](https://nodejs.org/api/http.html#httpcreateserveroptions-requestlistener).
 
-You can use the `Mpay.toNodeListener` helper to transform the handler into a Node.js compatible listener.
+Use the `Mpay.toNodeListener` helper to transform the handler into a Node.js-compatible listener.
 
 ```ts  twoslash
 import { Mpay, tempo } from 'mpay/server' // [!code collapse:7]
@@ -259,19 +256,19 @@ export async function handler(req: IncomingMessage, res: ServerResponse) {
     }, 
   }))(req, res) // [!code ++]
 
-  // Payment required — send 402 response with challenge 
+  // Payment required: send 402 response with challenge 
   if (response.status === 402) return response.challenge 
 
-  // Payment verified — attach receipt and return resource 
+  // Payment verified: attach receipt and return resource 
   return response.withReceipt(Response.json({ data: '...' })) 
 } 
 ```
 
 :::
 
-#### Plug into Framework
+#### Plug into your framework
 
-Finally, we can plug our handler into our framework of choice, like [Hono](#TODO).
+Plug the handler into your framework of choice, like [Hono](#TODO).
 
 ```ts twoslash [example.ts]
 import { Hono } from 'hono' // [!code focus]

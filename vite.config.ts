@@ -4,6 +4,13 @@ import { defineConfig } from "vite";
 import { vocs } from "vocs/vite";
 
 export default defineConfig({
+	css: {
+		preprocessorOptions: {
+			css: {
+				additionalData: '@import "./src/styles.css";',
+			},
+		},
+	},
 	optimizeDeps: {
 		include: ["@braintree/sanitize-url", "dayjs", "mermaid"],
 	},

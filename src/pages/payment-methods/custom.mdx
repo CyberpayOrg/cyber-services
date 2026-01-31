@@ -1,12 +1,12 @@
-# Custom Payment Methods
+# Custom payment methods
 
 Implement a custom payment method when integrating new rails or payment control flows (intents). In the TypeScript SDK, you can define custom intents, then attach them to a custom method and extend it with client and server logic.
 
 ## Intents
 
-Start by defining the request and credential payload shape for each intent your method supports. You can use built-in intents (like `charge`, `authorize`, or `subscription`) or define your own.
+Start by defining the request and credential payload schema for each intent your method supports. You can use built-in intents (like `charge`, `authorize`, or `subscription`) or define your own.
 
-### Define a Custom Intent
+### Define a custom intent
 
 ```ts twoslash
 import { Intent, z } from 'mpay'
@@ -23,7 +23,7 @@ const customIntent = Intent.from({
 })
 ```
 
-### Attach Method-Specific Schemas
+### Attach method-specific schemas
 
 Attach method-specific request and credential schemas to each intent.
 
@@ -64,7 +64,7 @@ You can also attach built-in intents like `Intent.charge` the same way.
 
 See `MethodIntent.fromIntent` and `MethodIntent.from` for more options.
 
-## Method Definition
+## Method definition
 
 Compose your intents into a method definition. Method names are free-form and should match the `method` field used in challenges and credentials.
 
@@ -77,7 +77,7 @@ const method = Method.from({
 })
 ```
 
-## Client Implementation
+## Client implementation
 
 Extend the method with credential creation logic and return a serialized credential.
 
@@ -97,7 +97,7 @@ const clientMethod = Method.toClient(method, {
 })
 ```
 
-## Server Implementation
+## Server implementation
 
 Extend the method with verification logic that returns a receipt.
 
@@ -118,11 +118,11 @@ const serverMethod = Method.toServer(method, {
 })
 ```
 
-## Register in Your App
+## Register in your app
 
-Client-side, pass `clientMethod` to `Fetch.from`. Server-side, pass `serverMethod` to `Mpay.create`.
+On the client, pass `clientMethod` to `Fetch.from`. On the server, pass `serverMethod` to `Mpay.create`.
 
-## TypeScript SDK References
+## TypeScript SDK references
 
 - [`MethodIntent.fromIntent`](/sdk/typescript/MethodIntent.fromIntent)
 - [`MethodIntent.from`](/sdk/typescript/MethodIntent.from)

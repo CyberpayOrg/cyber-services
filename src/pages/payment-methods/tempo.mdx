@@ -6,16 +6,16 @@ The [Tempo](https://docs.tempo.xyz) payment method enables instant payments usin
 
 [Tempo](https://docs.tempo.xyz) is purpose-built for machine-to-machine payments. It provides:
 
-- **Instant finality** — Transactions settle in ~500ms with deterministic confirmation
-- **Low fees** — Sub-cent transaction costs suitable for micropayments
-- **Fee sponsorship** — Servers can optionally cover gas fees for clients
+- **Instant finality:** Transactions settle in ~500ms with deterministic confirmation
+- **Low fees:** Sub-cent transaction costs suitable for micropayments
+- **Fee sponsorship:** Servers can optionally cover gas fees for clients
 
 ## Intents
 
 ### Charge
 
 The [Tempo](https://docs.tempo.xyz) method supports the `charge` intent for immediate one-time payments.
-Additional intents will be documented here as they land.
+The Tempo method currently supports only the `charge` intent.
 
 #### Client
 
@@ -72,7 +72,7 @@ export async function handler(request: Request) {
 
 See [`tempo` server reference](/sdk/typescript/server/Method.tempo) for full API documentation.
 
-#### Request Fields
+#### Request fields
 
 When issuing a charge, the server specifies:
 

@@ -1,9 +1,29 @@
+import { createElement } from "react";
 import { defineConfig, McpSource } from "vocs/config";
 
+const hydrationStabilityCSS = `
+/* Hydration stability styles - prevent layout shifts during React hydration */
+[data-v-sidebar], .vocs_Sidebar { contain: layout style; }
+main { contain: content; }
+[data-v-code-block], .vocs_CodeBlock { position: relative; contain: layout; }
+[data-v-code-block] pre, .vocs_CodeBlock pre { padding-right: 2.5rem; }
+.vocs_SidebarItem { min-height: 2rem; }
+article { contain: content; }
+.vocs_Heading a { display: inline-flex; vertical-align: middle; line-height: inherit; }
+header, .vocs_Header { contain: layout; }
+nav[aria-label="Pagination"], .vocs_Footer_Navigation { contain: layout; min-height: 4rem; }
+.vocs_Sidebar details:not([open]) > summary ~ * { content-visibility: auto; contain-intrinsic-size: auto 200px; }
+.vocs_Outline { contain: layout style; }
+`;
+
 export default defineConfig({
+	rootDir: "src",
 	accentColor: "light-dark(#0066FF, #3B82F6)",
 	description:
 		"Machine Payments Protocol - Internet-native payments for machine-to-machine transactions",
+	head: createElement("style", {
+		dangerouslySetInnerHTML: { __html: hydrationStabilityCSS },
+	}),
 	mcp: {
 		enabled: true,
 		sources: [

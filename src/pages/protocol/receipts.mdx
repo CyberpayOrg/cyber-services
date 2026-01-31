@@ -3,7 +3,7 @@
 A **Receipt** is the server's acknowledgment of successful payment. Receipts are returned in the `Payment-Receipt` header on successful responses.
 
 :::info
-The `Payment-Receipt` header is optional. Servers SHOULD include it for auditability, but Clients MUST NOT require it for correct operation.
+The `Payment-Receipt` header is optional. Include it for auditability, but clients don't need it for correct operation.
 :::
 
 ## Header
@@ -13,7 +13,7 @@ HTTP/1.1 200 OK
 Payment-Receipt: eyJzdGF0dXMiOiJzdWNjZXNzIiwibWV0aG9kIjoidGVtcG8iLCJ0aW1lc3RhbXAiOiIyMDI1LTAxLTE1VDEyOjAwOjAwWiJ9
 Content-Type: application/json
 
-{ "data": "Thanks for your payment!" }
+{ "data": "Payment received." }
 ```
 
 The receipt is a base64url-encoded JSON object.
@@ -45,7 +45,7 @@ The receipt is a base64url-encoded JSON object.
 | `status` | Payment outcome (`success`) |
 | `timestamp` | When the payment was processed |
 
-## Use Cases
+## Use cases
 
 Receipts enable:
 
@@ -53,7 +53,7 @@ Receipts enable:
 - **Dispute resolution** – Reference IDs link to payment network records
 - **Reconciliation** – Match payments to requests
 
-## Payment Method References
+## Payment method references
 
 | Payment Method | Reference Format |
 |----------------|------------------|
@@ -61,7 +61,7 @@ Receipts enable:
 | Stripe | PaymentIntent ID (`pi_1234...`) |
 | Lightning | Payment preimage |
 
-## Learn More
+## Learn more
 
 import { Card, Cards } from 'vocs'
 

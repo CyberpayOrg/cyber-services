@@ -1,4 +1,4 @@
-# Server Quickstart
+# Server quickstart
 
 Learn how to charge for resources by issuing payment challenges and verifying credentials.
 
@@ -193,12 +193,12 @@ const payment = Mpay.create({
 ```
 
 :::tip
-When `feePayer` is set, the server co-signs transactions to cover gas fees, providing a seamless UX for end users.
+When `feePayer` is set, the server co-signs transactions to cover gas fees so end users don't pay them.
 :::
 
 ## Testing with pget
 
-Once your server is running, test it with [pget](/tools/pget):
+After your server is running, test it with [pget](/tools/pget):
 
 ```bash
 # See the payment challenge
@@ -216,6 +216,6 @@ pget -D <your-server>/resource
 
 ## Next steps
 
-- [Client Quickstart](/quickstart/client) — Learn how to pay for resources
-- [Tempo Payment Method](/payment-methods/tempo) — Configure Tempo blockchain payments
-- [Mpay.create Reference](/sdk/typescript/server/Mpay.create) — Full API documentation
+- [Client quickstart](/quickstart/client): Learn how to pay for resources
+- [Tempo payment method](/payment-methods/tempo): Configure Tempo blockchain payments
+- [Mpay.create reference](/sdk/typescript/server/Mpay.create): Full API documentation

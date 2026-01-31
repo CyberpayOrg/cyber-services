@@ -4,7 +4,7 @@ import { Card, Cards } from 'vocs'
 
 The **Machine Payments Protocol (MPP)** is an internet-native payments protocol for machine-to-machine transactions. 
 
-You can learn more about the protocol itself at https://machinepaymentsprotocol.com
+Learn more about the protocol at [machinepaymentsprotocol.com](https://machinepaymentsprotocol.com).
 
 :::tip[Get started in 5 minutes]
 Check out the [Quickstart](/quickstart) to build your first payment-enabled API.
@@ -14,7 +14,7 @@ Check out the [Quickstart](/quickstart) to build your first payment-enabled API.
 
 | Principle | Description |
 |---------|-------------|
-| **True web standards** | Built on an IETF-track specification using open protocol, not a proprietary protocol or payment method specific ecosystem.  |
+| **True web standards** | Built on an IETF-track specification using open protocols, not proprietary payment ecosystems. |
 | **Multi-rail** | Crypto, cards, bank transfers—all through one protocol |
 | **Currency agnostic** | No implicit advantages at the protocol layer for any currency or asset. |
 | **Designed for payments** | Idempotency, security, and receipts as first-class primitives |
@@ -35,14 +35,14 @@ sequenceDiagram
     Server-->>Client: (6) 200 OK<br/>Payment-Receipt: <receipt>
 ```
 
-## Use Cases
+## Use cases
 
 ### APIs
-Programmatic APIs can enable true pay-per-use pricing without requiring upfront API keys or billing accounts. Clients, including agents, can authenticate and pay inline -- no manual signup or plumbing required.
+Programmatic APIs can enable true pay-per-use pricing without requiring upfront API keys or billing accounts. Clients, including agents, can authenticate and pay inline—no manual signup or plumbing required.
 
-### MCP Servers
+### MCP servers
 
-Tools served via the Model Context Protocol (MCP) can monetize without the complexities of OAuth integrations and account models. MPP's MCP transport lets agents pay for tool calls autonomously.
+Tools served through the Model Context Protocol (MCP) can monetize without the complexities of OAuth integrations and account models. MPP's MCP transport lets agents pay for tool calls autonomously.
 
 ### Content Providers
 Publishers can monetize individual articles or data queries without forcing users through subscription paywalls—or gate content from known AI scrapers with micro-payment requirements.
@@ -57,7 +57,7 @@ MPP currently ships official SDKs in TypeScript, Python, and Rust.
 | [Python](/sdk/python) | [`pympay`](https://pypi.org/project/pympay/) | [tempoxyz/pympay](https://github.com/tempoxyz/pympay) | Beta |
 | [Rust](/sdk/rust) | [`mpay`](https://crates.io/crates/mpay) | [tempoxyz/mpay-rs](https://github.com/tempoxyz/mpay-rs) | Beta |
 
-## Next Steps
+## Next steps
 
 <Cards>
   <Card
@@ -69,13 +69,13 @@ MPP currently ships official SDKs in TypeScript, Python, and Rust.
   <Card
     description="Understand concepts like challenges, credentials, and receipts"
     icon="lucide:book-open"
-    title="Learn the Protocol"
+    title="Learn the protocol"
     to="/protocol"
   />
   <Card
     description="Normative IETF-style spec"
     icon="lucide:file-text"
-    title="Read the Specification"
+    title="Read the specification"
     to="https://paymentauth.tempo.xyz"
   />
 </Cards>
