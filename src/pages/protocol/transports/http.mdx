@@ -1,4 +1,4 @@
-# HTTP Transport
+# HTTP transport
 
 The HTTP transport is the primary binding for MPP, using standard HTTP headers from [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110#section-11).
 
@@ -10,29 +10,29 @@ The HTTP transport is the primary binding for MPP, using standard HTTP headers f
 | Client → Server | `Authorization: Payment ...` | Credential |
 | Server → Client | `Payment-Receipt: ...` | Receipt |
 
-## Example Flow
+## Example flow
 
 :::steps
 
-### (Client) Request Resource
+### (Client) Request a resource
 
 ```http
 GET /api/data HTTP/1.1
 Host: api.example.com
 ```
 
-### (Server) Payment Challenge
+### (Server) Send a payment challenge
 
-Returns the `WWW-Authenticate` header with a `Payment` challenge.
+Return the `WWW-Authenticate` header with a `Payment` challenge.
 
 ```http
 HTTP/1.1 402 Payment Required
 WWW-Authenticate: Payment id="abc123", method="tempo", intent="charge", request="..."
 ```
 
-### (Client) Request with Credential
+### (Client) Retry with a credential
 
-Fulfills with the `Authorization` header.
+Send the `Authorization` header.
 
 ```http
 GET /api/data HTTP/1.1
@@ -40,9 +40,9 @@ Host: api.example.com
 Authorization: Payment eyJjaGFsbGVuZ2UiOnsiaWQiOiJhYmMxMjMi...
 ```
 
-### (Server) Success with Receipt
+### (Server) Return a receipt
 
-Returns the `Payment-Receipt` header with a success receipt.
+Return the `Payment-Receipt` header with a success receipt.
 
 ```http
 HTTP/1.1 200 OK
@@ -54,10 +54,10 @@ Content-Type: application/json
 
 :::
 
-## Header Encoding
+## Header encoding
 
 Challenges are encoded as [auth-params](https://www.rfc-editor.org/rfc/rfc9110#section-11.2) in `WWW-Authenticate`. Credentials and receipts use base64url-encoded JSON.
 
-## Full Specification
+## Full specification
 
 See the [Payment HTTP Authentication Scheme](https://paymentauth.tempo.xyz/core/payment-auth) for the normative specification.

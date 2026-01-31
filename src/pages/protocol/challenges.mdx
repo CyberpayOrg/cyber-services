@@ -1,6 +1,6 @@
 # Challenges
 
-A **Challenge** is a payment requirement issued by the server in response to a request. Challenges are sent in the `WWW-Authenticate` header using the Payment authentication scheme.
+A server issues a **challenge** to describe the payment required for a resource. Challenges are sent in the `WWW-Authenticate` header using the Payment authentication scheme.
 
 ## Structure
 
@@ -13,17 +13,17 @@ WWW-Authenticate: Payment id="qB3wErTyU7iOpAsD9fGhJk",
     request="eyJhbW91bnQiOiIxMDAwIiwiY3VycmVuY3kiOiJ1c2QifQ"
 ```
 
-### Required Parameters
+### Required parameters
 
 | Parameter | Description |
 |-----------|-------------|
 | `id` | Unique challenge identifier, cryptographically bound to challenge parameters |
 | `realm` | Protection space identifier (typically the API domain) |
-| `method` | Payment method identifier (e.g., `tempo`, `stripe`) |
-| `intent` | Payment intent type (e.g., `charge`, `authorize`) |
+| `method` | Payment method identifier (such as `tempo` or `stripe`) |
+| `intent` | Payment intent type (such as `charge` or `authorize`) |
 | `request` | Base64url-encoded JSON with payment details |
 
-### Optional Parameters
+### Optional parameters
 
 | Parameter | Description |
 |-----------|-------------|
@@ -46,13 +46,13 @@ Common fields across payment methods:
 
 | Field | Description |
 |-------|-------------|
-| `amount` | Payment amount in base units (e.g., cents for USD) |
+| `amount` | Payment amount in base units (for example, cents for USD) |
 | `currency` | Currency code (`usd`) or token address (`0x20c0...`) |
 | `recipient` | Payment destination in method-native format |
 
-## Multiple Challenges
+## Multiple challenges
 
-Servers may offer multiple payment options in a single response:
+Servers can offer multiple payment options in a single response:
 
 ```http
 HTTP/1.1 402 Payment Required
@@ -62,10 +62,10 @@ WWW-Authenticate: Payment id="def", method="stripe", ...
 
 Clients select one based on their capabilities and submit a single credential.
 
-## Challenge Binding
+## Challenge binding
 
 :::danger[Security requirement]
-Servers MUST cryptographically bind the `id` to the challenge parameters. This prevents clients from reusing a challenge ID with modified payment terms.
+Cryptographically bind the `id` to the challenge parameters. This prevents clients from reusing a challenge ID with modified payment terms.
 :::
 
 Typical binding includes:
@@ -74,9 +74,9 @@ Typical binding includes:
 - Hash of the `request` object
 - `expires` timestamp
 
-It is highly recommended to use a [HMAC-bound](https://en.wikipedia.org/wiki/HMAC) challenge ID to prevent clients from reusing a challenge ID with modified payment terms.
+Use an [HMAC-bound](https://en.wikipedia.org/wiki/HMAC) challenge ID to prevent clients from reusing a challenge ID with modified payment terms.
 
-## Learn More
+## Learn more
 
 import { Card, Cards } from 'vocs'
 

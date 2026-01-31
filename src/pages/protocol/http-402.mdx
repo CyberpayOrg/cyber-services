@@ -1,4 +1,4 @@
-# HTTP 402 Payment Required
+# HTTP 402 payment required
 
 MPP gives the HTTP/1.1 `402` "Payment Required" status code its semantics by pairing it with the HTTP `Payment` authentication scheme.
 
@@ -7,7 +7,7 @@ MPP gives the HTTP/1.1 `402` "Payment Required" status code its semantics by pai
 Servers respond with 402 when:
 
 - A resource requires payment as a precondition for access
-- The server can provide a Payment challenge the client may fulfill
+- The server can provide a Payment challenge the client can fulfill
 - Payment is the primary barrier (not authentication or authorization, which would result in a 401 and then potentially an incremental 402)
 
 ```http
@@ -20,10 +20,10 @@ WWW-Authenticate: Payment id="abc123",
 ```
 
 :::warning
-Servers MUST include a `WWW-Authenticate` header with at least one Payment challenge when returning 402.
+Include a `WWW-Authenticate` header with at least one Payment challenge when returning 402.
 :::
 
-## Status Code Comparison
+## Status code comparison
 
 | Condition | Status Code |
 |-----------|-------------|
@@ -34,9 +34,9 @@ Servers MUST include a `WWW-Authenticate` header with at least one Payment chall
 
 MPP uses `402` consistently for all payment-related challenges, including when a credential fails validation. This differs from other HTTP authentication schemes that use `401` for failed credentials.
 
-## Token Authentication
+## Token authentication
 
-When a resource requires both **token** and **payment** authentication, servers should:
+When a resource requires both **token** and **payment** authentication:
 
 1. Verify authentication credentials
 2. Return `401` if token authentication fails
@@ -45,11 +45,10 @@ When a resource requires both **token** and **payment** authentication, servers 
 This ordering prevents leaking payment requirements to unauthenticated clients.
 
 :::info
-It is recommended for servers to store authentication tokens in a [HTTP-only cookie](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#httponly-attribute) to prevent 
-them from conflicting with the payment `Authorization` header and more importantly, to avoid the token from being exposed to the client.
+Store authentication tokens in an [HTTP-only cookie](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#httponly-attribute) to prevent them from conflicting with the payment `Authorization` header and to avoid exposing the token to the client.
 :::
 
-## Error Responses
+## Error responses
 
 Failed payment attempts return 402 with a fresh challenge and a Problem Details body:
 
@@ -71,7 +70,7 @@ Error types include:
 - `invalid-challenge` – Unknown, expired, or already-used challenge
 - `verification-failed` – Payment proof invalid
 
-## Learn More
+## Learn more
 
 import { Card, Cards } from 'vocs'
 

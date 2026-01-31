@@ -231,18 +231,22 @@ data: \${endpointUrl}
 		}
 
 		// Patch MCP createServer to skip filesystem-based tools
-		if (
-			content.includes(
-				"const pagesDir = path.resolve(config.rootDir, config.srcDir, config.pagesDir);",
-			)
-		) {
-			content = content.replace(
-				"const pagesDir = path.resolve(config.rootDir, config.srcDir, config.pagesDir);",
-				`// Skip filesystem-based tools in CF Workers (fs.glob/readFile don't work)
+		// Note: vocs uses minpath.resolve, not path.resolve
+		const pagesDirPatterns = [
+			"const pagesDir = path.resolve(config.rootDir, config.srcDir, config.pagesDir);",
+			"const pagesDir = minpath.resolve(config.rootDir, config.srcDir, config.pagesDir);",
+		];
+		for (const pattern of pagesDirPatterns) {
+			if (content.includes(pattern)) {
+				content = content.replace(
+					pattern,
+					`// Skip filesystem-based tools in CF Workers (fs.glob/readFile don't work)
   if (typeof globalThis.caches === "undefined") {
-    const pagesDir = path.resolve(config.rootDir, config.srcDir, config.pagesDir);`,
-			);
-			patched = true;
+    ${pattern}`,
+				);
+				patched = true;
+				break;
+			}
 		}
 
 		// Close the if block before the sources registration

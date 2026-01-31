@@ -1,6 +1,6 @@
-# Client Quickstart
+# Client quickstart
 
-Learn how to pay for resources by handling 402 responses with the MPP client SDK.
+Use the MPP client SDK to write agents and services that pay for resources.
 
 ## Overview
 
@@ -11,9 +11,9 @@ The client SDK provides two approaches:
 | [`Fetch.from`](/sdk/typescript/client/Fetch.from) | Wraps fetch to automatically handle 402 responses (recommended) |
 | [`Mpay.create`](/sdk/typescript/client/Mpay.create) | Lower-level API for manual control over payment flow |
 
-## Using the Fetch wrapper
+## Use the Fetch wrapper
 
-The simplest way to pay with MPP is via mpay's fetch wrapper. When the server returns 402, the wrapped fetch automatically creates a payment credential and retries.
+To pay with MPP, use mpay's fetch wrapper. When the server returns 402, the wrapped fetch automatically creates a payment credential and retries.
 
 ```ts [client.ts]
 import { Fetch, tempo } from 'mpay/client'
@@ -126,6 +126,6 @@ if (receiptHeader) {
 
 ## Next steps
 
-- [Server Quickstart](/quickstart/server) — Learn how to charge for resources
-- [Tempo Payment Method](/payment-methods/tempo) — Configure Tempo blockchain payments
-- [Fetch.from Reference](/sdk/typescript/client/Fetch.from) — Full API documentation
+- [Server quickstart](/quickstart/server): Learn how to charge for resources
+- [Tempo payment method](/payment-methods/tempo): Configure Tempo blockchain payments
+- [Fetch.from reference](/sdk/typescript/client/Fetch.from): Full API documentation

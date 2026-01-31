@@ -1,6 +1,7 @@
 import { defineConfig, McpSource } from "vocs/config";
 
 export default defineConfig({
+	rootDir: "src",
 	accentColor: "light-dark(#0066FF, #3B82F6)",
 	description:
 		"Machine Payments Protocol - Internet-native payments for machine-to-machine transactions",

@@ -1,0 +1,52 @@
+name: SDK Manifest Drift Check
+
+on:
+  schedule:
+    # Run daily at 9am UTC
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+    inputs:
+      sdk_package:
+        description: "SDK package to check"
+        required: false
+        default: "mpay"
+      sdk_version:
+        description: "SDK version to check"
+        required: false
+        default: "latest"
+
+jobs:
+  drift-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile --ignore-scripts
+
+      - name: Run SDK drift check
+        id: drift-check
+        uses: ./.github/actions/sdk-drift-check
+        with:
+          sdk-package: ${{ github.event.inputs.sdk_package || 'mpay' }}
+          sdk-version: ${{ github.event.inputs.sdk_version || 'latest' }}
+          output-dir: ./drift-results
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: drift-check-results-${{ github.run_id }}
+          path: drift-results/
+          retention-days: 30

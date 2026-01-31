@@ -1,8 +1,8 @@
-# Getting Started
+# Getting started
 
 ## Overview
 
-The `mpay` Rust library provides an intuitive interface over the Machine Payments Protocol, from high-level abstractions to low-level primitives & building blocks.
+The `mpay` Rust library provides an intuitive interface over the Machine Payments Protocol, from high-level abstractions to low-level primitives and building blocks.
 
 ## Install
 
@@ -16,7 +16,7 @@ With Tempo blockchain support:
 cargo add mpay --features tempo,client,server
 ```
 
-## Quick Start
+## Quick start
 
 ### Parse a Challenge
 
@@ -54,7 +54,7 @@ println!("Status: {:?}", receipt.status);
 println!("Reference: {}", receipt.reference);
 ```
 
-## Feature Flags
+## Feature flags
 
 | Feature | Description |
 |---------|-------------|
@@ -63,7 +63,7 @@ println!("Reference: {}", receipt.reference);
 | `tempo` | Tempo blockchain support |
 | `middleware` | reqwest-middleware integration |
 
-### Common Configurations
+### Common configurations
 
 ```toml
 # Client only
@@ -79,7 +79,7 @@ mpay = { version = "0.1", features = ["tempo", "client", "server"] }
 mpay = { version = "0.1", features = ["tempo", "client", "middleware"] }
 ```
 
-## Next Steps
+## Next steps
 
-- [Client →](/sdk/rust/client) — Handle 402 responses automatically
-- [Server →](/sdk/rust/server) — Protect endpoints with payments
+- [Client](/sdk/rust/client): Handle 402 responses automatically
+- [Server](/sdk/rust/server): Protect endpoints with payments
