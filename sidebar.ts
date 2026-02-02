@@ -46,11 +46,26 @@ export const sidebar = {
 		},
 
 		{
-			text: "Payment Methods",
+			text: "Payment Methods & Intents",
 			items: [
 				{ text: "Overview", link: "/payment-methods" },
-				{ text: "Tempo", link: "/payment-methods/tempo" },
-				{ text: "Stripe", link: "/payment-methods/stripe" },
+				{
+					text: "Tempo",
+					collapsed: true,
+					items: [
+						{ text: "Overview", link: "/payment-methods/tempo" },
+						{ text: "Charge", link: "/payment-methods/tempo/charge" },
+						{ text: "Stream 🚧", disabled: true },
+					],
+				},
+				{
+					text: "Stripe",
+					collapsed: true,
+					items: [
+						{ text: "Overview", link: "/payment-methods/stripe" },
+						{ text: "Charge 🚧", disabled: true },
+					],
+				},
 				{ text: "Custom", link: "/payment-methods/custom" },
 			],
 		},

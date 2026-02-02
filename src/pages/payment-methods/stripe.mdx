@@ -1,16 +1,24 @@
+import { Badge, Card, Cards } from 'vocs'
+
 # Stripe [Cards, bank transfers, and invoices]
 
 :::warning[Coming soon]
-Stripe support is still in beta. Follow @stripe and @tempo on Twitter to learn when it goes live.
+Stripe support is still in development. Follow [@mpp](https://x.com/mpp) on Twitter to learn when it goes live.
 :::
 
 The Stripe payment method enables traditional payment rails through [Stripe](https://stripe.com): credit cards, bank transfers, and invoices.
 
-## Intents
+## Supported intents
 
-| Intent | Description |
-|--------|-------------|
-| `charge` | One-time card or bank payment |
+<Cards>
+  <Card
+    topRight={<Badge variant="warning">Coming soon</Badge>}
+    icon="lucide:credit-card"
+    title="Charge"
+    description="One-time card or bank payment"
+    disabled
+  />
+</Cards>
 
 ## Build your own
 

@@ -1,0 +1,39 @@
+import { Badge, Card, Cards } from 'vocs'
+
+# Tempo [Instant stablecoin payments on the Tempo blockchain]
+
+The [Tempo](https://docs.tempo.xyz) payment method enables instant payments using TIP-20 stablecoins on the Tempo blockchain.
+
+## Overview
+
+[Tempo](https://docs.tempo.xyz) is purpose-built for machine-to-machine payments. It provides:
+
+- **Instant finality:** Transactions settle in ~500ms with deterministic confirmation
+- **Low fees:** Sub-cent transaction costs suitable for micropayments
+- **Fee sponsorship:** Servers can optionally cover gas fees for clients
+
+## Supported intents
+
+<Cards>
+  <Card
+    icon="lucide:credit-card"
+    title="Charge"
+    description="Immediate one-time payments"
+    to="/payment-methods/tempo/charge"
+  />
+  <Card
+    topRight={<Badge variant="warning">Coming soon</Badge>}
+    icon="lucide:waves"
+    title="Stream"
+    description="Pay-as-you-go streaming payments"
+    disabled
+  />
+</Cards>
+
+:::info[Advanced intents]
+Future versions will support additional intents like streaming payments for metered usage.
+:::
+
+## Specification
+
+For complete protocol details, credential formats, and verification requirements, see the [Tempo Charge specification](https://paymentauth.tempo.xyz/specs/methods/tempo/draft-tempo-charge-00.html).

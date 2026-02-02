@@ -101,6 +101,7 @@ type Page =
 | { path: '/payment-methods/custom'; render: 'static' }
 | { path: '/payment-methods'; render: 'static' }
 | { path: '/payment-methods/stripe'; render: 'static' }
+| { path: '/payment-methods/tempo/charge'; render: 'static' }
 | { path: '/payment-methods/tempo'; render: 'static' }
 | { path: '/guides/building-with-ai'; render: 'static' }
 | { path: '/_api/api/og'; render: 'static' };
