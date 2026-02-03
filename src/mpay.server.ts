@@ -18,9 +18,7 @@ const client = createClient({
 });
 
 export const mpay = Mpay.create({
-	method: tempo({
-		client,
-	}),
+	method: tempo({ client }),
 	realm: "mpp.dev",
 	secretKey: env.SECRET_KEY! ?? "top-secret",
 });

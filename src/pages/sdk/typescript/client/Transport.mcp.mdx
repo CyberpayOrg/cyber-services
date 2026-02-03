@@ -8,10 +8,10 @@ MCP transport for client-side payment handling.
 import { Mpay, Transport, tempo } from 'mpay/client'
 import { privateKeyToAccount } from 'viem/accounts'
 
+const account = privateKeyToAccount('0x...')
+
 const mpay = Mpay.create({
-  methods: [
-    tempo({ account: privateKeyToAccount('0x...') }),
-  ],
+  methods: [tempo({ account })],
   transport: Transport.mcp(), // [!code focus]
 })
 ```

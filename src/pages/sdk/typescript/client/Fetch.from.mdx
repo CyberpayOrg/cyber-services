@@ -14,10 +14,10 @@ import { Fetch } from 'mpay/client'
 import { Fetch, tempo } from 'mpay/client'
 import { privateKeyToAccount } from 'viem/accounts'
 
+const account = privateKeyToAccount('0x...')
+
 const fetch = Fetch.from({
-  methods: [
-    tempo({ account: privateKeyToAccount('0x...') }),
-  ],
+  methods: [tempo({ account })],
 })
 
 // Use the wrapped fetch — handles 402 automatically
@@ -74,11 +74,11 @@ Array of payment methods to use for handling `402` responses.
 import { Fetch, tempo } from 'mpay/client'
 import { privateKeyToAccount } from 'viem/accounts'
 
+const account = privateKeyToAccount('0x...')
+
 const fetch = Fetch.from({
   // [!code focus:start]
-  methods: [
-    tempo({ account: privateKeyToAccount('0x...') }),
-  ],
+  methods: [tempo({ account })],
   // [!code focus:end]
 })
 ```
@@ -96,10 +96,10 @@ import { privateKeyToAccount } from 'viem/accounts'
 
 const customFetch = globalThis.fetch
 
+const account = privateKeyToAccount('0x...')
+
 const fetch = Fetch.from({
   fetch: customFetch, // [!code focus]
-  methods: [
-    tempo({ account: privateKeyToAccount('0x...') }),
-  ],
+  methods: [tempo({ account })],
 })
 ```

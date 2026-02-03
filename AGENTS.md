@@ -132,11 +132,7 @@ import { Fetch, tempo } from 'mpay/client'
 import { privateKeyToAccount } from 'viem/accounts'
 
 const fetch = Fetch.from({
-  methods: [
-    tempo({
-      account: privateKeyToAccount('0x...'),
-    }),
-  ],
+  methods: [tempo({ account: privateKeyToAccount('0x...') })],
 })
 
 const res = await fetch('https://api.example.com/resource')

@@ -8,10 +8,12 @@ Creates a Tempo payment method client for signing payment transactions.
 import { Fetch, tempo } from 'mpay/client'
 import { privateKeyToAccount } from 'viem/accounts'
 
+const account = privateKeyToAccount('0x...')
+
 const fetch = Fetch.from({
   methods: [
     // [!code focus:start]
-    tempo({ account: privateKeyToAccount('0x...') }),
+    tempo({ account }),
     // [!code focus:end]
   ],
 })

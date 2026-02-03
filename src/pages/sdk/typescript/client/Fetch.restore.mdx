@@ -8,10 +8,10 @@ Restores the original `fetch` after calling `polyfill`.
 import { Fetch, tempo } from 'mpay/client'
 import { privateKeyToAccount } from 'viem/accounts'
 
+const account = privateKeyToAccount('0x...')
+
 Fetch.polyfill({
-  methods: [
-    tempo({ account: privateKeyToAccount('0x...') }),
-  ],
+  methods: [tempo({ account })],
 })
 
 // ... use payment-aware fetch ...

@@ -8,10 +8,10 @@ Replaces the global `fetch` with a payment-aware wrapper.
 import { Fetch, tempo } from 'mpay/client'
 import { privateKeyToAccount } from 'viem/accounts'
 
+const account = privateKeyToAccount('0x...')
+
 Fetch.polyfill({
-  methods: [
-    tempo({ account: privateKeyToAccount('0x...') }),
-  ],
+  methods: [tempo({ account })],
 })
 
 // Global fetch now handles 402 automatically
@@ -59,11 +59,11 @@ Array of payment methods to use for handling `402` responses.
 import { Fetch, tempo } from 'mpay/client'
 import { privateKeyToAccount } from 'viem/accounts'
 
+const account = privateKeyToAccount('0x...')
+
 Fetch.polyfill({
   // [!code focus:start]
-  methods: [
-    tempo({ account: privateKeyToAccount('0x...') }),
-  ],
+  methods: [tempo({ account })],
   // [!code focus:end]
 })
 ```

@@ -61,9 +61,7 @@ const account = privateKeyToAccount('0xabc…123')
 
 // [!code focus:start]
 const fetch = Fetch.from({
-  methods: [
-    tempo({ account })
-  ]
+  methods: [tempo({ account })]
 })
 // [!code focus:end]
 ```
@@ -73,9 +71,7 @@ You can also polyfill the global `fetch` instance.
 
 ```ts 
 Fetch.polyfill({
-  methods: [
-    tempo({ account })
-  ]
+  methods: [tempo({ account })]
 })
 
 // Now, the global `fetch` instance is payment-enabled.
@@ -97,9 +93,7 @@ You can also define accounts on a per-request basis under `context`.
 ```ts 
 const fetch = Fetch.from({ 
   account, // [!code --] 
-  methods: [ 
-    tempo({ account }) 
-  ] 
+  methods: [tempo({ account })] 
 }) 
 
 const response = await fetch('https://mpp.dev/ping/paid', {
@@ -129,11 +123,11 @@ This is useful in the following scenarios:
 import { Mpay, tempo } from 'mpay/client'
 import { privateKeyToAccount } from 'viem/accounts'
 
+const account = privateKeyToAccount('0x...')
+
 // [!code focus:start]
 const mpay = Mpay.create({ 
-  methods: [ 
-    tempo({ account: privateKeyToAccount('0x...') }), 
-  ], 
+  methods: [tempo({ account })], 
 }) 
 // [!code focus:end]
 

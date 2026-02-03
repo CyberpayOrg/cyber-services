@@ -52,13 +52,11 @@ Array of payment methods to use.
 import { Mpay, tempo } from 'mpay/client'
 import { privateKeyToAccount } from 'viem/accounts'
 
+const account = privateKeyToAccount('0x...')
+
 const mpay = Mpay.create({
   // [!code focus:start]
-  methods: [
-    tempo({
-      account: privateKeyToAccount('0x...'),
-    }),
-  ],
+  methods: [tempo({ account })],
   // [!code focus:end]
 })
 ```
@@ -74,12 +72,10 @@ Transport to use for extracting challenges and attaching credentials.
 import { Mpay, Transport, tempo } from 'mpay/client'
 import { privateKeyToAccount } from 'viem/accounts'
 
+const account = privateKeyToAccount('0x...')
+
 const mpay = Mpay.create({
-  methods: [
-    tempo({
-      account: privateKeyToAccount('0x...'),
-    }),
-  ],
+  methods: [tempo({ account })],
   transport: Transport.mcp(), // [!code focus]
 })
 ```

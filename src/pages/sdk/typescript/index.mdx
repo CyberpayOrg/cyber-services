@@ -88,9 +88,7 @@ const account = privateKeyToAccount('0xabc…123')
 
 // [!code focus:start]
 const fetch = Fetch.from({
-  methods: [
-    tempo({ account })
-  ]
+  methods: [tempo({ account })]
 })
 // [!code focus:end]
 ```
@@ -100,9 +98,7 @@ You can also polyfill the global `fetch` instance.
 
 ```ts 
 Fetch.polyfill({
-  methods: [
-    tempo({ account })
-  ]
+  methods: [tempo({ account })]
 })
 
 // Now, the global `fetch` instance is payment-enabled.
