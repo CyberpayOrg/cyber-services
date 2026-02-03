@@ -23,7 +23,6 @@ export async function handler(request: Request) {
       amount: '1000000',
       currency: '0x20c0000000000000000000000000000000000001',
       recipient: '0xa726a1CD723409074DF9108A2187cfA19899aCF8',
-      expires: '2030-01-20T12:00:00Z',
     },
   })(request)
   // [!code focus:end]
@@ -56,7 +55,6 @@ export async function handler(request: Request) {
       amount: '1000000',
       currency: '0x20c0000000000000000000000000000000000001',
       recipient: '0xa726a1CD723409074DF9108A2187cfA19899aCF8',
-      expires: '2030-01-20T12:00:00Z',
     },
   })(request)
 
@@ -100,6 +98,7 @@ Address to receive the payment.
 ### request.expires (optional)
 
 - **Type:** `string`
+- **Default:** 5 minutes from now
 
 ISO 8601 timestamp for when the payment challenge expires.
 

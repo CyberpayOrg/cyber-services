@@ -67,7 +67,6 @@ export async function handler(request: Request) {
       amount: '1000000', 
       currency: '0x20c0000000000000000000000000000000000001', 
       recipient: '0xa726a1CD723409074DF9108A2187cfA19899aCF8', 
-      expires: '2030-01-20T12:00:00Z', 
     }, 
   })(request) 
 
@@ -105,7 +104,6 @@ export async function handler(req: IncomingMessage, res: ServerResponse) {
       amount: '1000000', 
       currency: '0x20c0000000000000000000000000000000000001', 
       recipient: '0xa726a1CD723409074DF9108A2187cfA19899aCF8', 
-      expires: '2030-01-20T12:00:00Z', 
     }, 
   }))(req, res) // [!code ++]
 
@@ -140,7 +138,6 @@ app.get('/resource', async (c) => { // [!code focus:99]
     request: {
       amount: '1000000',
       currency: '0x20c0000000000000000000000000000000000001',
-      expires: '2030-01-20T12:00:00Z',
       recipient: '0xa726a1CD723409074DF9108A2187cfA19899aCF8',
     },
   })(c.req.raw)
