@@ -15,6 +15,11 @@ import * as Method from '../../Method.js'
 import * as z from '../../zod.js'
 import * as Methods from './../Method.js'
 
+const defaultParameters = {
+  chainId: 4217,
+  rpcUrl: 'https://rpc.tempo.xyz',
+} as const
+
 const transfer = /*#__PURE__*/ AbiFunction.from(
   'function transfer(address to, uint256 amount) returns (bool)',
 )
@@ -32,24 +37,25 @@ const transferWithMemoSelector = /*#__PURE__*/ AbiFunction.getSelector(transferW
  * ```ts
  * import { tempo } from 'mpay/server'
  *
- * const method = tempo({
- *   rpcUrl: 'https://rpc.tempo.xyz',
- *   chainId: 42431,
- * })
+ * const method = tempo()
  * ```
  */
-export function tempo(parameters: tempo.Parameters) {
-  const { feePayer } = parameters
+export function tempo(parameters: tempo.Parameters = {}) {
+  const {
+    chainId = defaultParameters.chainId,
+    feePayer,
+    rpcUrl = defaultParameters.rpcUrl,
+  } = parameters
 
   const client = (() => {
     if (parameters.client) return parameters.client
     return createClient({
       chain: {
         ...tempo_chain,
-        id: parameters.chainId,
+        id: chainId,
         experimental_preconfirmationTime: 500,
       },
-      transport: http(parameters.rpcUrl),
+      transport: http(rpcUrl),
     })
   })()
 
@@ -60,9 +66,9 @@ export function tempo(parameters: tempo.Parameters) {
       }),
       { feePayer },
     ),
-    request(options) {
-      if (options.feePayer) return { feePayer: true, ...options.request }
-      return options.request
+    request({ feePayer, ...request }) {
+      if (feePayer) return { feePayer: true, ...request }
+      return request
     },
     async verify({ context, credential }) {
       const { feePayer } = context
@@ -159,10 +165,7 @@ export function tempo(parameters: tempo.Parameters) {
                 if (memo) {
                   if (selector !== transferWithMemoSelector) return false
                   try {
-                    const [to, amount_, memo_] = AbiFunction.decodeData(
-                      transferWithMemo,
-                      call.data,
-                    )
+                    const [to, amount_, memo_] = AbiFunction.decodeData(transferWithMemo, call.data)
                     return (
                       Address.isEqual(to, recipient) &&
                       amount_.toString() === amount &&
@@ -183,15 +186,12 @@ export function tempo(parameters: tempo.Parameters) {
               })
 
               if (!call)
-                throw new MismatchError(
-                  'Invalid transaction: no matching payment call found',
-                  {
-                    amount,
-                    currency,
-                    recipient,
-                    memo: memo ?? '(none)',
-                  },
-                )
+                throw new MismatchError('Invalid transaction: no matching payment call found', {
+                  amount,
+                  currency,
+                  recipient,
+                  memo: memo ?? '(none)',
+                })
 
               const serializedTransaction_final = await (async () => {
                 if (methodDetails?.feePayer && feePayer) {
@@ -232,13 +232,13 @@ export declare namespace tempo {
   } & OneOf<
     | {
         /** Viem Client. */
-        client: Client
+        client?: Client | undefined
       }
     | {
         /** Tempo chain ID. */
-        chainId: number
+        chainId?: number | undefined
         /** Tempo RPC URL. */
-        rpcUrl: string
+        rpcUrl?: string | undefined
       }
   >
 }
