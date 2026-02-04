@@ -765,7 +765,7 @@ export function CliDemo() {
 							? "vocs:bg-[var(--vocs-color-accent)]/20 vocs:text-[var(--vocs-color-accent)]"
 							: "vocs:text-[var(--vocs-color-text-2)] hover:vocs:bg-[rgba(255,255,255,0.05)]"
 					}`}
-					style={{ textIndent: "-1ch", paddingLeft: "1ch" }}
+					style={{ textIndent: "-5ch", paddingLeft: "5ch" }}
 					disabled={status !== "selecting"}
 				>
 					{isHighlighted ? "▸" : " "}
