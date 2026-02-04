@@ -149,17 +149,14 @@ function PaymentDemoInner() {
 				throw new Error("Missing WWW-Authenticate header");
 			}
 
-			const challenge = Challenge.fromResponse(res1);
-			// Create tempo method with wagmiClient (configured for tempoModerato) and account for signing
-			const tempoParams = {
-				client: wagmiClient,
+			const method = tempo({
 				account: walletClient.account,
-				// biome-ignore lint/suspicious/noExplicitAny: wagmi client/account types differ from viem types
-			} as any;
-			const method = tempo(tempoParams);
-			// biome-ignore lint/suspicious/noExplicitAny: Challenge.fromResponse returns generic, createCredential expects intent-typed
-			const createCredentialArgs = { challenge, context: {} } as any;
-			const credential = await method.createCredential(createCredentialArgs);
+			});
+			const challenge = Challenge.fromResponse(res1, { method });
+			const credential = await method.createCredential({
+				challenge,
+				context: {}
+			});
 
 			if (seq !== requestSeqRef.current) return;
 
@@ -207,7 +204,7 @@ function PaymentDemoInner() {
 				setIsLoading(null);
 			}
 		}
-	}, [walletClient, refetchBalance, wagmiClient]);
+	}, [walletClient, refetchBalance]);
 
 	const balanceValue = balance ?? 0n;
 	const hasFunds = balanceValue > 0n;
