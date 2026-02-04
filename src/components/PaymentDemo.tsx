@@ -369,7 +369,7 @@ function PaymentDemoInner() {
 
 					{protocolData.credential && (
 						<div className="vocs:p-4 vocs:font-mono vocs:text-xs vocs:leading-relaxed vocs:overflow-x-auto">
-							<ResponseSection title="Credential Sent">
+							<ResponseSection title="Credential">
 								<HeaderLine
 									name="Authorization"
 									value={protocolData.credential}
