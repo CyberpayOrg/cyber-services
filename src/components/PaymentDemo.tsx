@@ -150,13 +150,12 @@ function PaymentDemoInner() {
 			}
 
 			const challenge = Challenge.fromResponse(res1);
-			// biome-ignore lint/suspicious/noExplicitAny: mpay library types don't align with wagmi's WalletClient
-			const method = tempo({ client: walletClient as any });
-			const credential = await method.createCredential({
-				// biome-ignore lint/suspicious/noExplicitAny: Challenge.fromResponse returns generic Challenge, createCredential expects intent-typed
-				challenge: challenge as any,
-				context: { account: walletClient.account },
-			});
+			// Create tempo method with account for signing
+			// biome-ignore lint/suspicious/noExplicitAny: wagmi account type differs from viem Account
+			const method = tempo({ account: walletClient.account as any });
+			// biome-ignore lint/suspicious/noExplicitAny: Challenge.fromResponse returns generic, createCredential expects intent-typed
+			const createCredentialArgs = { challenge, context: {} } as any;
+			const credential = await method.createCredential(createCredentialArgs);
 
 			if (seq !== requestSeqRef.current) return;
 
