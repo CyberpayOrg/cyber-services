@@ -18,7 +18,7 @@ export default defineConfig({
 	},
 	baseUrl,
 	description:
-		"Machine Payments Protocol - Internet-native payments for machine-to-machine transactions",
+		"Machine Payments Protocol - Machine-native payments for machine-to-machine transactions",
 	checkDeadlinks: true,
 	iconUrl: {
 		light: "/icon-light.png",

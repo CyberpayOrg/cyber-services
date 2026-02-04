@@ -73,6 +73,45 @@ function StripeLogo({
 	);
 }
 
+// Viem logo SVG
+function ViemLogo({
+	className,
+	style,
+}: {
+	className?: string;
+	style?: React.CSSProperties;
+}) {
+	return (
+		<svg
+			className={className}
+			style={style}
+			viewBox="0 0 120 28"
+			fill="none"
+			xmlns="http://www.w3.org/2000/svg"
+			role="img"
+			aria-label="Viem"
+		>
+			<title>Viem</title>
+			<path
+				d="M17.4 1.5L9.1 26.5H0L10.9 1.5H17.4ZM12.5 1.5L20.8 26.5H29.9L19 1.5H12.5Z"
+				fill="currentColor"
+			/>
+			<path
+				d="M36.5 6.5V1.5H43.5V6.5H36.5ZM36.5 26.5V9.5H43.5V26.5H36.5Z"
+				fill="currentColor"
+			/>
+			<path
+				d="M62.5 15.5C62.5 12.5 60.8 10.5 57.8 10.5C54.8 10.5 52.5 12.8 52.5 16C52.5 19.2 54.8 21.5 57.8 21.5C60.3 21.5 62 20 62.3 18H69C68.3 23.2 63.8 27.5 57.8 27.5C51 27.5 45.5 22.5 45.5 16C45.5 9.5 51 4.5 57.8 4.5C64.3 4.5 68.8 8.8 69.3 14H62.5V15.5Z"
+				fill="currentColor"
+			/>
+			<path
+				d="M74.5 26.5V9.5H81.5V12C82.8 10.2 85 9 88 9C91 9 93.5 10.5 94.8 13C96.3 10.5 99 9 102.5 9C108 9 112 13 112 19V26.5H105V20C105 17 103.5 15 100.8 15C98 15 96 17.2 96 20.5V26.5H89V20C89 17 87.5 15 84.8 15C82 15 80 17.2 80 20.5V26.5H74.5Z"
+				fill="currentColor"
+			/>
+		</svg>
+	);
+}
+
 // GitHub icon
 function GitHubIcon({ className }: { className?: string }) {
 	return (
@@ -413,7 +452,7 @@ export function LandingPage() {
 
 							{/* Subtitle */}
 							<p className="vocs:text-lg sm:vocs:text-xl vocs:text-[var(--vocs-color-text-2)] vocs:leading-relaxed vocs:max-w-xl">
-								The internet-native payments protocol. Accept payments from
+								The machine-native payments protocol. Accept payments from
 								humans, software, or AI agents using standard HTTP—no billing
 								accounts or manual signup required.
 							</p>
@@ -457,6 +496,17 @@ export function LandingPage() {
 										<TempoLogo
 											className="vocs:text-[var(--vocs-color-text-2)]"
 											style={{ width: "80px" }}
+										/>
+									</a>
+									<a
+										href="https://viem.sh"
+										target="_blank"
+										rel="noopener noreferrer"
+										className="vocs:no-underline hover:vocs:opacity-80 vocs:transition-opacity"
+									>
+										<ViemLogo
+											className="vocs:text-[var(--vocs-color-text-2)]"
+											style={{ width: "72px" }}
 										/>
 									</a>
 									<a

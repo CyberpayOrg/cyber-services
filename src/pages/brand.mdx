@@ -84,57 +84,55 @@ const ASCII_MPP = `@@@@@@@@%                                $@@@@@@@@@@@@@@@@@@@
 @@@@@@@@=              %@@@$              %@@@@@@@%                          %@@@@@@@$                                  
 %%%%%%%%=               $%$               $%%%%%%%$                          $%%%%%%%$`;
 
-const ASCII_402 = `              @@@@@@@                                  @@@@@@@@@@@@@@@@                        @@@@@@@@@@@@@@@             
-             @@@@@@@@                                @@@@@@@@@@@@@@@@@@@@                    @@@@@@@@@@@@@@@@@@@@        
-            @@@@@@@@@                              @@@@@@@@@@@@@@@@@@@@@@@@                @@@@@@@@@@@@@@@@@@@@@@@@      
-           @@@@@@@@@@                             @@@@@@@@@@      @@@@@@@@@@              @@@@@@@@@@       @@@@@@@@@@    
-          @@@@@@@@@@@                            @@@@@@@@            @@@@@@@@                                @@@@@@@@   
-         @@@@@@@@@@@@                           @@@@@@@@@            @@@@@@@@@                              @@@@@@@@@   
-        @@@@@@ @@@@@@                           @@@@@@@@              @@@@@@@@                            @@@@@@@@@     
-       @@@@@@  @@@@@@@                          @@@@@@@@              @@@@@@@@                          @@@@@@@@@       
-      @@@@@@   @@@@@@@                          @@@@@@@@              @@@@@@@@                        @@@@@@@@@         
-     @@@@@@     @@@@@@@@                        @@@@@@@@              @@@@@@@@                      @@@@@@@@@           
-    @@@@@@       @@@@@@@@                       @@@@@@@@              @@@@@@@@                    @@@@@@@@@             
-   @@@@@@@@@@@@@@@@@@@@@@@@                     @@@@@@@@              @@@@@@@@                  @@@@@@@@@               
-  @@@@@@@@@@@@@@@@@@@@@@@@@                     @@@@@@@@@            @@@@@@@@@                @@@@@@@@@                 
- @@@@@@@@@@@@@@@@@@@@@@@@@@                      @@@@@@@@@@        @@@@@@@@@@               @@@@@@@@@                   
-              @@@@@@@@                            @@@@@@@@@@@@@@@@@@@@@@@@@@              @@@@@@@@@@@@@@@@@@@@@@@@@@@   
-              @@@@@@@@                              @@@@@@@@@@@@@@@@@@@@@@              @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  
-              @@@@@@@@                                @@@@@@@@@@@@@@@@@@               @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  
-              @@@@@@@@                                  @@@@@@@@@@@@@@                 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  
-              @@@@@@@@                                    @@@@@@@@@@                   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   
-              %%%%%%%%                                      %%%%%%%%                  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%`;
+const ASCII_402 = `                        .+&&&&&&&&&&&*             :=*$&%8#@@@@@@@##8%&*+-.         .:=+*$&%%8###@@@@@@@@##88%&*+-.     
+                      :$@@@@@@@@@@@@@8         :*%#@@@@@@@@@@@@@@@@@@@@@@@@8&=.   +#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@8*:  
+                      :$@@@@@@@@@@@@@8         :*%#@@@@@@@@@@@@@@@@@@@@@@@@8&=.   +#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@8*:  
+                    -&@@@@@@@&%@@@@@@8      .*8@@@@@@@@@@@@#888888#@@@@@@@@@@@@%- $@@@@@@@@@@@@###8888###@@@@@@@@@@@@@$.
+                 .+8@@@@@@#*: $@@@@@@8    .*@@@@@@@@@%*=:.          .-+$8@@@@@@@@8&@#%&*+=-:..            .:=*8@@@@@@@@&
+               :*#@@@@@@8+.   $@@@@@@8   :8@@@@@@@%=.                    :*#@@@@@@@$.                          -@@@@@@@@
+             -&@@@@@@@&-      $@@@@@@8  .#@@@@@@#-                         .$@@@@@@@*                          :#@@@@@@8
+          .=%@@@@@@@$:        $@@@@@@8  $@@@@@@@:                            *@@@@@@@-                      .-*#@@@@@@@:
+          .=%@@@@@@@$:        $@@@@@@8  $@@@@@@@:                            *@@@@@@@-                      .-*#@@@@@@@:
+        .*#@@@@@@8+.          $@@@@@@8  #@@@@@@*                             .#@@@@@@$                 .-+$%@@@@@@@@@&: 
+      :$@@@@@@@%=.            $@@@@@@8 .@@@@@@@=                              %@@@@@@%          .:=*&%#@@@@@@@@@@@%*:   
+   .=%@@@@@@@$:               $@@@@@@8  #@@@@@@*                             .#@@@@@@$    .:+$%#@@@@@@@@@@@@@#%*=.      
+ .+#@@@@@@#*:.................&@@@@@@8..&@@@@@@@:                            *@@@@@@@-.-*%@@@@@@@@@@@@@8&$+-.           
+$@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#-                         .$@@@@@@@&&@@@@@@@@@#%&*=-.                  
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%=.                    :*#@@@@@@@#@@@@@@@%*=.                         
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#@@@@@@@%%%%8$@@@@@@@@@%$=:.         .:-+$8@@@@@@@@8@@@@@@@%-::::::::::::::::::::::::::::.
+                              $@@@@@@8      .*8@@@@@@@@@@@@##8888##@@@@@@@@@@@@%-$@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
+                              $@@@@@@8      .*8@@@@@@@@@@@@##8888##@@@@@@@@@@@@%-$@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
+                              $@@@@@@8         :*%#@@@@@@@@@@@@@@@@@@@@@@@@8&=.  &@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
+                              +&&&&&&*             :=*$&%8#@@@@@@@##8%&*+-.      +&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&:`;
 
 const FILL_CHARS = ["@", "#", "%", "&", "£", "$", "█", "▓", "▒", "░", "■", "●", "◆", "★"];
 
 export function AsciiLogo() {
-  const [isHovered, setIsHovered] = useState(false);
   const [morphProgress, setMorphProgress] = useState(0);
   const morphStartTime = useRef(null);
-  const morphDirection = useRef("to402");
+  const morphStartProgress = useRef(0);
+  const morphTarget = useRef(0);
 
   const mppLines = useMemo(() => ASCII_MPP.split("\n"), []);
   const lines402 = useMemo(() => ASCII_402.split("\n"), []);
 
-  const currentLines = useMemo(() => {
-    if (morphProgress === 0) return mppLines;
-    if (morphProgress === 1) return lines402;
-    return mppLines.map((mppLine, lineIdx) => {
-      const line402 = lines402[lineIdx] || "";
-      const maxLen = Math.max(mppLine.length, line402.length);
-      let result = "";
-      for (let i = 0; i < maxLen; i++) {
-        const mppChar = mppLine[i] || " ";
-        const char402 = line402[i] || " ";
-        const threshold = morphProgress + (Math.random() - 0.5) * 0.3;
-        result += threshold > 0.5 ? char402 : mppChar;
-      }
-      return result;
-    });
-  }, [morphProgress, mppLines, lines402]);
-
   const maxLines = Math.max(mppLines.length, lines402.length);
   const maxWidth = Math.max(...mppLines.map((l) => l.length), ...lines402.map((l) => l.length));
+
+  const charTransitionOrder = useMemo(() => {
+    return Array.from({ length: maxLines }, () =>
+      Array.from({ length: maxWidth }, () => Math.random())
+    );
+  }, [maxLines, maxWidth]);
+
+  const getCharAt = (lineIdx, charIdx) => {
+    const mppChar = mppLines[lineIdx]?.[charIdx] || " ";
+    const char402 = lines402[lineIdx]?.[charIdx] || " ";
+    if (morphProgress === 0) return mppChar;
+    if (morphProgress === 1) return char402;
+    const threshold = charTransitionOrder[lineIdx]?.[charIdx] ?? 0.5;
+    return morphProgress > threshold ? char402 : mppChar;
+  };
 
   const [charStates, setCharStates] = useState(() =>
     Array.from({ length: maxLines }, () =>
@@ -146,31 +144,28 @@ export function AsciiLogo() {
     )
   );
 
-  useEffect(() => {
-    if (isHovered && morphProgress < 1) {
-      morphDirection.current = "to402";
-      if (morphStartTime.current === null) morphStartTime.current = Date.now();
-    } else if (!isHovered && morphProgress > 0) {
-      morphDirection.current = "toMPP";
-      if (morphStartTime.current === null) morphStartTime.current = Date.now();
-    }
-  }, [isHovered, morphProgress]);
+  const startMorph = (target) => {
+    if (morphTarget.current === target) return;
+    morphTarget.current = target;
+    morphStartProgress.current = morphProgress;
+    morphStartTime.current = Date.now();
+  };
 
   useEffect(() => {
     let animationId;
-    const MORPH_DURATION = 400;
+    const MORPH_DURATION = 600;
+
     const animate = () => {
       const now = Date.now();
       if (morphStartTime.current !== null) {
         const elapsed = now - morphStartTime.current;
-        const progress = Math.min(elapsed / MORPH_DURATION, 1);
-        if (morphDirection.current === "to402") {
-          setMorphProgress(progress);
-        } else {
-          setMorphProgress(1 - progress);
-        }
-        if (progress >= 1) morphStartTime.current = null;
+        const t = Math.min(elapsed / MORPH_DURATION, 1);
+        const start = morphStartProgress.current;
+        const target = morphTarget.current;
+        setMorphProgress(start + (target - start) * t);
+        if (t >= 1) morphStartTime.current = null;
       }
+
       setCharStates((prev) => {
         let changed = false;
         const next = prev.map((line) =>
@@ -196,8 +191,8 @@ export function AsciiLogo() {
 
   return (
     <div
-      onMouseEnter={() => { setIsHovered(true); morphStartTime.current = Date.now(); }}
-      onMouseLeave={() => { setIsHovered(false); morphStartTime.current = Date.now(); }}
+      onMouseEnter={() => startMorph(1)}
+      onMouseLeave={() => startMorph(0)}
       style={{
         fontFamily: "monospace", fontSize: "6px", lineHeight: 1.15,
         whiteSpace: "pre", letterSpacing: "1px", color: "#0166FF",
@@ -205,15 +200,21 @@ export function AsciiLogo() {
         textShadow: "0 0 20px rgba(1, 102, 255, 0.3)",
       }}
     >
-      {currentLines.map((line, lineIdx) => (
-        <div key={lineIdx}>
-          {line.split("").map((char, charIdx) => {
-            if (char === " ") return <span key={charIdx}>{char}</span>;
-            const state = charStates[lineIdx]?.[charIdx];
-            return <span key={charIdx}>{state ? FILL_CHARS[state.charIndex] : char}</span>;
-          })}
-        </div>
-      ))}
+      {mppLines.map((mppLine, lineIdx) => {
+        const line402 = lines402[lineIdx] || "";
+        const lineLen = Math.max(mppLine.length, line402.length);
+        return (
+          <div key={lineIdx}>
+            {Array.from({ length: lineLen }, (_, charIdx) => {
+              const baseChar = getCharAt(lineIdx, charIdx);
+              if (baseChar === " ") return <span key={charIdx}>{baseChar}</span>;
+              const state = charStates[lineIdx]?.[charIdx];
+              const displayChar = state ? FILL_CHARS[state.charIndex] : baseChar;
+              return <span key={charIdx}>{displayChar}</span>;
+            })}
+          </div>
+        );
+      })}
     </div>
   );
 }
