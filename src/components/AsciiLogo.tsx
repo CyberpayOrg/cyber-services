@@ -160,6 +160,26 @@ export function AsciiLogo() {
 		morphStartTime.current = Date.now();
 	};
 
+	// Auto-oscillate on mobile (no hover available)
+	useEffect(() => {
+		const isMobile = window.matchMedia("(max-width: 1023px)").matches;
+		if (!isMobile) return;
+
+		let isShowingAlt = false;
+		const interval = setInterval(() => {
+			isShowingAlt = !isShowingAlt;
+			// Directly manipulate refs instead of calling startMorph to avoid dependency
+			const target = isShowingAlt ? 1 : 0;
+			if (morphTarget.current !== target) {
+				morphTarget.current = target;
+				morphStartProgress.current = morphProgress;
+				morphStartTime.current = Date.now();
+			}
+		}, 3500);
+
+		return () => clearInterval(interval);
+	}, [morphProgress]);
+
 	useEffect(() => {
 		let animationId: number;
 		const MORPH_DURATION = 600; // ms
@@ -217,10 +237,13 @@ export function AsciiLogo() {
 			max-width: 100%;
 		}
 		.ascii-logo-inner {
-			font-size: 2.5px;
+			font-size: 3.2px;
 		}
 		@media (min-width: 400px) {
-			.ascii-logo-inner { font-size: 3px; }
+			.ascii-logo-inner { font-size: 3.8px; }
+		}
+		@media (min-width: 500px) {
+			.ascii-logo-inner { font-size: 4.5px; }
 		}
 		@media (min-width: 640px) {
 			.ascii-logo-inner { font-size: 5px; }
@@ -250,10 +273,7 @@ export function AsciiLogo() {
 					cursor: "pointer",
 				}}
 			>
-				<div
-					className="ascii-logo-inner"
-					style={{ minWidth: "fit-content" }}
-				>
+				<div className="ascii-logo-inner" style={{ minWidth: "fit-content" }}>
 					{mppLines.map((mppLine, lineIdx) => {
 						const line402 = lines402[lineIdx] || "";
 						const lineLen = Math.max(mppLine.length, line402.length);

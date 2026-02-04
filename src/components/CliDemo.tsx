@@ -302,10 +302,7 @@ export function CliDemo() {
 			});
 		});
 
-		addLines([
-			{ type: "blank", content: "" },
-			{ type: "info", content: "Type 1-4 or use ↑↓ arrows, then press Enter" },
-		]);
+		addLines([{ type: "blank", content: "" }]);
 	}, [addLine, addLines]);
 
 	// Initialize wallet and fund it
@@ -631,13 +628,7 @@ export function CliDemo() {
 				});
 			});
 
-			addLines([
-				{ type: "blank", content: "" },
-				{
-					type: "info",
-					content: "Type 1-4 or use ↑↓ arrows, then press Enter",
-				},
-			]);
+			addLines([{ type: "blank", content: "" }]);
 
 			setHighlightedIndex(0);
 			setStatus("selecting");
