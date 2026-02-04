@@ -12,10 +12,6 @@ const baseUrl = (() => {
 export default defineConfig({
 	accentColor: "#0166FF",
 	colorScheme: "dark",
-	logoUrl: {
-		light: "/mpp-logo-light.svg",
-		dark: "/mpp-logo-dark.svg",
-	},
 	baseUrl,
 	description:
 		"Machine Payments Protocol - Machine-native payments for machine-to-machine transactions",
