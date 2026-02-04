@@ -791,7 +791,7 @@ export function CliDemo() {
 			<div
 				key={index}
 				className={`${typeStyles[line.type] || ""} leading-relaxed`}
-				style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+				style={{ whiteSpace: "pre-wrap", overflowWrap: "break-word" }}
 			>
 				{line.content}
 			</div>
@@ -840,7 +840,7 @@ export function CliDemo() {
 						</span>
 					)}
 					<span
-						className="px-2 py-1 rounded-md text-[10px] uppercase tracking-wider font-medium"
+						className="hidden lg:inline-block px-2 py-1 rounded-md text-[10px] uppercase tracking-wider font-medium"
 						style={{
 							background:
 								status === "running"

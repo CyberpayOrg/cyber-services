@@ -152,7 +152,12 @@
 
 /* Smaller header logo */
 [data-v-logo] img {
-	height: 24px;
+	height: 20px;
+}
+@media (min-width: 768px) {
+	[data-v-logo] img {
+		height: 24px;
+	}
 }
 
 [data-v-step-content] {
