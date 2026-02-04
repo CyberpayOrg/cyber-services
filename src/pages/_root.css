@@ -150,6 +150,11 @@
 	margin-top: 0.2rem;
 }
 
+/* Smaller header logo */
+[data-v-logo] img {
+	height: 24px;
+}
+
 [data-v-step-content] {
 	:where(& > :not(:last-child)) {
 		--tw-space-y-reverse: 0;

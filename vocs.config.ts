@@ -10,18 +10,15 @@ const baseUrl = (() => {
 })();
 
 export default defineConfig({
-	accentColor: "light-dark(#2563eb, #60a5fa)",
+	accentColor: "#0166FF",
+	colorScheme: "dark",
 	baseUrl,
 	description:
-		"Machine Payments Protocol - Internet-native payments for machine-to-machine transactions",
+		"Machine Payments Protocol - Machine-native payments for machine-to-machine transactions",
 	checkDeadlinks: true,
 	iconUrl: {
 		light: "/icon-light.png",
 		dark: "/icon-dark.png",
-	},
-	logoUrl: {
-		light: "/logo-light.svg",
-		dark: "/logo-dark.svg",
 	},
 	mcp: {
 		enabled: true,
@@ -46,9 +43,10 @@ export default defineConfig({
 			{
 				text: "Introduction",
 				items: [
-					{ text: "Overview", link: "/" },
+					{ text: "Overview", link: "/docs/overview" },
 					{ text: "Specifications", link: "https://paymentauth.tempo.xyz/" },
 					{ text: "FAQ", link: "/faq" },
+					{ text: "Brand", link: "/brand" },
 				],
 			},
 			{
@@ -394,7 +392,7 @@ export default defineConfig({
 		},
 	},
 	topNav: [
-		{ text: "Docs", link: "/", match: "/" },
+		{ text: "Docs", link: "/overview", match: (path) => path !== "/" },
 		{ text: "SDKs & Tools", link: "/sdk" },
 		{ text: "Specifications", link: "https://paymentauth.tempo.xyz" },
 		{
