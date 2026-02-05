@@ -3,17 +3,15 @@
 import { Radio } from "@base-ui/react/radio";
 import { RadioGroup } from "@base-ui/react/radio-group";
 import { useMutation } from "@tanstack/react-query";
+import { Store as ts_Store, useStore } from "@tanstack/react-store";
 import { cva, cx } from "class-variance-authority";
-
 import {
 	Children,
 	createContext,
 	isValidElement,
 	type ReactNode,
-	useCallback,
 	useContext,
 	useEffect,
-	useMemo,
 	useRef,
 	useState,
 } from "react";
@@ -34,73 +32,33 @@ import IconLogOut from "~icons/lucide/log-out";
 import IconNetwork from "~icons/lucide/network";
 import IconRefresh from "~icons/lucide/refresh-cw";
 import IconTerminal from "~icons/lucide/terminal";
-import { useNetworkRequests } from "../lib/network-store";
+import { useRequests } from "../lib/network-store";
 import { fetch } from "../mpay.client";
 
-export const Context = createContext<Context.Value>({
-	initialBalance: {
-		reset: () => {},
-		value: undefined,
-	},
-	interaction: {
-		active: null,
-		setActive: () => {},
-	},
-	steps: {
-		index: 0,
-		next: () => {},
-		prev: () => {},
-		reset: () => {},
-	},
-	token: undefined,
-	view: {
-		current: "main",
-		set: () => {},
-	},
-});
-
-export namespace Context {
+export namespace Store {
 	export type InteractionType = "select" | "toggle" | null;
 	export type ViewType = "main" | "network";
 
-	export type InitialBalance = {
-		reset: () => void;
-		value: bigint | undefined;
-	};
-
-	export type Interaction = {
-		active: InteractionType;
-		setActive: (type: InteractionType) => void;
-	};
-
-	export type Steps = {
-		index: number;
-		next: () => void;
-		prev: () => void;
-		reset: () => void;
-	};
-
-	export type View = {
-		current: ViewType;
-		set: (view: ViewType) => void;
-	};
-
-	export type Value = {
-		initialBalance: InitialBalance;
-		interaction: Interaction;
-		steps: Steps;
+	export type State = {
+		initialBalance: bigint | undefined;
+		interaction: InteractionType;
+		stepIndex: number;
 		token: Address | undefined;
-		view: View;
+		view: ViewType;
 	};
 }
 
+export const store = new ts_Store<Store.State>({
+	initialBalance: undefined,
+	interaction: null,
+	stepIndex: 0,
+	token: undefined,
+	view: "main",
+});
+
 export function Window({ children, className, token }: Window.Props) {
 	const { address } = useConnection();
-
-	const [initial, setInitial] = useState<bigint | undefined>(undefined);
-	const [active, setActive] = useState<Context.InteractionType>(null);
-	const [stepIndex, setStepIndex] = useState(0);
-	const [currentView, setCurrentView] = useState<Context.ViewType>("main");
+	const initialBalance = useStore(store, (s) => s.initialBalance);
 
 	const { data: balance } = Hooks.token.useGetBalance({
 		account: address,
@@ -109,48 +67,28 @@ export function Window({ children, className, token }: Window.Props) {
 	});
 
 	useEffect(() => {
+		store.setState((s) => ({ ...s, token }));
+	}, [token]);
+
+	useEffect(() => {
 		if (!address) {
-			setInitial(undefined);
+			store.setState((s) => ({ ...s, initialBalance: undefined }));
 			return;
 		}
-		if (balance !== undefined && initial === undefined) setInitial(balance);
-	}, [address, balance, initial]);
-
-	const resetInitialBalance = useCallback(() => setInitial(balance), [balance]);
-
-	const next = useCallback(() => setStepIndex((i) => i + 1), []);
-	const prev = useCallback(() => setStepIndex((i) => Math.max(i - 1, 0)), []);
-	const reset = useCallback(() => setStepIndex(0), []);
-
-	const steps = useMemo(
-		() => ({ index: stepIndex, next, prev, reset }),
-		[stepIndex, next, prev, reset],
-	);
-
-	const view = useMemo(
-		() => ({ current: currentView, set: setCurrentView }),
-		[currentView],
-	);
+		if (balance !== undefined && initialBalance === undefined) {
+			store.setState((s) => ({ ...s, initialBalance: balance }));
+		}
+	}, [address, balance, initialBalance]);
 
 	return (
-		<Context.Provider
-			value={{
-				initialBalance: { reset: resetInitialBalance, value: initial },
-				token,
-				interaction: { active, setActive },
-				steps,
-				view,
-			}}
+		<div
+			className={cx(
+				"bg-gray2 rounded-xl overflow-hidden font-mono text-sm border border-primary",
+				className,
+			)}
 		>
-			<div
-				className={cx(
-					"bg-gray2 rounded-xl overflow-hidden font-mono text-sm border border-primary",
-					className,
-				)}
-			>
-				{children}
-			</div>
-		</Context.Provider>
+			{children}
+		</div>
 	);
 }
 
@@ -390,7 +328,7 @@ export namespace FooterBar {
 }
 
 export function Balance({ className, label = "Balance" }: Balance.Props) {
-	const { token } = useContext(Context);
+	const token = useStore(store, (s) => s.token);
 	const { address } = useConnection();
 
 	const { data: balance } = Hooks.token.useGetBalance({
@@ -425,15 +363,14 @@ export namespace Balance {
 }
 
 export function Spent({ className, label = "Spent" }: Spent.Props) {
-	const {
-		initialBalance: { value: initial },
-		token,
-	} = useContext(Context);
+	const initial = useStore(store, (s) => s.initialBalance);
+	const token = useStore(store, (s) => s.token);
 	const { address } = useConnection();
 
 	const { data: balance } = Hooks.token.useGetBalance({
 		account: address,
 		token,
+		blockTag: "latest",
 	});
 
 	if (!address) return null;
@@ -559,7 +496,6 @@ export function Select({
 	onSubmit,
 	value,
 }: Select.Props) {
-	const { interaction } = useContext(Context);
 	const ref = useRef<HTMLDivElement>(null);
 	const firstValue = getFirstOptionValue(children);
 	const [internalValue, setInternalValue] = useState(firstValue);
@@ -568,11 +504,11 @@ export function Select({
 
 	useEffect(() => {
 		if (!disabled) {
-			interaction.setActive("select");
-			return () => interaction.setActive(null);
+			store.setState((s) => ({ ...s, interaction: "select" }));
+			return () => store.setState((s) => ({ ...s, interaction: null }));
 		}
-		interaction.setActive(null);
-	}, [disabled, interaction]);
+		store.setState((s) => ({ ...s, interaction: null }));
+	}, [disabled]);
 
 	useEffect(() => {
 		if (autoFocus && !disabled && ref.current) {
@@ -671,7 +607,6 @@ export function Toggle({
 	onSubmit,
 	value,
 }: Toggle.Props) {
-	const { interaction } = useContext(Context);
 	const ref = useRef<HTMLDivElement>(null);
 	const firstValue = getFirstOptionValue(children);
 	const [internalValue, setInternalValue] = useState(firstValue);
@@ -680,11 +615,11 @@ export function Toggle({
 
 	useEffect(() => {
 		if (!disabled) {
-			interaction.setActive("toggle");
-			return () => interaction.setActive(null);
+			store.setState((s) => ({ ...s, interaction: "toggle" }));
+			return () => store.setState((s) => ({ ...s, interaction: null }));
 		}
-		interaction.setActive(null);
-	}, [disabled, interaction]);
+		store.setState((s) => ({ ...s, interaction: null }));
+	}, [disabled]);
 
 	useEffect(() => {
 		if (autoFocus && !disabled && ref.current) {
@@ -765,10 +700,10 @@ export namespace Toggle {
 }
 
 export function Hint({ className }: Hint.Props) {
-	const { interaction } = useContext(Context);
+	const interaction = useStore(store, (s) => s.interaction);
 	const { address } = useConnection();
 
-	if (!interaction.active) {
+	if (!interaction) {
 		return (
 			<StatusDot
 				variant={address ? "success" : "offline"}
@@ -779,15 +714,13 @@ export function Hint({ className }: Hint.Props) {
 		);
 	}
 
-	const hints: Record<NonNullable<Context.InteractionType>, string> = {
+	const hints: Record<NonNullable<Store.InteractionType>, string> = {
 		select: "↑↓ or click to select",
 		toggle: "←→ or click to select",
 	};
 
 	return (
-		<span className={cx("text-gray8", className)}>
-			{hints[interaction.active]}
-		</span>
+		<span className={cx("text-gray8", className)}>{hints[interaction]}</span>
 	);
 }
 
@@ -798,7 +731,6 @@ export namespace Hint {
 }
 
 export function Account({ className }: Account.Props) {
-	const { steps } = useContext(Context);
 	const { address } = useConnection();
 	const { disconnect } = useDisconnect();
 
@@ -813,7 +745,7 @@ export function Account({ className }: Account.Props) {
 				type="button"
 				onClick={() => {
 					disconnect();
-					steps.reset();
+					store.setState((s) => ({ ...s, stepIndex: 0 }));
 				}}
 				className="text-secondary hover:text-primary transition-colors"
 				aria-label="Log out"
@@ -831,12 +763,10 @@ export namespace Account {
 }
 
 export function Refresh({ className }: Refresh.Props) {
-	const { steps } = useContext(Context);
-
 	return (
 		<button
 			type="button"
-			onClick={() => steps.reset()}
+			onClick={() => store.setState((s) => ({ ...s, stepIndex: 0 }))}
 			className={cx(
 				"text-secondary hover:text-primary transition-colors",
 				className,
@@ -855,16 +785,21 @@ export namespace Refresh {
 }
 
 export function NetworkToggle({ className }: NetworkToggle.Props) {
-	const { view } = useContext(Context);
-	const requests = useNetworkRequests();
+	const view = useStore(store, (s) => s.view);
+	const requests = useRequests();
 
-	const isNetwork = view.current === "network";
+	const isNetwork = view === "network";
 	const hasPending = requests.some((r) => r.status === "pending");
 
 	return (
 		<button
 			type="button"
-			onClick={() => view.set(isNetwork ? "main" : "network")}
+			onClick={() =>
+				store.setState((s) => ({
+					...s,
+					view: isNetwork ? "main" : "network",
+				}))
+			}
 			className={cx(
 				"text-secondary hover:text-primary transition-colors relative",
 				className,
@@ -890,10 +825,10 @@ export namespace NetworkToggle {
 }
 
 export function Steps({ children }: Steps.Props) {
-	const { steps } = useContext(Context);
+	const stepIndex = useStore(store, (s) => s.stepIndex);
 	const childArray = Children.toArray(children);
 
-	return <>{childArray.slice(0, steps.index + 1)}</>;
+	return <>{childArray.slice(0, stepIndex + 1)}</>;
 }
 
 export namespace Steps {
@@ -913,7 +848,7 @@ export namespace Step {
 }
 
 export function NetworkPanel({ className }: NetworkPanel.Props) {
-	const requests = useNetworkRequests();
+	const requests = useRequests();
 
 	return (
 		<div className={cx("flex flex-col text-xs", className)}>
@@ -989,6 +924,9 @@ export namespace NetworkPanel {
 	};
 }
 
+/////////////////////////////////////////////////////////////////////
+// Demo Components
+
 export function Demo({
 	className,
 	height = 300,
@@ -1035,13 +973,13 @@ export namespace Demo {
 		height: number;
 		steps: (() => ReactNode)[];
 	}) {
-		const { view } = useContext(Context);
+		const view = useStore(store, (s) => s.view);
 
 		return (
 			<>
 				<Panel
 					height={height}
-					className={view.current !== "main" ? "hidden!" : undefined}
+					className={view !== "main" ? "hidden!" : undefined}
 				>
 					<Steps>
 						{steps.map((StepComponent, i) => (
@@ -1055,7 +993,7 @@ export namespace Demo {
 				<Panel
 					height={height}
 					reverse={false}
-					className={cx("p-0!", view.current !== "network" && "hidden!")}
+					className={cx("p-0!", view !== "network" && "hidden!")}
 				>
 					<NetworkPanel />
 				</Panel>
@@ -1065,22 +1003,25 @@ export namespace Demo {
 }
 
 export function Startup() {
-	const { steps } = useContext(Context);
+	const stepIndex = useStore(store, (s) => s.stepIndex);
 	const [phase, setPhase] = useState<"init" | "ready">("init");
 
 	useEffect(() => {
-		if (steps.index !== 0) return;
+		if (stepIndex !== 0) return;
 
 		setPhase("init");
 
 		const initTimer = setTimeout(() => setPhase("ready"), 1000);
-		const nextTimer = setTimeout(() => steps.next(), 2000);
+		const nextTimer = setTimeout(
+			() => store.setState((s) => ({ ...s, stepIndex: s.stepIndex + 1 })),
+			2000,
+		);
 
 		return () => {
 			clearTimeout(initTimer);
 			clearTimeout(nextTimer);
 		};
-	}, [steps]);
+	}, [stepIndex]);
 
 	return (
 		<Block>
@@ -1097,17 +1038,18 @@ export function Startup() {
 }
 
 export function ConnectWallet() {
-	const { steps } = useContext(Context);
 	const { address } = useConnection();
 	const connectors = useConnectors();
 	const { connect, isPending } = useConnect();
 
 	const connector = connectors[0];
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: only run on address change
 	useEffect(() => {
 		if (address) {
-			const timer = setTimeout(() => steps.next(), 500);
+			const timer = setTimeout(
+				() => store.setState((s) => ({ ...s, stepIndex: s.stepIndex + 1 })),
+				500,
+			);
 			return () => clearTimeout(timer);
 		}
 	}, [address]);
@@ -1144,39 +1086,42 @@ export function ConnectWallet() {
 }
 
 export function Faucet() {
-	const { steps, initialBalance } = useContext(Context);
+	const initialBalance = useStore(store, (s) => s.initialBalance);
 	const { address } = useConnection();
 	const { mutate, isPending, isSuccess } = Hooks.faucet.useFundSync();
 	const [alreadyFunded, setAlreadyFunded] = useState(false);
+
+	const token = useStore(store, (s) => s.token);
+	const { data: currentBalance } = Hooks.token.useGetBalance({
+		account: address,
+		token,
+		blockTag: "latest",
+	});
 
 	useEffect(() => {
 		if (!address) return;
 		if (isPending) return;
 		if (isSuccess) return;
 		if (alreadyFunded) return;
-		if (initialBalance.value === undefined) return;
-		if (initialBalance.value > 0n) {
+		if (initialBalance === undefined) return;
+		if (initialBalance > 0n) {
 			setAlreadyFunded(true);
 			return;
 		}
 
 		mutate({ account: address });
-	}, [
-		address,
-		alreadyFunded,
-		initialBalance.value,
-		isPending,
-		isSuccess,
-		mutate,
-	]);
+	}, [address, alreadyFunded, initialBalance, isPending, isSuccess, mutate]);
 
 	useEffect(() => {
 		if (isSuccess || alreadyFunded) {
-			initialBalance.reset();
-			const timer = setTimeout(() => steps.next(), 1000);
+			store.setState((s) => ({ ...s, initialBalance: currentBalance }));
+			const timer = setTimeout(
+				() => store.setState((s) => ({ ...s, stepIndex: s.stepIndex + 1 })),
+				1000,
+			);
 			return () => clearTimeout(timer);
 		}
-	}, [alreadyFunded, initialBalance, isSuccess, steps]);
+	}, [alreadyFunded, currentBalance, isSuccess]);
 
 	if (!address) return null;
 

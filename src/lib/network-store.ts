@@ -1,6 +1,6 @@
-import { useSyncExternalStore } from "react";
+import { Store, useStore } from "@tanstack/react-store";
 
-export type NetworkRequest = {
+export type Request = {
 	description?: string;
 	id: string;
 	method: string;
@@ -10,63 +10,29 @@ export type NetworkRequest = {
 	url: string;
 };
 
-type Listener = () => void;
+export const store = new Store<Request[]>([]);
 
-let requests: NetworkRequest[] = [];
-const listeners = new Set<Listener>();
-
-function emit() {
-	for (const listener of listeners) {
-		listener();
-	}
+export function add(request: Omit<Request, "id" | "timestamp">): string {
+	const id = crypto.randomUUID();
+	store.setState((requests) => [
+		...requests,
+		{ ...request, id, timestamp: Date.now() },
+	]);
+	return id;
 }
 
-export const networkStore = {
-	add(request: Omit<NetworkRequest, "id" | "timestamp">) {
-		const id = crypto.randomUUID();
-		requests = [
-			...requests,
-			{
-				...request,
-				id,
-				timestamp: Date.now(),
-			},
-		];
-		emit();
-		return id;
-	},
-
-	update(id: string, updates: Partial<NetworkRequest>) {
-		const index = requests.findIndex((r) => r.id === id);
-		if (index !== -1) {
-			requests = requests.map((r, i) =>
-				i === index ? { ...r, ...updates } : r,
-			);
-			emit();
-		}
-	},
-
-	clear() {
-		requests = [];
-		emit();
-	},
-
-	getSnapshot() {
-		return requests;
-	},
-
-	subscribe(listener: Listener) {
-		listeners.add(listener);
-		return () => listeners.delete(listener);
-	},
-};
-
-export function useNetworkRequests() {
-	return useSyncExternalStore(
-		networkStore.subscribe,
-		networkStore.getSnapshot,
-		networkStore.getSnapshot,
+export function update(id: string, updates: Partial<Request>): void {
+	store.setState((requests) =>
+		requests.map((r) => (r.id === id ? { ...r, ...updates } : r)),
 	);
+}
+
+export function clear(): void {
+	store.setState(() => []);
+}
+
+export function useRequests() {
+	return useStore(store);
 }
 
 export function wrapFetch<
@@ -80,7 +46,7 @@ export function wrapFetch<
 		const url = typeof input === "string" ? input : input.toString();
 		const method = (init as RequestInit | undefined)?.method ?? "GET";
 
-		const id = networkStore.add({
+		const id = add({
 			method,
 			status: "pending",
 			url,
@@ -104,14 +70,14 @@ export function wrapFetch<
 				}
 			} catch {}
 
-			networkStore.update(id, {
+			update(id, {
 				description,
 				status: response.ok ? "success" : "error",
 				statusCode: response.status,
 			});
 			return response;
 		} catch (error) {
-			networkStore.update(id, {
+			update(id, {
 				status: "error",
 			});
 			throw error;

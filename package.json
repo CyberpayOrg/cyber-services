@@ -21,6 +21,7 @@
 	"dependencies": {
 		"@base-ui/react": "^1.1.0",
 		"@tanstack/react-query": "^5.90.20",
+		"@tanstack/react-store": "^0.8.0",
 		"class-variance-authority": "^0.7.1",
 		"dayjs": "^1.11.19",
 		"mermaid": "^11.12.2",
