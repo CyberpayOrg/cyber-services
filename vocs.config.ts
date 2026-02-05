@@ -17,13 +17,10 @@ export default defineConfig({
 	description:
 		"Machine Payments Protocol - Machine-native payments for machine-to-machine transactions",
 	checkDeadlinks: "warn",
-	iconUrl: {
-		light: "/icon-light.png",
-		dark: "/icon-dark.png",
-	},
+	iconUrl: "/favicon-dollar.svg",
 	logoUrl: {
-		light: "/mpp-logo-light.svg",
-		dark: "/mpp-logo-dark.svg",
+		light: "/mpp-logo-light.png",
+		dark: "/mpp-logo-dark.png",
 	},
 	mcp: {
 		enabled: true,

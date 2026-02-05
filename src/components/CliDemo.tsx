@@ -3,6 +3,7 @@
 import { Receipt } from "mpay";
 import { Fetch, tempo } from "mpay/client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { AsciiLogo } from "./AsciiLogo";
 
 // Terminal line types
 interface TerminalLine {
@@ -324,8 +325,6 @@ export function CliDemo() {
 
 				// Initial terminal output
 				addLines([
-					{ type: "header", content: "MPP Agent Demo v0.1.0" },
-					{ type: "blank", content: "" },
 					{ type: "info", content: "Initializing payment-enabled agent..." },
 				]);
 
@@ -852,9 +851,12 @@ export function CliDemo() {
 			<div
 				ref={terminalRef}
 				onClick={handleTerminalClick}
-				className="p-4 flex-1 min-h-[300px] overflow-y-auto cursor-text"
+				className="p-4 min-h-[300px] max-h-[500px] overflow-y-auto cursor-text"
 				style={{ background: "#ffffff" }}
 			>
+				<div className="mb-3">
+					<AsciiLogo morph={false} color="#9ca3af" />
+				</div>
 				{lines.map(renderLine)}
 				{status === "running" && currentCall >= 0 && (
 					<div className="text-gray-300 animate-pulse">▊</div>
