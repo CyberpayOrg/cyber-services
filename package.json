@@ -20,6 +20,7 @@
 	},
 	"dependencies": {
 		"@tanstack/react-query": "^5.90.20",
+		"class-variance-authority": "^0.7.1",
 		"dayjs": "^1.11.19",
 		"mermaid": "^11.12.2",
 		"mpay": "https://pkg.pr.new/wevm/mpay@c7b84d2",

@@ -313,3 +313,37 @@ export function SidebarHeader() {
 - `pnpm build` — Production build
 - `pnpm check` — Biome format/lint
 - `pnpm check:types` — TypeScript check
+
+## Component Patterns
+
+### TypeScript Conventions
+
+- **Named exports** — Use `export function X` over object exports
+- **Namespace below function** — Put types in namespace after the component:
+  ```tsx
+  export function Button({ children }: Button.Props) {
+    return <button>{children}</button>
+  }
+
+  export namespace Button {
+    export type Props = {
+      children: ReactNode
+    }
+  }
+  ```
+- **`type` over `interface`** — Prefer type aliases
+
+### Styling Conventions
+
+- **Vocs theme colors** — Use `text-gray12`, `bg-primary`, `text-success`, etc. (not Tailwind defaults like `text-zinc-400`)
+- **`light-dark()` for theme-aware colors** — Use `text-[light-dark(var(--vocs-color-accent),var(--vocs-color-accent8))]` for colors that differ in light/dark mode
+- **Never use inline styles** — Alert before using `style={}` 
+- **Never use margin** — Use `gap` on parent containers instead
+- **`cx` for className merging** — Import from `class-variance-authority`
+- **`cva` inline for variants** — Use inline for autocomplete: `className={cva("base", { variants: {...} })({ variant, className })}`
+- **`data-*` attributes for conditionals** — Use `data-active={!disabled}` with `data-[active=true]:text-accent` instead of ternary className logic
+
+### Layout Patterns
+
+- **`flex-col-reverse` for terminal scroll** — Content sticks to bottom, scroll up to see history
+- **Compound components** — Use `Cli.Window`, `Cli.Panel`, `Cli.Line` pattern for composable UIs
