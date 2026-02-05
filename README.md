@@ -48,19 +48,14 @@ See [examples/](./examples/) for runnable demos.
 import { Mpay, tempo } from 'mpay/server'
 
 const mpay = Mpay.create({
-  method: tempo(),
-  realm: 'api.example.com',
+  method: tempo({
+    currency: '0x20c0000000000000000000000000000000000001',
+    recipient: '0x742d35Cc6634c0532925a3b844bC9e7595F8fE00',
+  }),
 })
 
 export async function handler(request: Request) {
-  const response = await mpay.charge({
-    request: {
-      amount: '1000000',
-      currency: '0x20c0000000000000000000000000000000000001',
-      recipient: '0x742d35Cc6634c0532925a3b844bC9e7595F8fE00',
-      expires: '2030-01-20T12:00:00Z',
-    },
-  })(request)
+  const response = await mpay.charge({ amount: '1' })(request)
 
   // Payment required — send 402 response with challenge
   if (response.status === 402) return response.challenge
@@ -80,15 +75,7 @@ import { Mpay } from 'mpay/server'
 
 http.createServer(async (req, res) => {
   const result = await Mpay.toNodeListener(
-    mpay.charge({
-      request: {
-        amount: '1000000',
-        currency: '0x20c0000000000000000000000000000000000001',
-        recipient: '0x742d35Cc6634c0532925a3b844bC9e7595F8fE00',
-        expires: '2030-01-20T12:00:00Z',
-      },
-    }),
-  )(req, res)
+    mpay.charge({ amount: '1' }))(req, res)
 
   // 402 response already sent
   if (result.status === 402) return
@@ -108,22 +95,17 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp'
 import { Mpay, Transport, tempo } from 'mpay/server'
 
 const mpay = Mpay.create({
-  method: tempo(),
-  realm: 'mcp.example.com',
-  secretKey: process.env.SECRET_KEY,
+  method: tempo({
+    currency: '0x20c0000000000000000000000000000000000001',
+    recipient: '0x742d35Cc6634c0532925a3b844bC9e7595F8fE00',
+  }),
   transport: Transport.mcpSdk(),
 })
 
 const server = new McpServer({ name: 'my-server', version: '1.0.0' })
 
 server.registerTool('premium_tool', { description: '...' }, async (extra) => {
-  const result = await mpay.charge({
-    request: {
-      amount: '1000000',
-      currency: '0x20c0000000000000000000000000000000000001',
-      recipient: '0x742d35Cc6634c0532925a3b844bC9e7595F8fE00',
-    },
-  })(extra)
+  const result = await mpay.charge({ amount: '1' })(extra)
 
   // Payment required — throw challenge
   if (result.status === 402) throw result.challenge
@@ -147,11 +129,7 @@ const account = privateKeyToAccount('0x...')
 
 // Globally polyfill fetch (mutates globalThis.fetch)
 Fetch.polyfill({
-  methods: [
-    tempo({
-      account: privateKeyToAccount('0x...')
-    }),
-  ],
+  methods: [ tempo({ account })],
 })
 
 // Now fetch handles 402 automatically
@@ -172,9 +150,7 @@ import { Fetch, tempo } from 'mpay/client'
 const account = privateKeyToAccount('0x...')
 
 const fetch = Fetch.from({
-  methods: [
-    tempo({ account }),
-  ],
+  methods: [tempo({ account })],
 })
 
 // Use the wrapped fetch — handles 402 automatically
@@ -190,10 +166,10 @@ import { Challenge } from 'mpay'
 import { Mpay, tempo } from 'mpay/client'
 import { privateKeyToAccount } from 'viem/accounts'
 
+const account = privateKeyToAccount('0x...')
+
 const mpay = Mpay.create({
-  methods: [
-    tempo({ account: privateKeyToAccount('0x...') }),
-  ]
+  methods: [tempo({ account })],
 })
 
 const res = await fetch('https://api.example.com/resource')
@@ -251,7 +227,7 @@ const challenge = Challenge.from({
   realm: 'api.example.com',
   method: 'tempo',
   intent: 'charge',
-  request: { amount: '1000000', currency: '0x...', recipient: '0x...' },
+  request: { amount: '1', currency: '0x...', recipient: '0x...' },
 })
 ```
 
@@ -267,7 +243,7 @@ const challenge = Challenge.fromIntent(Intents.charge, {
   id: 'challenge-id',
   realm: 'api.example.com',
   request: {
-    amount: '1000000',
+    amount: '1',
     currency: '0x20c0000000000000000000000000000000000001',
     recipient: '0x742d35Cc6634C0532925a3b844Bc9e7595f8fE00',
     expires: '2025-01-06T12:00:00Z',
@@ -452,7 +428,7 @@ import { Request } from 'mpay'
 import { Intents } from 'mpay/tempo'
 
 const request = Request.fromIntent(Intents.charge, {
-  amount: '1000000',
+  amount: '1',
   currency: '0x20c0000000000000000000000000000000000001',
   recipient: '0x742d35Cc6634C0532925a3b844Bc9e7595f8fE00',
   expires: '2025-01-06T12:00:00Z',
