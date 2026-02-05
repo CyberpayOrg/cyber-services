@@ -27,12 +27,15 @@ import {
 	useDisconnect,
 } from "wagmi";
 import { Hooks } from "wagmi/tempo";
+import IconAlertHexagon from "~icons/lucide/alert-triangle";
+import IconCheck from "~icons/lucide/check";
+import IconLoader from "~icons/lucide/loader";
 import IconLogOut from "~icons/lucide/log-out";
 import IconNetwork from "~icons/lucide/network";
 import IconRefresh from "~icons/lucide/refresh-cw";
 import IconTerminal from "~icons/lucide/terminal";
-import { fetch } from "../mpay.client";
 import { useNetworkRequests } from "../lib/network-store";
+import { fetch } from "../mpay.client";
 
 export const Context = createContext<Context.Value>({
 	initialBalance: {
@@ -199,6 +202,7 @@ export function Panel({
 	height,
 	autoScroll,
 	className,
+	reverse = true,
 }: Panel.Props) {
 	const ref = useRef<HTMLDivElement>(null);
 
@@ -212,7 +216,8 @@ export function Panel({
 		<div
 			ref={ref}
 			className={cx(
-				"p-4 overflow-y-auto bg-primary flex flex-col-reverse",
+				"p-4 overflow-y-auto bg-primary flex",
+				reverse ? "flex-col-reverse" : "flex-col",
 				className,
 			)}
 			style={height ? { height } : undefined}
@@ -224,10 +229,11 @@ export function Panel({
 
 export namespace Panel {
 	export type Props = {
-		children: ReactNode;
-		height?: number;
 		autoScroll?: boolean;
+		children: ReactNode;
 		className?: string;
+		height?: number;
+		reverse?: boolean;
 	};
 }
 
@@ -909,41 +915,71 @@ export namespace Step {
 export function NetworkPanel({ className }: NetworkPanel.Props) {
 	const requests = useNetworkRequests();
 
-	if (requests.length === 0) return null;
-
 	return (
-		<Block className={className}>
-			<Line variant="info">Network activity:</Line>
-			{requests.map((request) => (
-				<div key={request.id} className="flex items-center gap-2">
-					<span
-						className={cva("w-2 h-2 rounded-full shrink-0", {
-							variants: {
-								status: {
-									pending: "bg-warning animate-pulse",
-									success: "bg-success",
-									error: "bg-destructive",
-								},
-							},
-						})({ status: request.status })}
-					/>
-					<span className="text-gray8 uppercase text-[10px] w-8 shrink-0">
-						{request.method}
-					</span>
-					<span className="text-secondary truncate">{request.url}</span>
-					{request.statusCode && (
-						<span
-							className={cx(
-								"text-[10px] shrink-0",
-								request.statusCode >= 400 ? "text-destructive" : "text-success",
-							)}
-						>
-							{request.statusCode}
-						</span>
-					)}
+		<div className={cx("flex flex-col text-xs", className)}>
+			<div className="flex items-center border-b border-primary px-3 py-1.5 text-gray8">
+				<div className="min-w-0 basis-0 grow-4 flex items-center gap-2">
+					<div className="w-3.5 shrink-0" />
+					<div>URL</div>
 				</div>
-			))}
-		</Block>
+				<div className="min-w-0 basis-0 grow-10">Description</div>
+				<div className="min-w-0 basis-0 grow-3 text-right">Status</div>
+				<div className="min-w-0 basis-0 grow-3 text-right">Time</div>
+			</div>
+			{requests.length === 0 ? (
+				<div className="px-2 py-3 text-gray8">No network activity</div>
+			) : (
+				requests.map((request) => {
+					const urlPath = (() => {
+						try {
+							return new URL(request.url).pathname;
+						} catch {
+							return request.url;
+						}
+					})();
+
+					return (
+						<div
+							key={request.id}
+							className="flex items-center border-b border-primary/50 px-3 py-1.5 hover:bg-gray3 transition-colors"
+						>
+							<div className="min-w-0 basis-0 grow-4 flex items-center gap-2">
+								{request.status === "pending" ? (
+									<IconLoader className="w-3.5 h-3.5 shrink-0 text-warning animate-spin" />
+								) : request.status === "success" ? (
+									<IconCheck className="w-3.5 h-3.5 shrink-0 text-success" />
+								) : (
+									<IconAlertHexagon className="w-3.5 h-3.5 shrink-0 text-destructive" />
+								)}
+								<div className="text-primary truncate">{urlPath}</div>
+							</div>
+							<div className="min-w-0 basis-0 grow-10 text-gray8 truncate">
+								{request.description ?? "—"}
+							</div>
+							<div
+								className={cx(
+									"min-w-0 basis-0 grow-3 text-right tabular-nums",
+									request.status === "pending"
+										? "text-gray8"
+										: request.statusCode && request.statusCode >= 400
+											? "text-destructive"
+											: "text-success",
+								)}
+							>
+								{request.status === "pending"
+									? "..."
+									: (request.statusCode ?? "—")}
+							</div>
+							<div className="min-w-0 basis-0 grow-3 text-right tabular-nums text-gray8">
+								{new Date(request.timestamp).toLocaleTimeString("en-US", {
+									hour12: false,
+								})}
+							</div>
+						</div>
+					);
+				})
+			)}
+		</div>
 	);
 }
 
@@ -955,7 +991,7 @@ export namespace NetworkPanel {
 
 export function Demo({
 	className,
-	height = 200,
+	height = 300,
 	steps,
 	title,
 	token,
@@ -987,33 +1023,43 @@ export namespace Demo {
 	export type Props = {
 		className?: string;
 		height?: number;
-		steps: Array<() => ReactNode>;
+		steps: (() => ReactNode)[];
 		title?: string;
 		token?: Address;
 	};
 
-	export function Content({ height, steps }: { height: number; steps: Array<() => ReactNode> }) {
+	export function Content({
+		height,
+		steps,
+	}: {
+		height: number;
+		steps: (() => ReactNode)[];
+	}) {
 		const { view } = useContext(Context);
 
-		if (view.current === "network") {
-			return (
-				<Panel height={height}>
+		return (
+			<>
+				<Panel
+					height={height}
+					className={view.current !== "main" ? "hidden!" : undefined}
+				>
+					<Steps>
+						{steps.map((StepComponent, i) => (
+							// biome-ignore lint/suspicious/noArrayIndexKey: stable array
+							<Step key={i}>
+								<StepComponent />
+							</Step>
+						))}
+					</Steps>
+				</Panel>
+				<Panel
+					height={height}
+					reverse={false}
+					className={cx("p-0!", view.current !== "network" && "hidden!")}
+				>
 					<NetworkPanel />
 				</Panel>
-			);
-		}
-
-		return (
-			<Panel height={height}>
-				<Steps>
-					{steps.map((StepComponent, i) => (
-						// biome-ignore lint/suspicious/noArrayIndexKey: stable array
-						<Step key={i}>
-							<StepComponent />
-						</Step>
-					))}
-				</Steps>
-			</Panel>
+			</>
 		);
 	}
 }
@@ -1149,7 +1195,7 @@ export function Faucet() {
 }
 
 export function Ping() {
-	const [history, setHistory] = useState<Array<"success" | "error">>([]);
+	const [history, setHistory] = useState<("success" | "error")[]>([]);
 	const [showResult, setShowResult] = useState(false);
 	const { data: client } = useConnectorClient();
 

@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 
 export type NetworkRequest = {
+	description?: string;
 	id: string;
 	method: string;
 	status: "pending" | "success" | "error";
@@ -11,7 +12,7 @@ export type NetworkRequest = {
 
 type Listener = () => void;
 
-const requests: NetworkRequest[] = [];
+let requests: NetworkRequest[] = [];
 const listeners = new Set<Listener>();
 
 function emit() {
@@ -23,11 +24,14 @@ function emit() {
 export const networkStore = {
 	add(request: Omit<NetworkRequest, "id" | "timestamp">) {
 		const id = crypto.randomUUID();
-		requests.push({
-			...request,
-			id,
-			timestamp: Date.now(),
-		});
+		requests = [
+			...requests,
+			{
+				...request,
+				id,
+				timestamp: Date.now(),
+			},
+		];
 		emit();
 		return id;
 	},
@@ -35,13 +39,15 @@ export const networkStore = {
 	update(id: string, updates: Partial<NetworkRequest>) {
 		const index = requests.findIndex((r) => r.id === id);
 		if (index !== -1) {
-			requests[index] = { ...requests[index], ...updates };
+			requests = requests.map((r, i) =>
+				i === index ? { ...r, ...updates } : r,
+			);
 			emit();
 		}
 	},
 
 	clear() {
-		requests.length = 0;
+		requests = [];
 		emit();
 	},
 
@@ -82,7 +88,24 @@ export function wrapFetch<
 
 		try {
 			const response = await fetch(...args);
+			const cloned = response.clone();
+
+			let description: string | undefined;
+			try {
+				const contentType = cloned.headers.get("content-type") ?? "";
+				if (contentType.includes("json")) {
+					const json = (await cloned.json()) as { detail?: string };
+					description =
+						typeof json.detail === "string" && json.detail
+							? json.detail
+							: JSON.stringify(json);
+				} else {
+					description = await cloned.text();
+				}
+			} catch {}
+
 			networkStore.update(id, {
+				description,
 				status: response.ok ? "success" : "error",
 				statusCode: response.status,
 			});
