@@ -1,8 +1,45 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AsciiLogo } from "./AsciiLogo";
 import { CliDemo } from "./CliDemo";
+
+// Hook to sync with Vocs theme
+function useThemeSync() {
+	const [, setTick] = useState(0);
+
+	useEffect(() => {
+		// Force re-render when theme changes
+		const observer = new MutationObserver((mutations) => {
+			for (const mutation of mutations) {
+				if (
+					mutation.type === "attributes" &&
+					mutation.attributeName === "style"
+				) {
+					setTick((t) => t + 1);
+				}
+			}
+		});
+
+		observer.observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ["style"],
+		});
+
+		// Also listen for storage changes (cross-tab theme sync)
+		const handleStorage = (e: StorageEvent) => {
+			if (e.key === "vocs-theme") {
+				setTick((t) => t + 1);
+			}
+		};
+		window.addEventListener("storage", handleStorage);
+
+		return () => {
+			observer.disconnect();
+			window.removeEventListener("storage", handleStorage);
+		};
+	}, []);
+}
 
 // Tempo logo SVG
 function TempoLogo({
@@ -374,6 +411,9 @@ function CodeTabs() {
 }
 
 export function LandingPage() {
+	// Sync with Vocs theme toggle
+	useThemeSync();
+
 	return (
 		<div className="not-prose">
 			{/* Hero Section */}
