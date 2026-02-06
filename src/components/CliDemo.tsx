@@ -56,7 +56,7 @@ const QUERY_PRESETS: QueryPreset[] = [
 	{
 		id: "coffee",
 		label: "Coffee Shop",
-		prompt: "Find the best coffee shop nearby and give me directions",
+		prompt: "Find the best coffee shop nearby",
 		calls: [
 			{
 				name: "location.lookup",
@@ -99,7 +99,7 @@ const QUERY_PRESETS: QueryPreset[] = [
 	{
 		id: "restaurant",
 		label: "Restaurant",
-		prompt: "Find a highly-rated Italian restaurant for dinner tonight",
+		prompt: "Find a highly-rated Italian restaurant",
 		calls: [
 			{
 				name: "location.lookup",
@@ -142,7 +142,7 @@ const QUERY_PRESETS: QueryPreset[] = [
 	{
 		id: "parking",
 		label: "Parking",
-		prompt: "Find available parking near Union Square with current rates",
+		prompt: "Find available parking near Union Square",
 		calls: [
 			{
 				name: "location.lookup",
@@ -185,7 +185,7 @@ const QUERY_PRESETS: QueryPreset[] = [
 	{
 		id: "weather",
 		label: "Weather",
-		prompt: "What's the weather like and should I bring an umbrella today?",
+		prompt: "What's the weather today?",
 		calls: [
 			{
 				name: "location.lookup",
@@ -302,11 +302,6 @@ export function CliDemo() {
 				menuIndex: index,
 			});
 		});
-
-		addLines([
-			{ type: "blank", content: "" },
-			{ type: "info", content: "Type 1-4 or use ↑↓ arrows, then press Enter" },
-		]);
 	}, [addLine, addLines]);
 
 	// Initialize wallet and fund it
@@ -630,14 +625,6 @@ export function CliDemo() {
 				});
 			});
 
-			addLines([
-				{ type: "blank", content: "" },
-				{
-					type: "info",
-					content: "Type 1-4 or use ↑↓ arrows, then press Enter",
-				},
-			]);
-
 			setHighlightedIndex(0);
 			setStatus("selecting");
 			setTimeout(() => inputRef.current?.focus(), 100);
@@ -854,7 +841,7 @@ export function CliDemo() {
 				className="p-4 min-h-[300px] max-h-[500px] overflow-y-auto cursor-text"
 				style={{ background: "#ffffff" }}
 			>
-				<div className="mb-3">
+				<div className="mb-3 hidden lg:block">
 					<AsciiLogo morph={false} color="#9ca3af" />
 				</div>
 				{lines.map(renderLine)}
@@ -868,7 +855,7 @@ export function CliDemo() {
 			{/* biome-ignore lint/a11y/noStaticElementInteractions: click to focus input */}
 			<div
 				onClick={() => inputRef.current?.focus()}
-				className={`flex items-center px-4 py-2.5 gap-2 cursor-text ${
+				className={`flex items-center px-4 py-2.5 gap-2 cursor-text flex-1 ${
 					status === "selecting" ? "bg-green-50/50" : ""
 				}`}
 				style={{
@@ -891,7 +878,7 @@ export function CliDemo() {
 					disabled={status !== "selecting"}
 					placeholder={
 						status === "selecting"
-							? "Type 1-4 or press Enter..."
+							? "Type 1-4 or use ↑↓ arrows, then press Enter"
 							: status === "funding"
 								? "Initializing..."
 								: status === "running"

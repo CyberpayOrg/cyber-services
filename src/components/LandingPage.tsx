@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { AsciiLogo } from "./AsciiLogo";
 import { CliDemo } from "./CliDemo";
 
 function CopyButton({ text }: { text: string }) {
@@ -234,7 +235,7 @@ function AgentTabs() {
 export function LandingPage() {
 	return (
 		<div
-			className="not-prose min-h-screen"
+			className="not-prose"
 			style={{
 				color: "#111",
 				fontFamily:
@@ -242,15 +243,13 @@ export function LandingPage() {
 			}}
 		>
 			{/* Hero */}
-			<section className="mx-auto max-w-[1200px] px-6 pt-16 pb-12 md:pt-24 md:pb-16">
+			<section className="pt-4 pb-12 lg:pt-24 lg:pb-16">
 				<div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-stretch">
-					{/* Left pane — interactive demo */}
-					<div className="flex-1 w-full min-w-0 flex flex-col">
-						<CliDemo />
-					</div>
-
 					{/* Right pane */}
-					<div className="flex-1 space-y-8 min-w-0">
+					<div className="flex-9 space-y-8 min-w-0 order-first lg:order-last">
+						<div className="lg:hidden">
+							<AsciiLogo morph={false} color="#9ca3af" />
+						</div>
 						{/* Title */}
 						<h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-black leading-[1.1] tracking-tight">
 							The Machine Payments Protocol
@@ -321,12 +320,17 @@ export function LandingPage() {
 						{/* Copy-to-agent line */}
 						<AgentTabs />
 					</div>
+
+					{/* Left pane — interactive demo */}
+					<div className="flex-11 w-full min-w-0 flex flex-col order-last lg:order-first max-w-[574px] lg:max-w-none">
+						<CliDemo />
+					</div>
 				</div>
 			</section>
 
 			{/* Footer */}
 			<div className="border-t border-gray-100" />
-			<footer className="mx-auto max-w-[1200px] px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400">
+			<footer className="px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400">
 				<div className="flex items-center gap-4">
 					<a
 						href="https://github.com/tempoxyz/payment-auth-spec"
