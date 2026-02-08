@@ -35,8 +35,8 @@ importers:
         specifier: ^11.12.2
         version: 11.12.2
       mpay:
-        specifier: ~0.1.0
-        version: 0.1.0(@modelcontextprotocol/sdk@1.25.3(hono@4.11.7)(zod@4.3.6))(typescript@5.9.3)(viem@2.45.0(typescript@5.9.3)(zod@4.3.6))(zod@4.3.6)
+        specifier: https://pkg.pr.new/wevm/mpay@3e967dc
+        version: https://pkg.pr.new/wevm/mpay@3e967dc(@modelcontextprotocol/sdk@1.25.3(hono@4.11.7)(zod@4.3.6))(typescript@5.9.3)(viem@2.45.0(typescript@5.9.3)(zod@4.3.6))(zod@4.3.6)
       react:
         specifier: ^19
         version: 19.2.4
@@ -53,8 +53,8 @@ importers:
         specifier: latest
         version: 2.45.0(typescript@5.9.3)(zod@4.3.6)
       vocs:
-        specifier: https://pkg.pr.new/wevm/vocs@d482648
-        version: https://pkg.pr.new/wevm/vocs@d482648(patch_hash=63ee48dd94bdea42788f70c3b78065e8d7aad149b685f999fc18687d3d39018d)(@types/react@19.2.10)(mermaid@11.12.2)(react-dom@19.2.4(react@19.2.4))(react-router-dom@7.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-router@7.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-server-dom-webpack@19.2.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(webpack@5.104.1))(react@19.2.4)(rollup@4.57.0)(typescript@5.9.3)(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(waku@1.0.0-alpha.3(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(react-dom@19.2.4(react@19.2.4))(react-server-dom-webpack@19.2.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(webpack@5.104.1))(react@19.2.4)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
+        specifier: https://pkg.pr.new/wevm/vocs@5647cea
+        version: https://pkg.pr.new/wevm/vocs@5647cea(patch_hash=63ee48dd94bdea42788f70c3b78065e8d7aad149b685f999fc18687d3d39018d)(@types/react@19.2.10)(mermaid@11.12.2)(react-dom@19.2.4(react@19.2.4))(react-router-dom@7.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-router@7.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-server-dom-webpack@19.2.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(webpack@5.104.1))(react@19.2.4)(rollup@4.57.0)(typescript@5.9.3)(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(waku@1.0.0-alpha.3(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(react-dom@19.2.4(react@19.2.4))(react-server-dom-webpack@19.2.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(webpack@5.104.1))(react@19.2.4)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
       wagmi:
         specifier: ^3.4.2
         version: 3.4.2(@tanstack/query-core@5.90.20)(@tanstack/react-query@5.90.20(react@19.2.4))(@types/react@19.2.10)(ox@0.12.0(typescript@5.9.3)(zod@4.3.6))(react@19.2.4)(typescript@5.9.3)(viem@2.45.0(typescript@5.9.3)(zod@4.3.6))
@@ -3019,11 +3019,13 @@ packages:
   mlly@1.8.0:
     resolution: {integrity: sha512-l8D9ODSRWLe2KHJSifWGwBqpTZXIXTeo8mlKjY+E2HAakaTeNpqAyBZ8GSqLzHgw4XmHmC8whvpjJNMbFZN7/g==}
 
-  mpay@0.1.0:
-    resolution: {integrity: sha512-r+aiZ6BIzHvz+NYWFt69qaAkRypt/fSQ2Z4nDscQPsVp0FU//Sviw6L2fqzCr+li306MHdcOM/zE5TFher1u4A==}
+  mpay@https://pkg.pr.new/wevm/mpay@3e967dc:
+    resolution: {integrity: sha512-qUdlMc7/pttzlPBSO3DDz4XhnK/oUU9Su+IQZEDphd00nUGMX9dMUZxJ8B3krAgFH7KqE1zpF+X7zWZ5dBasvA==, tarball: https://pkg.pr.new/wevm/mpay@3e967dc}
+    version: 0.1.0
     peerDependencies:
       '@modelcontextprotocol/sdk': '>=1.25.0'
       viem: '>=2.44.4'
+      zod: '>=4.0.0'
     peerDependenciesMeta:
       '@modelcontextprotocol/sdk':
         optional: true
@@ -3847,8 +3849,8 @@ packages:
       jsdom:
         optional: true
 
-  vocs@https://pkg.pr.new/wevm/vocs@d482648:
-    resolution: {integrity: sha512-VPHzPa44kfXI8spjcs7OCA0BP4iuHCxyMFL+1TSZfYNddXDn4A7SU2tC4i44nDCxTLJ0DO+P1OUraanh9YfAQw==, tarball: https://pkg.pr.new/wevm/vocs@d482648}
+  vocs@https://pkg.pr.new/wevm/vocs@5647cea:
+    resolution: {integrity: sha512-Yngamgf39BeR2zhHE3Rk2nGtdJ9AAT8C8pNid7ZJicgEm2vomui8bB74xx7Q+C/Mp5MyNi07k8I7Nu4FJ5H/HQ==, tarball: https://pkg.pr.new/wevm/vocs@5647cea}
     version: 0.0.0
     hasBin: true
     peerDependencies:
@@ -7175,15 +7177,15 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.3
 
-  mpay@0.1.0(@modelcontextprotocol/sdk@1.25.3(hono@4.11.7)(zod@4.3.6))(typescript@5.9.3)(viem@2.45.0(typescript@5.9.3)(zod@4.3.6))(zod@4.3.6):
+  mpay@https://pkg.pr.new/wevm/mpay@3e967dc(@modelcontextprotocol/sdk@1.25.3(hono@4.11.7)(zod@4.3.6))(typescript@5.9.3)(viem@2.45.0(typescript@5.9.3)(zod@4.3.6))(zod@4.3.6):
     dependencies:
       ox: 0.12.0(typescript@5.9.3)(zod@4.3.6)
+      zod: 4.3.6
     optionalDependencies:
       '@modelcontextprotocol/sdk': 1.25.3(hono@4.11.7)(zod@4.3.6)
       viem: 2.45.0(typescript@5.9.3)(zod@4.3.6)
     transitivePeerDependencies:
       - typescript
-      - zod
 
   ms@2.1.3: {}
 
@@ -8121,7 +8123,7 @@ snapshots:
       - tsx
       - yaml
 
-  vocs@https://pkg.pr.new/wevm/vocs@d482648(patch_hash=63ee48dd94bdea42788f70c3b78065e8d7aad149b685f999fc18687d3d39018d)(@types/react@19.2.10)(mermaid@11.12.2)(react-dom@19.2.4(react@19.2.4))(react-router-dom@7.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-router@7.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-server-dom-webpack@19.2.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(webpack@5.104.1))(react@19.2.4)(rollup@4.57.0)(typescript@5.9.3)(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(waku@1.0.0-alpha.3(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(react-dom@19.2.4(react@19.2.4))(react-server-dom-webpack@19.2.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(webpack@5.104.1))(react@19.2.4)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)):
+  vocs@https://pkg.pr.new/wevm/vocs@5647cea(patch_hash=63ee48dd94bdea42788f70c3b78065e8d7aad149b685f999fc18687d3d39018d)(@types/react@19.2.10)(mermaid@11.12.2)(react-dom@19.2.4(react@19.2.4))(react-router-dom@7.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-router@7.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-server-dom-webpack@19.2.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(webpack@5.104.1))(react@19.2.4)(rollup@4.57.0)(typescript@5.9.3)(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(waku@1.0.0-alpha.3(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(react-dom@19.2.4(react@19.2.4))(react-server-dom-webpack@19.2.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(webpack@5.104.1))(react@19.2.4)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)):
     dependencies:
       '@base-ui/react': 1.1.0(@types/react@19.2.10)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@codesandbox/sandpack-react': 2.20.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)

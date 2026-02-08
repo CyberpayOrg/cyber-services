@@ -64,11 +64,11 @@ const specs = xmlFiles.map(parseXml);
 
 const categories: [string, (b: string) => boolean, string | null][] = [
 	["Core", (b) => b.startsWith("draft-httpauth-"), null],
-	["Extensions", (b) => b.startsWith("draft-payment-discovery"), null],
-	["Transports", (b) => b.startsWith("draft-payment-transport"), null],
 	["Intents", (b) => b.startsWith("draft-payment-intent"), null],
 	["Tempo", (b) => b.startsWith("draft-tempo-"), "Payment Methods"],
 	["Stripe", (b) => b.startsWith("draft-stripe-"), "Payment Methods"],
+	["Transports", (b) => b.startsWith("draft-payment-transport"), null],
+	["Extensions", (b) => b.startsWith("draft-payment-discovery"), null],
 ];
 
 const lines: string[] = [
@@ -98,12 +98,11 @@ for (const [heading, matcher, parent] of categories) {
 	lines.push("");
 	for (const spec of matched) {
 		const hasTxt = fs.existsSync(path.join(specsDir, `${spec.basename}.txt`));
+		const titleLink = `<a href="/specs/${spec.basename}.html">${spec.title}</a>`;
 		const txtLink = hasTxt
-			? ` <a href="/specs/${spec.basename}.txt"><code data-v="true">.txt</code></a>`
+			? ` [<a href="/specs/${spec.basename}.txt"><code data-v="true">.txt</code></a>]`
 			: "";
-		lines.push(
-			`- ${spec.title} <a href="/specs/${spec.basename}.html"><code data-v="true">.html</code></a>${txtLink}`,
-		);
+		lines.push(`- ${titleLink}${txtLink}`);
 		used.add(spec.basename);
 	}
 	lines.push("");
@@ -115,12 +114,11 @@ if (uncategorized.length > 0) {
 	lines.push("");
 	for (const spec of uncategorized) {
 		const hasTxt = fs.existsSync(path.join(specsDir, `${spec.basename}.txt`));
+		const titleLink = `<a href="/specs/${spec.basename}.html">${spec.title}</a>`;
 		const txtLink = hasTxt
-			? ` <a href="/specs/${spec.basename}.txt"><code data-v="true">.txt</code></a>`
+			? ` [<a href="/specs/${spec.basename}.txt"><code data-v="true">.txt</code></a>]`
 			: "";
-		lines.push(
-			`- ${spec.title} <a href="/specs/${spec.basename}.html"><code data-v="true">.html</code></a>${txtLink}`,
-		);
+		lines.push(`- ${titleLink}${txtLink}`);
 	}
 	lines.push("");
 }

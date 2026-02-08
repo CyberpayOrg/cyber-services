@@ -87,13 +87,14 @@ const QUERY_PRESETS: QueryPreset[] = [
 				price: "$0.002",
 				priceNum: 0.002,
 				description: "Get walking directions",
-				params: { to: "Blue Bottle Coffee" },
+				params: { to: "The Coffee Movement" },
 			},
 		],
 		response: [
-			'"Blue Bottle Coffee is the top-rated coffee shop nearby',
-			" (4.8★, 0.3mi). It's a 6 minute walk — head north on",
-			' Market St, then right on 4th St."',
+			'"The Coffee Movement is the top-rated coffee shop',
+			" nearby (4.6★, 0.4mi). Known for specialty pour-overs",
+			" and single-origin beans. It's an 8 minute walk — head",
+			' north on Market St to Nob Hill, 1030 Washington St."',
 		],
 	},
 	{
@@ -317,6 +318,8 @@ export function CliDemo() {
 				const { privateKeyToAccount, generatePrivateKey } = await import(
 					"viem/accounts"
 				);
+				const { createClient, http } = await import("viem");
+				const { tempoModerato } = await import("viem/chains");
 
 				// Initial terminal output
 				addLines([
@@ -441,11 +444,13 @@ export function CliDemo() {
 				// Set up mpay fetch with the account
 				const customFetch = Fetch.from({
 					methods: [
-						tempo({
+						tempo.charge({
 							account: acc,
-							rpcUrl: {
-								42431: "https://rpc.moderato.tempo.xyz",
-							},
+							client: () =>
+								createClient({
+									chain: tempoModerato,
+									transport: http("/api/rpc"),
+								}),
 						}),
 					],
 				});
@@ -526,14 +531,21 @@ export function CliDemo() {
 						}
 					}
 
-					// Make the paid request
-					const res = await mpayFetch(url.toString());
-
-					if (!res.ok) {
-						throw new Error(`API returned ${res.status}`);
+					// Make the paid request, retrying if the payment credential
+					// is rejected (nonce conflict from a prior in-flight tx)
+					let res: Response | undefined;
+					for (let attempt = 0; attempt < 3; attempt++) {
+						res = await mpayFetch(url.toString());
+						if (res.ok || res.status !== 402) break;
+						await new Promise((r) => setTimeout(r, 1000 * 2 ** attempt));
 					}
 
-					const data = (await res.json()) as {
+					if (!res!.ok) {
+						throw new Error(`API returned ${res!.status}`);
+					}
+					const resOk = res!;
+
+					const data = (await resOk.json()) as {
 						location?: { city: string; region: string };
 						results?: { name: string }[];
 						summary?: string;
@@ -545,7 +557,7 @@ export function CliDemo() {
 					spent += call.priceNum;
 
 					// Show receipt info if available
-					const receiptHeader = res.headers.get("Payment-Receipt");
+					const receiptHeader = resOk.headers.get("Payment-Receipt");
 					let txDisplay = "";
 					if (receiptHeader) {
 						const receipt = Receipt.deserialize(receiptHeader);
@@ -580,8 +592,8 @@ export function CliDemo() {
 						setBalance(balance - spent);
 					}
 
-					// Small delay between calls for visual effect
-					await new Promise((r) => setTimeout(r, 400));
+					// Delay between calls to allow on-chain nonce settlement
+					await new Promise((r) => setTimeout(r, 1500));
 				} catch (err) {
 					addLine({
 						type: "error",

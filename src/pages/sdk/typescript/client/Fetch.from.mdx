@@ -17,16 +17,16 @@ import { privateKeyToAccount } from 'viem/accounts'
 const account = privateKeyToAccount('0x...')
 
 const fetch = Fetch.from({
-  methods: [tempo({ account })],
+  methods: [tempo.charge({ account })],
 })
 
-// Use the wrapped fetch — handles 402 automatically
-const res = await fetch('https://mpp.dev/ping/paid')
+// Handles 402 automatically
+const res = await fetch('https://mpp.dev/api/ping/paid')
 ```
 
 ### Per-call accounts
 
-Instead of defining an `account` at instantiation, you can pass it on a per-request basis via the `context` option. 
+Instead of defining an `account` at instantiation, you can pass it on a per-request basis using the `context` option. 
 
 :::tip
 This is useful when you need to use different accounts for different requests.
@@ -38,11 +38,11 @@ import { privateKeyToAccount } from 'viem/accounts'
 
 const fetch = Fetch.from({
   methods: [
-    tempo(),
+    tempo.charge(),
   ],
 })
 
-const res = await fetch('https://mpp.dev/ping/paid', {
+const res = await fetch('https://mpp.dev/api/ping/paid', {
   // [!code focus:start]
   context: {
     account: privateKeyToAccount('0x...'),
@@ -66,7 +66,7 @@ The returned fetch function has the same signature as the global `fetch`, but wi
 
 ### methods
 
-- **Type:** `readonly Method.Client[]`
+- **Type:** `readonly MethodIntent.Client[]`
 
 Array of payment methods to use for handling `402` responses.
 
@@ -78,7 +78,7 @@ const account = privateKeyToAccount('0x...')
 
 const fetch = Fetch.from({
   // [!code focus:start]
-  methods: [tempo({ account })],
+  methods: [tempo.charge({ account })],
   // [!code focus:end]
 })
 ```
@@ -100,6 +100,6 @@ const account = privateKeyToAccount('0x...')
 
 const fetch = Fetch.from({
   fetch: customFetch, // [!code focus]
-  methods: [tempo({ account })],
+  methods: [tempo.charge({ account })],
 })
 ```

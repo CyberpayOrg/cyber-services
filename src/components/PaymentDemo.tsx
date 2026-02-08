@@ -136,7 +136,7 @@ function PaymentDemoInner() {
 		});
 
 		try {
-			const res1 = await fetch("/ping/paid", { signal: controller.signal });
+			const res1 = await fetch("/api/ping/paid", { signal: controller.signal });
 
 			if (seq !== requestSeqRef.current) return;
 
@@ -149,11 +149,17 @@ function PaymentDemoInner() {
 				throw new Error("Missing WWW-Authenticate header");
 			}
 
-			const method = tempo({
+			const method = tempo.charge({
 				account: walletClient.account,
 			});
-			const challenge = Challenge.fromResponse(res1, { method });
-			const credential = await method.createCredential({
+			const challenge = Challenge.fromResponse(res1);
+			// Challenge type widening: createCredential expects method-narrowed challenge
+			const credential = await (
+				method.createCredential as (args: {
+					challenge: Challenge.Challenge;
+					context: Record<string, unknown>;
+				}) => Promise<string>
+			)({
 				challenge,
 				context: {},
 			});
@@ -167,7 +173,7 @@ function PaymentDemoInner() {
 				credential,
 			}));
 
-			const res2 = await fetch("/ping/paid", {
+			const res2 = await fetch("/api/ping/paid", {
 				headers: { Authorization: credential },
 				signal: controller.signal,
 			});
@@ -319,7 +325,7 @@ function PaymentDemoInner() {
 						<>
 							Make request to{" "}
 							<code className="text-xs bg-[var(--vocs-color-background-2)] px-1.5 py-0.5 rounded">
-								/ping/paid
+								/api/ping/paid
 							</code>
 						</>
 					}

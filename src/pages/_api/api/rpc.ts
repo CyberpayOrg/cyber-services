@@ -1,5 +1,18 @@
-// RPC proxy endpoint for Tempo Moderato (testnet)
+import { env } from "cloudflare:workers";
+
 const RPC_URL = "https://rpc.moderato.tempo.xyz";
+
+function getRpcHeaders(): Record<string, string> {
+	const headers: Record<string, string> = {
+		"Content-Type": "application/json",
+	};
+	const user = env.RPC_AUTH_USER;
+	const pass = env.RPC_AUTH_PASS;
+	if (user && pass) {
+		headers.Authorization = `Basic ${btoa(`${user}:${pass}`)}`;
+	}
+	return headers;
+}
 
 export async function POST(request: Request) {
 	try {
@@ -7,7 +20,7 @@ export async function POST(request: Request) {
 
 		const response = await fetch(RPC_URL, {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
+			headers: getRpcHeaders(),
 			body: JSON.stringify(body),
 		});
 

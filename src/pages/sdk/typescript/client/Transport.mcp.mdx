@@ -11,18 +11,18 @@ import { privateKeyToAccount } from 'viem/accounts'
 const account = privateKeyToAccount('0x...')
 
 const mpay = Mpay.create({
-  methods: [tempo({ account })],
+  methods: [tempo.charge({ account })],
   transport: Transport.mcp(), // [!code focus]
 })
 ```
 
 ## Behavior
 
-- Detects payment required via **error code `-32042`**
+- Detects payment required using **error code `-32042`**
 - Extracts challenges from **`error.data.challenges[0]`**
-- Sends credentials via **`_meta["org.paymentauth/credential"]`**
+- Sends credentials using **`_meta["org.paymentauth/credential"]`**
 
-## Return Type
+## Return type
 
 ```ts
 type McpTransport = Transport<Mcp.Request, Mcp.Response>

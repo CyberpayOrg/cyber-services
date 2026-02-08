@@ -1,6 +1,13 @@
-# `tempo`
+# `tempo` [Tempo payment method namespace]
 
-Creates a Tempo payment method client for signing payment transactions.
+The `tempo` namespace provides client-side payment methods for the Tempo blockchain.
+
+## Methods
+
+| Method | Description |
+|--------|-------------|
+| [`tempo.charge()`](/sdk/typescript/client/Method.tempo.charge) | One-time payments |
+| [`tempo.stream()`](/sdk/typescript/client/Method.tempo.stream) | Low-cost high-throughput payments |
 
 ## Usage
 
@@ -13,53 +20,53 @@ const account = privateKeyToAccount('0x...')
 const fetch = Fetch.from({
   methods: [
     // [!code focus:start]
-    tempo({ account }),
+    tempo.charge({ account }),
     // [!code focus:end]
   ],
 })
 ```
 
-## Return Type
+### With multiple intents
 
-```ts
-type Tempo = Method.Client<
-  'tempo',
-  Schema,
-  z.ZodObject<{ account: z.ZodOptional<z.ZodCustom<Account>> }>
->
+Register both charge and stream methods on a single client.
+
+```ts twoslash
+import { Fetch, tempo } from 'mpay/client'
+import { privateKeyToAccount } from 'viem/accounts'
+
+const account = privateKeyToAccount('0x...')
+
+const fetch = Fetch.from({
+  // [!code focus:start]
+  methods: [
+    tempo.charge({ account }),
+    tempo.stream({ account }),
+  ],
+  // [!code focus:end]
+})
 ```
 
-## Parameters
+## Shared parameters
+
+Both `tempo.charge()` and `tempo.stream()` accept these common parameters:
 
 ### account (optional)
 
 - **Type:** `Account`
 
-Account to sign transactions with. Can be overridden per-call via context.
+Account to sign transactions with. You can override this per call using the context.
 
 ```ts twoslash
 import { tempo } from 'mpay/client'
 import { privateKeyToAccount } from 'viem/accounts'
 
-const method = tempo({
+const method = tempo.charge({
   account: privateKeyToAccount('0x...'), // [!code focus]
 })
 ```
 
-### rpcUrl (optional)
+### client (optional)
 
-- **Type:** `{ [chainId: number]: string }`
+- **Type:** `(chainId: number) => Client`
 
-RPC URLs keyed by chain ID.
-
-```ts twoslash
-import { tempo } from 'mpay/client'
-
-const method = tempo({
-  // [!code focus:start]
-  rpcUrl: {
-    123456: 'https://rpc.tempo.xyz',
-  },
-  // [!code focus:end]
-})
-```
+Function that returns a viem client for the given chain ID.
