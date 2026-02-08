@@ -164,11 +164,6 @@ export function LandingPage() {
 					<div className="flex-11 w-full min-w-0 flex flex-col order-last lg:order-first max-w-[574px] lg:max-w-none">
 						<CliDemo />
 					</div>
-
-					{/* Left pane — interactive demo */}
-					<div className="flex-11 w-full min-w-0 flex flex-col order-last lg:order-first max-w-[574px] lg:max-w-none">
-						<CliDemo />
-					</div>
 				</div>
 			</section>
 
