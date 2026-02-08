@@ -15,7 +15,7 @@ const realm = 'api.example.com'
 const secretKey = 'test-secret-key'
 
 const method = tempo.charge({
-  client: () => client,
+  getClient: () => client,
 })
 
 describe('create', () => {

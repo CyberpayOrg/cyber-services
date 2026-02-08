@@ -24,11 +24,9 @@ import * as defaults from '../internal/defaults.js'
  * ```
  */
 export function charge(parameters: charge.Parameters = {}) {
-  const { client } = parameters
-
   const getClient = Client.getResolver({
     chain: tempo_chain,
-    client,
+    getClient: parameters.getClient,
     rpcUrl: defaults.rpcUrl,
   })
 
@@ -43,7 +41,7 @@ export function charge(parameters: charge.Parameters = {}) {
         throw new Error('No `account` provided. Pass `account` to parameters or context.')
 
       const chainId = challenge.request.methodDetails?.chainId ?? 0
-      const client = getClient(chainId)
+      const client = await getClient(chainId)
 
       const { request } = challenge
       const { amount, currency, recipient, methodDetails } = request

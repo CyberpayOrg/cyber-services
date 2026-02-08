@@ -1,5 +1,5 @@
 ---
-"mpay": major
+"mpay": minor
 ---
 
 **Breaking:** Removed `Method` module. Use `MethodIntent` instead.

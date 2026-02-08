@@ -122,7 +122,7 @@ function createIntentFn(parameters: createIntentFn.Parameters): createIntentFn.R
       // Transform request if method provides a `request` function.
       const request = (
         parameters.request
-          ? parameters.request({ credential: credential_request, request: merged } as never)
+          ? await parameters.request({ credential: credential_request, request: merged } as never)
           : merged
       ) as never
 

@@ -1,5 +1,5 @@
 ---
-"mpay": major
+"mpay": minor
 ---
 
 **Breaking:** Renamed `method` to `methods` on `Challenge.from()`, `Challenge.deserialize()`, `Challenge.fromHeaders()`, and `Challenge.fromResponse()`.

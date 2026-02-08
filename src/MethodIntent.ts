@@ -1,7 +1,7 @@
 import type * as Challenge from './Challenge.js'
 import type * as Credential from './Credential.js'
 import * as Intent from './Intent.js'
-import type { ExactPartial, LooseOmit } from './internal/types.js'
+import type { ExactPartial, LooseOmit, MaybePromise } from './internal/types.js'
 import type * as Receipt from './Receipt.js'
 import * as z from './zod.js'
 
@@ -249,7 +249,7 @@ export type CreateCredentialFn<intent extends AnyMethodIntent, context = unknown
 export type RequestFn<intent extends AnyMethodIntent> = (options: {
   credential?: Credential.Credential | null | undefined
   request: z.input<intent['schema']['request']>
-}) => z.input<intent['schema']['request']>
+}) => MaybePromise<z.input<intent['schema']['request']>>
 
 /** Verification function for a single intent. */
 export type VerifyFn<intent extends AnyMethodIntent> = (parameters: {

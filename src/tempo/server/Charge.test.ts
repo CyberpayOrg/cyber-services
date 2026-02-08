@@ -18,7 +18,7 @@ const secretKey = 'test-secret-key'
 const server = Mpay_server.create({
   methods: [
     Methods_server.charge({
-      client() {
+      getClient() {
         return client
       },
       currency: asset,
@@ -228,7 +228,7 @@ describe('tempo', () => {
       const server = Mpay_server.create({
         methods: [
           Methods_server.charge({
-            client(chainId) {
+            getClient(chainId: number) {
               if (chainId === chain.id) return client
               throw new Error('not found')
             },
@@ -298,7 +298,7 @@ describe('tempo', () => {
         methods: [
           Methods_client.charge({
             account: accounts[1],
-            client() {
+            getClient() {
               return client
             },
           }),
@@ -355,7 +355,7 @@ describe('tempo', () => {
         methods: [
           Methods_client.charge({
             account: accounts[1],
-            client() {
+            getClient() {
               return client
             },
           }),
@@ -398,7 +398,7 @@ describe('tempo', () => {
         methods: [
           Methods_client.charge({
             account: accounts[1],
-            client() {
+            getClient() {
               return client
             },
           }),
@@ -452,7 +452,7 @@ describe('tempo', () => {
         methods: [
           Methods_client.charge({
             account: accounts[1],
-            client() {
+            getClient() {
               return client
             },
           }),
@@ -462,7 +462,7 @@ describe('tempo', () => {
       const server = Mpay_server.create({
         methods: [
           Methods_server.charge({
-            client() {
+            getClient() {
               return client
             },
             currency: asset,

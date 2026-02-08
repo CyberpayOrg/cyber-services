@@ -16,7 +16,7 @@ const secretKey = 'test-secret-key'
 describe('Mpay.create', () => {
   test('default', () => {
     const mpay = Mpay.create({
-      methods: [tempo.charge({ account: accounts[1], client: () => client })],
+      methods: [tempo.charge({ account: accounts[1], getClient: () => client })],
     })
 
     expect(mpay.methods).toHaveLength(1)
@@ -28,7 +28,7 @@ describe('Mpay.create', () => {
 
   test('behavior: with mcp transport', () => {
     const mpay = Mpay.create({
-      methods: [tempo.charge({ account: accounts[1], client: () => client })],
+      methods: [tempo.charge({ account: accounts[1], getClient: () => client })],
       transport: Transport.mcp(),
     })
 
@@ -54,7 +54,7 @@ describe('Mpay.create', () => {
     })
 
     const mpay = Mpay.create({
-      methods: [tempo.charge({ account: accounts[1], client: () => client }), stripeMethod],
+      methods: [tempo.charge({ account: accounts[1], getClient: () => client }), stripeMethod],
     })
 
     expect(mpay.methods).toHaveLength(2)
@@ -66,7 +66,7 @@ describe('Mpay.create', () => {
 describe('createCredential', () => {
   test('behavior: routes to correct method based on challenge', async () => {
     const mpay = Mpay.create({
-      methods: [tempo.charge({ account: accounts[1], client: () => client })],
+      methods: [tempo.charge({ account: accounts[1], getClient: () => client })],
     })
 
     const challenge = Challenge.fromIntent(Intents.charge, {
@@ -99,7 +99,7 @@ describe('createCredential', () => {
 
   test('behavior: throws when method not found', async () => {
     const mpay = Mpay.create({
-      methods: [tempo.charge({ account: accounts[1], client: () => client })],
+      methods: [tempo.charge({ account: accounts[1], getClient: () => client })],
     })
 
     const challenge = Challenge.from({
@@ -142,7 +142,7 @@ describe('createCredential', () => {
     })
 
     const mpay = Mpay.create({
-      methods: [tempo.charge({ account: accounts[1], client: () => client }), stripe],
+      methods: [tempo.charge({ account: accounts[1], getClient: () => client }), stripe],
     })
 
     const stripeChallenge = Challenge.from({
@@ -173,7 +173,7 @@ describe('createCredential', () => {
   })
 
   test('behavior: passes context to createCredential', async () => {
-    const mpay = Mpay.create({ methods: [tempo.charge({ client: () => client })] })
+    const mpay = Mpay.create({ methods: [tempo.charge({ getClient: () => client })] })
 
     const challenge = Challenge.fromIntent(Intents.charge, {
       realm,
@@ -203,7 +203,7 @@ describe('createCredential', () => {
 
   test('behavior: works without context when account provided at creation', async () => {
     const mpay = Mpay.create({
-      methods: [tempo.charge({ account: accounts[1], client: () => client })],
+      methods: [tempo.charge({ account: accounts[1], getClient: () => client })],
     })
 
     const challenge = Challenge.fromIntent(Intents.charge, {
@@ -232,7 +232,7 @@ describe('createCredential', () => {
 
   test('behavior: with mcp transport', async () => {
     const mpay = Mpay.create({
-      methods: [tempo.charge({ account: accounts[1], client: () => client })],
+      methods: [tempo.charge({ account: accounts[1], getClient: () => client })],
       transport: Transport.mcp(),
     })
 

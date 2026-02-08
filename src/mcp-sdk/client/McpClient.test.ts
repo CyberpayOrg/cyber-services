@@ -24,7 +24,7 @@ describe('McpClient.wrap', () => {
   const mpayServer = Mpay_server.create({
     methods: [
       tempo_server.charge({
-        client: () => testClient,
+        getClient: () => testClient,
       }),
     ],
     realm,
@@ -73,7 +73,7 @@ describe('McpClient.wrap', () => {
       methods: [
         tempo_client.charge({
           account: accounts[1],
-          client: () => testClient,
+          getClient: () => testClient,
         }),
       ],
     })
@@ -91,7 +91,7 @@ describe('McpClient.wrap', () => {
     const mcp = McpClient.wrap(client, {
       methods: [
         tempo_client.charge({
-          client: () => testClient,
+          getClient: () => testClient,
         }),
       ],
     })
@@ -110,7 +110,7 @@ describe('McpClient.wrap', () => {
       methods: [
         tempo_client.charge({
           account: accounts[1],
-          client: () => testClient,
+          getClient: () => testClient,
         }),
       ],
     })
@@ -125,7 +125,7 @@ describe('McpClient.wrap', () => {
     const mcp = McpClient.wrap(client, {
       methods: [
         tempo_client.charge({
-          client: () => testClient,
+          getClient: () => testClient,
         }),
       ],
     })
@@ -144,7 +144,7 @@ describe('McpClient.wrap', () => {
       methods: [
         tempo_client.charge({
           account: accounts[1],
-          client: () => testClient,
+          getClient: () => testClient,
         }),
       ],
     })
@@ -155,7 +155,7 @@ describe('McpClient.wrap', () => {
   })
 
   test('error: throws when method not found', async () => {
-    const challenge = Challenge.fromIntent(tempo_server.charge({ client: () => testClient }), {
+    const challenge = Challenge.fromIntent(tempo_server.charge({ getClient: () => testClient }), {
       realm,
       secretKey,
       request: {
@@ -178,7 +178,7 @@ describe('McpClient.wrap', () => {
       methods: [
         tempo_client.charge({
           account: accounts[1],
-          client: () => testClient,
+          getClient: () => testClient,
         }),
       ],
     })

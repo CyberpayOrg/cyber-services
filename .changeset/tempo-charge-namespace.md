@@ -1,5 +1,5 @@
 ---
-"mpay": major
+"mpay": minor
 ---
 
 **Breaking:** Refactored tempo method exports to use `tempo.charge()` namespace.

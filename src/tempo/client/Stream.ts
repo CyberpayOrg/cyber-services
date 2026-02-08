@@ -74,11 +74,9 @@ type ChannelEntry = {
  * ```
  */
 export function stream(parameters: stream.Parameters = {}) {
-  const { client } = parameters
-
   const getClient = Client.getResolver({
     chain: tempo_chain,
-    client,
+    getClient: parameters.getClient,
     rpcUrl: defaults.rpcUrl,
   })
 
@@ -161,7 +159,7 @@ export function stream(parameters: stream.Parameters = {}) {
       | { chainId?: number; escrowContract?: string; channelId?: string }
       | undefined
     const chainId = md?.chainId ?? 0
-    const client = getClient(chainId)
+    const client = await getClient(chainId)
     const escrowContract = resolveEscrow(challenge, chainId)
     const payee = challenge.request.recipient as Address
     const currency = challenge.request.currency as Address
@@ -304,7 +302,7 @@ export function stream(parameters: stream.Parameters = {}) {
       | { chainId?: number; escrowContract?: string; channelId?: string }
       | undefined
     const chainId = md?.chainId ?? 0
-    const client = getClient(chainId)
+    const client = await getClient(chainId)
 
     const action = context.action!
     const {

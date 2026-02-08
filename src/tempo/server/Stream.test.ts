@@ -43,7 +43,7 @@ describe('stream server Method', () => {
   function createServer(overrides: Partial<Parameters<typeof stream>[0]> = {}) {
     return stream({
       storage,
-      client: () => client,
+      getClient: () => client,
       recipient,
       currency,
       escrowContract,
@@ -770,7 +770,7 @@ describe('stream server Method', () => {
 
     test('close submits on-chain when client provided', async () => {
       const { channelId, serializedTransaction } = await createSignedOpenTransaction(10000000n)
-      const server = createServer({ client: () => client })
+      const server = createServer({ getClient: () => client })
       await openServerChannel(server, channelId, serializedTransaction)
 
       const receipt = await server.verify({

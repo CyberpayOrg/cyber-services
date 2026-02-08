@@ -38,7 +38,6 @@ export function charge<const defaults extends charge.Defaults>(
 ) {
   const {
     amount,
-    client,
     currency,
     decimals = 6,
     description,
@@ -49,7 +48,7 @@ export function charge<const defaults extends charge.Defaults>(
 
   const getClient = Client.getResolver({
     chain: { ...tempo_chain, experimental_preconfirmationTime: 500 },
-    client,
+    getClient: parameters.getClient,
     rpcUrl: defaults.rpcUrl,
   })
 
@@ -66,18 +65,18 @@ export function charge<const defaults extends charge.Defaults>(
     } as Defaults,
 
     // TODO: dedupe `{charge,stream}.request`
-    request({ credential, request }) {
+    async request({ credential, request }) {
       // Extract chainId from request or default.
-      const chainId = (() => {
+      const chainId = await (async () => {
         if (request.chainId) return request.chainId
         if (parameters.testnet) return defaults.testnetChainId
-        return getClient(0).chain?.id
+        return (await getClient(0)).chain?.id
       })()
 
       // Validate chainId.
-      const client = (() => {
+      const client = await (async () => {
         try {
-          return getClient(chainId!)
+          return await getClient(chainId!)
         } catch {
           throw new Error(`No client configured with chainId ${chainId}.`)
         }
@@ -102,7 +101,7 @@ export function charge<const defaults extends charge.Defaults>(
       const { challenge } = credential
       const { chainId, feePayer } = request
 
-      const client = getClient(chainId!)
+      const client = await getClient(chainId!)
 
       const { request: challengeRequest } = challenge
       const { amount, expires, methodDetails } = challengeRequest

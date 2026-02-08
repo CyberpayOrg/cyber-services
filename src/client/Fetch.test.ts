@@ -14,7 +14,7 @@ const secretKey = 'test-secret-key'
 const server = Mpay_server.create({
   methods: [
     charge_server({
-      client: () => client,
+      getClient: () => client,
     }),
   ],
   realm,
@@ -27,7 +27,7 @@ describe('Fetch.from', () => {
       methods: [
         charge_client({
           account: accounts[1],
-          client: () => client,
+          getClient: () => client,
         }),
       ],
     })
@@ -69,7 +69,7 @@ describe('Fetch.from', () => {
     const fetch = Fetch.from({
       methods: [
         charge_client({
-          client: () => client,
+          getClient: () => client,
         }),
       ],
     })
@@ -103,7 +103,7 @@ describe('Fetch.from', () => {
       methods: [
         charge_client({
           account: accounts[0],
-          client: () => client,
+          getClient: () => client,
         }),
       ],
     })
@@ -133,7 +133,7 @@ describe('Fetch.from', () => {
     const fetch = Fetch.from({
       methods: [
         charge_client({
-          client: () => client,
+          getClient: () => client,
         }),
       ],
     })
@@ -163,7 +163,7 @@ describe('Fetch.from', () => {
       methods: [
         charge_client({
           account: accounts[1],
-          client: () => client,
+          getClient: () => client,
         }),
       ],
     })
@@ -185,7 +185,7 @@ describe('Fetch.from', () => {
       methods: [
         charge_server({
           feePayer: accounts[0],
-          client: () => client,
+          getClient: () => client,
         }),
       ],
       realm,
@@ -196,7 +196,7 @@ describe('Fetch.from', () => {
       methods: [
         charge_client({
           account: accounts[1],
-          client: () => client,
+          getClient: () => client,
         }),
       ],
     })
@@ -241,7 +241,7 @@ describe('Fetch.polyfill', () => {
       methods: [
         charge_client({
           account: accounts[1],
-          client: () => client,
+          getClient: () => client,
         }),
       ],
     })
