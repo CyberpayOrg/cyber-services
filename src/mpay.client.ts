@@ -4,13 +4,11 @@ import { config } from "./wagmi.config";
 
 const trackedFetch = wrapFetch(globalThis.fetch);
 
-console.log("test");
 export const fetch = Fetch.from({
 	fetch: trackedFetch,
 	methods: [
 		tempo.charge({
-			async client(chainId) {
-				console.log("test");
+			async getClient(chainId) {
 				const client = await config.connectors
 					.at(0)
 					?.getClient?.({ chainId: chainId as never });

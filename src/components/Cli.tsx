@@ -177,7 +177,7 @@ export namespace Panel {
 export function Line({ variant, prefix, children, className }: Line.Props) {
 	return (
 		<div
-			className={cva("leading-normal whitespace-nowrap", {
+			className={cva("leading-normal", {
 				variants: {
 					variant: {
 						default: "text-primary",
@@ -713,8 +713,8 @@ export function Hint({ className }: Hint.Props) {
 	}
 
 	const hints: Record<NonNullable<Store.InteractionType>, string> = {
-		select: "↑↓ to select",
-		toggle: "←→ to select",
+		select: "(↑ ↓) + ⏎, or press to select",
+		toggle: "(← →) + ⏎, or press to select",
 	};
 
 	const mobileHints: Record<NonNullable<Store.InteractionType>, string> = {
@@ -1067,7 +1067,8 @@ export function ConnectWallet() {
 	return (
 		<Block>
 			<Line variant="info">
-				Create a Tempo Wallet, or use your existing one:
+				Use <span className="text-accent">Tempo Wallet</span> and{" "}
+				<span className="text-accent">authorize $5</span> to get started:
 			</Line>
 			{address ? (
 				<Line variant="success" prefix="✓">
@@ -1087,8 +1088,8 @@ export function ConnectWallet() {
 						}
 					}}
 				>
-					<Toggle.Option value="sign-in">Sign In</Toggle.Option>
 					<Toggle.Option value="sign-up">Sign Up</Toggle.Option>
+					<Toggle.Option value="sign-in">Sign In</Toggle.Option>
 				</Toggle>
 			)}
 		</Block>
@@ -1139,7 +1140,7 @@ export function Faucet() {
 
 	return (
 		<Block>
-			{isPending && <Line variant="loading">Requesting testnet funds...</Line>}
+			{isPending && <Line variant="loading">Funding wallet...</Line>}
 			{funded && (
 				<Line variant="success" prefix="✓">
 					Wallet funded

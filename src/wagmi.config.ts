@@ -24,6 +24,10 @@ const rpId = (() => {
 export const config = createConfig({
 	connectors: [
 		webAuthn({
+			grantAccessKey: true,
+			createOptions: {
+				label: "MPP Demo",
+			},
 			keyManager: KeyManager.http("https://keys.tempo.xyz"),
 			rpId,
 		}),
