@@ -7,7 +7,7 @@ const trackedFetch = wrapFetch(globalThis.fetch);
 export const fetch = Fetch.from({
 	fetch: trackedFetch,
 	methods: [
-		tempo({
+		tempo.charge({
 			client(chainId) {
 				return config.getClient({ chainId: chainId as never });
 			},

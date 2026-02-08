@@ -134,7 +134,7 @@ export function LandingPage() {
 						<div className="flex flex-wrap gap-3">
 							<a
 								href="/quickstart/client"
-								className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0166FF] text-white text-sm font-medium rounded-md hover:bg-[#0052CC] transition-colors no-underline"
+								className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0166FF] text-white! text-sm font-medium rounded-md hover:bg-[#0052CC] transition-colors no-underline!"
 							>
 								Get started
 								<svg

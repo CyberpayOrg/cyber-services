@@ -7,6 +7,7 @@ import { Store as ts_Store, useStore } from "@tanstack/react-store";
 import { cva, cx } from "class-variance-authority";
 import {
 	Children,
+	type CSSProperties,
 	createContext,
 	isValidElement,
 	type ReactNode,
@@ -29,9 +30,7 @@ import IconAlertHexagon from "~icons/lucide/alert-triangle";
 import IconCheck from "~icons/lucide/check";
 import IconLoader from "~icons/lucide/loader";
 import IconLogOut from "~icons/lucide/log-out";
-import IconNetwork from "~icons/lucide/network";
 import IconRefresh from "~icons/lucide/refresh-cw";
-import IconTerminal from "~icons/lucide/terminal";
 import { useRequests } from "../lib/network-store";
 import { fetch } from "../mpay.client";
 
@@ -370,7 +369,6 @@ export function Spent({ className, label = "Spent" }: Spent.Props) {
 	const { data: balance } = Hooks.token.useGetBalance({
 		account: address,
 		token,
-		blockTag: "latest",
 	});
 
 	if (!address) return null;
@@ -715,12 +713,20 @@ export function Hint({ className }: Hint.Props) {
 	}
 
 	const hints: Record<NonNullable<Store.InteractionType>, string> = {
-		select: "↑↓ or click to select",
-		toggle: "←→ or click to select",
+		select: "↑↓ to select",
+		toggle: "←→ to select",
+	};
+
+	const mobileHints: Record<NonNullable<Store.InteractionType>, string> = {
+		select: "Tap to select",
+		toggle: "Tap to select",
 	};
 
 	return (
-		<span className={cx("text-gray8", className)}>{hints[interaction]}</span>
+		<span className={cx("text-gray8", className)}>
+			<span className="hidden sm:inline">{hints[interaction]}</span>
+			<span className="sm:hidden">{mobileHints[interaction]}</span>
+		</span>
 	);
 }
 
@@ -784,41 +790,51 @@ export namespace Refresh {
 	};
 }
 
-export function NetworkToggle({ className }: NetworkToggle.Props) {
+export function Tabs({ className }: Tabs.Props) {
 	const view = useStore(store, (s) => s.view);
 	const requests = useRequests();
 
-	const isNetwork = view === "network";
-	const hasPending = requests.some((r) => r.status === "pending");
-
 	return (
-		<button
-			type="button"
-			onClick={() =>
-				store.setState((s) => ({
-					...s,
-					view: isNetwork ? "main" : "network",
-				}))
-			}
+		<div
 			className={cx(
-				"text-secondary hover:text-primary transition-colors relative",
+				"flex items-center border-b border-primary bg-primary text-xs",
 				className,
 			)}
-			aria-label={isNetwork ? "Show terminal" : "Show network"}
 		>
-			{isNetwork ? (
-				<IconTerminal className="w-3.5 h-3.5" />
-			) : (
-				<IconNetwork className="w-3.5 h-3.5" />
-			)}
-			{hasPending && !isNetwork && (
-				<span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-warning rounded-full animate-pulse" />
-			)}
-		</button>
+			<button
+				type="button"
+				onClick={() => store.setState((s) => ({ ...s, view: "main" }))}
+				className={cx(
+					"px-3 py-1.5 transition-colors",
+					view === "main"
+						? "text-primary border-b border-current"
+						: "text-secondary hover:text-primary",
+				)}
+			>
+				Terminal
+			</button>
+			<button
+				type="button"
+				onClick={() => store.setState((s) => ({ ...s, view: "network" }))}
+				className={cx(
+					"px-3 py-1.5 transition-colors flex items-center gap-1.5",
+					view === "network"
+						? "text-primary border-b border-current"
+						: "text-secondary hover:text-primary",
+				)}
+			>
+				Network
+				{requests.length > 0 && (
+					<span className="bg-gray12 text-primary rounded-full px-1.5 py-px text-[10px] leading-tight tabular-nums">
+						{requests.length}
+					</span>
+				)}
+			</button>
+		</div>
 	);
 }
 
-export namespace NetworkToggle {
+export namespace Tabs {
 	export type Props = {
 		className?: string;
 	};
@@ -847,12 +863,23 @@ export namespace Step {
 	};
 }
 
-export function NetworkPanel({ className }: NetworkPanel.Props) {
+export function NetworkPanel({ className, style }: NetworkPanel.Props) {
+	const view = useStore(store, (s) => s.view);
 	const requests = useRequests();
+	const bodyRef = useRef<HTMLDivElement>(null);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: scroll on new requests or view change
+	useEffect(() => {
+		if (bodyRef.current)
+			bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
+	}, [requests, view]);
 
 	return (
-		<div className={cx("flex flex-col text-xs", className)}>
-			<div className="flex items-center border-b border-primary px-3 py-1.5 text-gray8">
+		<div
+			className={cx("flex flex-col text-xs bg-primary", className)}
+			style={style}
+		>
+			<div className="flex items-center border-b border-primary px-3 py-1.5 text-gray8 shrink-0">
 				<div className="min-w-0 basis-0 grow-4 flex items-center gap-2">
 					<div className="w-3.5 shrink-0" />
 					<div>URL</div>
@@ -861,59 +888,61 @@ export function NetworkPanel({ className }: NetworkPanel.Props) {
 				<div className="min-w-0 basis-0 grow-3 text-right">Status</div>
 				<div className="min-w-0 basis-0 grow-3 text-right">Time</div>
 			</div>
-			{requests.length === 0 ? (
-				<div className="px-2 py-3 text-gray8">No network activity</div>
-			) : (
-				requests.map((request) => {
-					const urlPath = (() => {
-						try {
-							return new URL(request.url).pathname;
-						} catch {
-							return request.url;
-						}
-					})();
+			<div ref={bodyRef} className="flex-1 overflow-y-auto min-h-0">
+				{requests.length === 0 ? (
+					<div className="px-2 py-3 text-gray8">No network activity</div>
+				) : (
+					requests.map((request) => {
+						const urlPath = (() => {
+							try {
+								return new URL(request.url).pathname;
+							} catch {
+								return request.url;
+							}
+						})();
 
-					return (
-						<div
-							key={request.id}
-							className="flex items-center border-b border-primary/50 px-3 py-1.5 hover:bg-gray3 transition-colors"
-						>
-							<div className="min-w-0 basis-0 grow-4 flex items-center gap-2">
-								{request.status === "pending" ? (
-									<IconLoader className="w-3.5 h-3.5 shrink-0 text-warning animate-spin" />
-								) : request.status === "success" ? (
-									<IconCheck className="w-3.5 h-3.5 shrink-0 text-success" />
-								) : (
-									<IconAlertHexagon className="w-3.5 h-3.5 shrink-0 text-destructive" />
-								)}
-								<div className="text-primary truncate">{urlPath}</div>
-							</div>
-							<div className="min-w-0 basis-0 grow-10 text-gray8 truncate">
-								{request.description ?? "—"}
-							</div>
+						return (
 							<div
-								className={cx(
-									"min-w-0 basis-0 grow-3 text-right tabular-nums",
-									request.status === "pending"
-										? "text-gray8"
-										: request.statusCode && request.statusCode >= 400
-											? "text-destructive"
-											: "text-success",
-								)}
+								key={request.id}
+								className="flex items-center border-b border-primary/50 px-3 py-1.5 hover:bg-gray13 transition-colors"
 							>
-								{request.status === "pending"
-									? "..."
-									: (request.statusCode ?? "—")}
+								<div className="min-w-0 basis-0 grow-4 flex items-center gap-2">
+									{request.status === "pending" ? (
+										<IconLoader className="w-3.5 h-3.5 shrink-0 text-warning animate-spin" />
+									) : request.status === "success" ? (
+										<IconCheck className="w-3.5 h-3.5 shrink-0 text-success" />
+									) : (
+										<IconAlertHexagon className="w-3.5 h-3.5 shrink-0 text-destructive" />
+									)}
+									<div className="text-primary truncate">{urlPath}</div>
+								</div>
+								<div className="min-w-0 basis-0 grow-10 text-gray8 truncate">
+									{request.description ?? "—"}
+								</div>
+								<div
+									className={cx(
+										"min-w-0 basis-0 grow-3 text-right tabular-nums",
+										request.status === "pending"
+											? "text-gray8"
+											: request.statusCode && request.statusCode >= 400
+												? "text-destructive"
+												: "text-success",
+									)}
+								>
+									{request.status === "pending"
+										? "..."
+										: (request.statusCode ?? "—")}
+								</div>
+								<div className="min-w-0 basis-0 grow-3 text-right tabular-nums text-gray8">
+									{new Date(request.timestamp).toLocaleTimeString("en-US", {
+										hour12: false,
+									})}
+								</div>
 							</div>
-							<div className="min-w-0 basis-0 grow-3 text-right tabular-nums text-gray8">
-								{new Date(request.timestamp).toLocaleTimeString("en-US", {
-									hour12: false,
-								})}
-							</div>
-						</div>
-					);
-				})
-			)}
+						);
+					})
+				)}
+			</div>
 		</div>
 	);
 }
@@ -921,6 +950,7 @@ export function NetworkPanel({ className }: NetworkPanel.Props) {
 export namespace NetworkPanel {
 	export type Props = {
 		className?: string;
+		style?: CSSProperties;
 	};
 }
 
@@ -938,9 +968,10 @@ export function Demo({
 		<Window className={className} token={token}>
 			<TitleBar title={title}>
 				<Account />
-				<NetworkToggle />
 				<Refresh />
 			</TitleBar>
+
+			<Tabs />
 
 			<Demo.Content height={height} steps={steps} />
 
@@ -990,13 +1021,10 @@ export namespace Demo {
 						))}
 					</Steps>
 				</Panel>
-				<Panel
-					height={height}
-					reverse={false}
-					className={cx("p-0!", view !== "network" && "hidden!")}
-				>
-					<NetworkPanel />
-				</Panel>
+				<NetworkPanel
+					style={{ height }}
+					className={view !== "network" ? "hidden!" : undefined}
+				/>
 			</>
 		);
 	}
@@ -1004,35 +1032,18 @@ export namespace Demo {
 
 export function Startup() {
 	const stepIndex = useStore(store, (s) => s.stepIndex);
-	const [phase, setPhase] = useState<"init" | "ready">("init");
 
 	useEffect(() => {
 		if (stepIndex !== 0) return;
-
-		setPhase("init");
-
-		const initTimer = setTimeout(() => setPhase("ready"), 1000);
-		const nextTimer = setTimeout(
-			() => store.setState((s) => ({ ...s, stepIndex: s.stepIndex + 1 })),
-			2000,
-		);
-
-		return () => {
-			clearTimeout(initTimer);
-			clearTimeout(nextTimer);
-		};
+		store.setState((s) => ({ ...s, stepIndex: s.stepIndex + 1 }));
 	}, [stepIndex]);
 
 	return (
 		<Block>
 			<Line>MPP Agent Demo v0.1.0</Line>
-			{phase === "init" ? (
-				<Line variant="loading">Initializing...</Line>
-			) : (
-				<Line variant="success" prefix="✓">
-					Agent ready
-				</Line>
-			)}
+			<Line variant="success" prefix="✓">
+				Agent ready
+			</Line>
 		</Block>
 	);
 }
@@ -1146,7 +1157,7 @@ export function Ping() {
 
 	const { mutate, isPending, isSuccess, isError, reset } = useMutation({
 		mutationFn: () =>
-			fetch("/ping/paid", { context: { account: client?.account } }),
+			fetch("/api/ping/paid", { context: { account: client?.account } }),
 		onSettled: (_, error) => {
 			setShowResult(true);
 			setTimeout(() => {
