@@ -1,0 +1,189 @@
+diff --git a/dist/tempo/stream/Voucher.d.ts b/dist/tempo/stream/Voucher.d.ts
+index 274facae0457e13207bae1c6b1cf41c079d46498..e642ee3010ada3c5edaf10392e268f59aa5bbec1 100644
+--- a/dist/tempo/stream/Voucher.d.ts
++++ b/dist/tempo/stream/Voucher.d.ts
+@@ -1,13 +1,18 @@
+-import type { Account, Address, Client, Hex } from 'viem';
++import type { Account, Client, Hex } from 'viem';
++import type { Address } from 'ox';
+ import type { SignedVoucher, Voucher } from './Types.js';
+ /**
+  * Sign a voucher with an account.
+  */
+-export declare function signVoucher(client: Client, account: Account, message: Voucher, escrowContract: Address, chainId: number): Promise<Hex>;
++export declare function signVoucher(client: Client, account: Account, message: Voucher, escrowContract: Address.Address, chainId: number): Promise<Hex>;
+ /**
+  * Verify a voucher signature matches the expected signer.
++ *
++ * Supports both direct signatures (secp256k1/p256/webAuthn) and
++ * Tempo access key (keychain) signatures. For keychain signatures,
++ * the envelope's `userAddress` is compared to `expectedSigner`.
+  */
+-export declare function verifyVoucher(escrowContract: Address, chainId: number, voucher: SignedVoucher, expectedSigner: Address): Promise<boolean>;
++export declare function verifyVoucher(escrowContract: Address.Address, chainId: number, voucher: SignedVoucher, expectedSigner: Address.Address): Promise<boolean>;
+ /**
+  * Parse a voucher from credential payload.
+  */
+diff --git a/dist/tempo/stream/Voucher.js b/dist/tempo/stream/Voucher.js
+index d7ad939b220bad698d0c2e12fc435d40e2f40773..da7442194ea4b784a508c2b9443040cdea521f9c 100644
+--- a/dist/tempo/stream/Voucher.js
++++ b/dist/tempo/stream/Voucher.js
+@@ -1,5 +1,7 @@
+-import { recoverTypedDataAddress } from 'viem';
++import { hashTypedData, isAddressEqual, recoverTypedDataAddress } from 'viem';
+ import { signTypedData } from 'viem/actions';
++import { SignatureEnvelope } from 'ox/tempo';
++import { Address, Secp256k1 } from 'ox';
+ /** Must match the on-chain TempoStreamChannel DOMAIN_SEPARATOR name. */
+ const DOMAIN_NAME = 'Tempo Stream Channel';
+ /** Must match the on-chain TempoStreamChannel DOMAIN_SEPARATOR version. */
+@@ -42,20 +44,47 @@ export async function signVoucher(client, account, message, escrowContract, chai
+ }
+ /**
+  * Verify a voucher signature matches the expected signer.
++ *
++ * Supports both direct signatures (secp256k1/p256/webAuthn) and
++ * Tempo access key (keychain) signatures. For keychain signatures,
++ * the envelope's `userAddress` is compared to `expectedSigner`.
+  */
+ export async function verifyVoucher(escrowContract, chainId, voucher, expectedSigner) {
+     try {
++        const domain = getVoucherDomain(escrowContract, chainId);
++        const message = {
++            channelId: voucher.channelId,
++            cumulativeAmount: voucher.cumulativeAmount,
++        };
++        const envelope = SignatureEnvelope.from(voucher.signature);
++        if (envelope.type === 'keychain') {
++            const payload = hashTypedData({
++                domain,
++                types: voucherTypes,
++                primaryType: 'Voucher',
++                message,
++            });
++            const publicKey = (() => {
++                const env = envelope.inner;
++                if (env.publicKey)
++                    return env.publicKey;
++                if (env.type === 'secp256k1')
++                    return Secp256k1.recoverPublicKey({ payload, signature: env.signature });
++                return undefined;
++            })();
++            if (!publicKey)
++                return false;
++            const address = Address.fromPublicKey(publicKey);
++            return isAddressEqual(address, expectedSigner);
++        }
+         const signer = await recoverTypedDataAddress({
+-            domain: getVoucherDomain(escrowContract, chainId),
++            domain,
+             types: voucherTypes,
+             primaryType: 'Voucher',
+-            message: {
+-                channelId: voucher.channelId,
+-                cumulativeAmount: voucher.cumulativeAmount,
+-            },
++            message,
+             signature: voucher.signature,
+         });
+-        return signer.toLowerCase() === expectedSigner.toLowerCase();
++        return isAddressEqual(signer, expectedSigner);
+     }
+     catch {
+         return false;
+diff --git a/src/tempo/stream/Voucher.ts b/src/tempo/stream/Voucher.ts
+index 72aed13c2acdfc0597bfde1daeb86f65aaf84e20..e44fc2541781f63618758670c3205fcc176a062c 100644
+--- a/src/tempo/stream/Voucher.ts
++++ b/src/tempo/stream/Voucher.ts
+@@ -1,7 +1,9 @@
+-import type { Account, Address, Client, Hex } from 'viem'
+-import { recoverTypedDataAddress } from 'viem'
++import type { Account, Client, Hex } from 'viem'
++import { hashTypedData, isAddressEqual, recoverTypedDataAddress } from 'viem'
+ import { signTypedData } from 'viem/actions'
++import { SignatureEnvelope } from 'ox/tempo'
+ import type { SignedVoucher, Voucher } from './Types.js'
++import { Address, Secp256k1 } from 'ox'
+ 
+ /** Must match the on-chain TempoStreamChannel DOMAIN_SEPARATOR name. */
+ const DOMAIN_NAME = 'Tempo Stream Channel'
+@@ -11,7 +13,7 @@ const DOMAIN_VERSION = '1'
+ /**
+  * EIP-712 domain for voucher signing.
+  */
+-function getVoucherDomain(escrowContract: Address, chainId: number) {
++function getVoucherDomain(escrowContract: Address.Address, chainId: number) {
+   return {
+     name: DOMAIN_NAME,
+     version: DOMAIN_VERSION,
+@@ -38,7 +40,7 @@ export async function signVoucher(
+   client: Client,
+   account: Account,
+   message: Voucher,
+-  escrowContract: Address,
++  escrowContract: Address.Address,
+   chainId: number,
+ ): Promise<Hex> {
+   return signTypedData(client, {
+@@ -55,25 +57,53 @@ export async function signVoucher(
+ 
+ /**
+  * Verify a voucher signature matches the expected signer.
++ *
++ * Supports both direct signatures (secp256k1/p256/webAuthn) and
++ * Tempo access key (keychain) signatures. For keychain signatures,
++ * the envelope's `userAddress` is compared to `expectedSigner`.
+  */
+ export async function verifyVoucher(
+-  escrowContract: Address,
++  escrowContract: Address.Address,
+   chainId: number,
+   voucher: SignedVoucher,
+-  expectedSigner: Address,
++  expectedSigner: Address.Address,
+ ): Promise<boolean> {
+   try {
++    const domain = getVoucherDomain(escrowContract, chainId)
++    const message = {
++      channelId: voucher.channelId,
++      cumulativeAmount: voucher.cumulativeAmount,
++    }
++
++    const envelope = SignatureEnvelope.from(voucher.signature as SignatureEnvelope.Serialized)
++
++    if (envelope.type === 'keychain') {
++      const payload = hashTypedData({
++        domain,
++        types: voucherTypes,
++        primaryType: 'Voucher',
++        message,
++      })
++      const publicKey = (() => {
++        const env = envelope.inner
++        if (env.publicKey) return env.publicKey
++        if (env.type === 'secp256k1')
++          return Secp256k1.recoverPublicKey({ payload, signature: env.signature })
++        return undefined
++      })()
++      if (!publicKey) return false
++      const address = Address.fromPublicKey(publicKey)
++      return isAddressEqual(address, expectedSigner)
++    }
++
+     const signer = await recoverTypedDataAddress({
+-      domain: getVoucherDomain(escrowContract, chainId),
++      domain,
+       types: voucherTypes,
+       primaryType: 'Voucher',
+-      message: {
+-        channelId: voucher.channelId,
+-        cumulativeAmount: voucher.cumulativeAmount,
+-      },
++      message,
+       signature: voucher.signature,
+     })
+-    return signer.toLowerCase() === expectedSigner.toLowerCase()
++    return isAddressEqual(signer, expectedSigner)
+   } catch {
+     return false
+   }

@@ -2,7 +2,7 @@
 
 import { Radio } from "@base-ui/react/radio";
 import { RadioGroup } from "@base-ui/react/radio-group";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Store as ts_Store, useStore } from "@tanstack/react-store";
 import { cva, cx } from "class-variance-authority";
 import {
@@ -374,41 +374,72 @@ export namespace Balance {
 	};
 }
 
-export function Spent({ className, label = "Spent" }: Spent.Props) {
-	const initial = useStore(store, (s) => s.initialBalance);
-	const token = useStore(store, (s) => s.token);
-	const { address } = useConnection();
-
-	const { data: balance } = Hooks.token.useGetBalance({
-		account: address,
-		token,
-	});
-
-	if (!address) return null;
-
-	const spent =
-		initial !== undefined && balance !== undefined && initial > balance
-			? initial - balance
-			: 0n;
-
-	const formatted = formatUnits(spent, 6);
-	const display = Number(formatted).toLocaleString("en-US", {
-		maximumFractionDigits: 4,
-		minimumFractionDigits: 2,
-	});
-
-	return (
-		<span className={cx("text-secondary hidden sm:inline", className)}>
-			{label}: <span className="text-warning">${display}</span>
-		</span>
-	);
+export function Spent({ className, label = "Spent", type }: Spent.Props) {
+	if (type === "stream") return <Spent.Stream className={className} label={label} />;
+	return <Spent.Charge className={className} label={label} />;
 }
 
 export namespace Spent {
 	export type Props = {
 		className?: string;
 		label?: string;
+		type: "charge" | "stream";
 	};
+
+	type DisplayProps = { className?: string; label: string };
+
+	export function Stream({ className, label }: DisplayProps) {
+		const { address } = useConnection();
+
+		const { data: spent = 0n } = useQuery({
+			queryKey: ["spent", address],
+			async queryFn() {
+				const res = await globalThis.fetch(`/api/spent?payer=${address}`);
+				const json = (await res.json()) as { spent: string };
+				return BigInt(json.spent);
+			},
+			enabled: !!address,
+			refetchInterval: 2_000,
+		});
+
+		if (!address) return null;
+
+		return <Display className={className} label={label} spent={spent} />;
+	}
+
+	export function Charge({ className, label }: DisplayProps) {
+		const initial = useStore(store, (s) => s.initialBalance);
+		const token = useStore(store, (s) => s.token);
+		const { address } = useConnection();
+
+		const { data: balance } = Hooks.token.useGetBalance({
+			account: address,
+			token,
+		});
+
+		if (!address) return null;
+
+		const spent =
+			initial !== undefined && balance !== undefined && initial > balance
+				? initial - balance
+				: 0n;
+
+		return <Display className={className} label={label} spent={spent} />;
+	}
+
+	function Display({ className, label, spent }: DisplayProps & { spent: bigint }) {
+		const formatted = formatUnits(spent, 6);
+		const display = Number(formatted).toLocaleString("en-US", {
+			maximumFractionDigits: 4,
+			minimumFractionDigits: 2,
+		});
+
+		return (
+			<span className={cx("text-secondary hidden sm:inline", className)}>
+				{label}: <span className="text-warning">${display}</span>
+			</span>
+		);
+	}
 }
 
 export function Status({ children, className, variant }: Status.Props) {
@@ -979,6 +1010,7 @@ export function Demo({
 	restartStep = 0,
 	title,
 	token,
+	type,
 }: Demo.Props) {
 	useEffect(() => {
 		store.setState((s) => ({ ...s, restartStep }));
@@ -1000,7 +1032,7 @@ export function Demo({
 				right={
 					<>
 						<Balance />
-						<Spent />
+						<Spent type={type} />
 					</>
 				}
 			/>
@@ -1016,6 +1048,7 @@ export namespace Demo {
 		restartStep?: number;
 		title?: string;
 		token?: Address;
+		type: "charge" | "stream";
 	};
 
 	export function Content({

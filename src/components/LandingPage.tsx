@@ -105,6 +105,7 @@ export function LandingPage() {
 							token={alphaUsd}
 							height={337}
 							restartStep={1}
+							type="stream"
 						>
 							<Cli.Startup />
 							<Cli.ConnectWallet />

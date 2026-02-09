@@ -10,6 +10,8 @@ import { tempoModerato } from "viem/chains";
 export const mpay = Mpay.create({
 	methods: [
 		tempo.stream({
+			currency: env.DEFAULT_CURRENCY!,
+			recipient: env.DEFAULT_RECIPIENT!,
 			...(env.FEE_PAYER_PRIVATE_KEY
 				? {
 						feePayer: privateKeyToAccount(

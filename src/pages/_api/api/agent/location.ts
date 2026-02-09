@@ -1,11 +1,8 @@
-import { env } from "cloudflare:workers";
 import { mpay } from "../../../../mpay.server";
 
 export async function GET(request: Request) {
 	const result = await mpay.stream({
 		amount: "0.001",
-		currency: env.DEFAULT_CURRENCY!,
-		recipient: env.DEFAULT_RECIPIENT!,
 		unitType: "llm_token",
 	})(request);
 

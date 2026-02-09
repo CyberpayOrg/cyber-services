@@ -119,7 +119,7 @@ export function CliPlayground() {
 					right={
 						<>
 							<Cli.Balance />
-							<Cli.Spent />
+							<Cli.Spent type="stream" />
 							<Cli.Status variant="ready">Ready</Cli.Status>
 						</>
 					}
@@ -130,6 +130,7 @@ export function CliPlayground() {
 				title="Make a request with payment"
 				token={alphaUsd}
 				restartStep={1}
+				type="stream"
 			>
 				<Cli.Startup />
 				<Cli.ConnectWallet />
