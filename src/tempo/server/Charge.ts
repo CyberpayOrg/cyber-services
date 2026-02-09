@@ -62,13 +62,13 @@ export function charge<const defaults extends charge.Defaults>(
       const chainId = await (async () => {
         if (request.chainId) return request.chainId
         if (parameters.testnet) return defaults.testnetChainId
-        return (await getClient(0)).chain?.id
+        return (await getClient({})).chain?.id
       })()
 
       // Validate chainId.
       const client = await (async () => {
         try {
-          return await getClient(chainId!)
+          return await getClient({ chainId })
         } catch {
           throw new Error(`No client configured with chainId ${chainId}.`)
         }
@@ -93,7 +93,7 @@ export function charge<const defaults extends charge.Defaults>(
       const { challenge } = credential
       const { chainId, feePayer } = request
 
-      const client = await getClient(chainId!)
+      const client = await getClient({ chainId })
 
       const { request: challengeRequest } = challenge
       const { amount, expires, methodDetails } = challengeRequest

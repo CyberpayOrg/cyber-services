@@ -40,8 +40,8 @@ export function charge(parameters: charge.Parameters = {}) {
       if (!account)
         throw new Error('No `account` provided. Pass `account` to parameters or context.')
 
-      const chainId = challenge.request.methodDetails?.chainId ?? 0
-      const client = await getClient(chainId)
+      const chainId = challenge.request.methodDetails?.chainId
+      const client = await getClient({ chainId })
 
       const { request } = challenge
       const { amount, currency, recipient, methodDetails } = request

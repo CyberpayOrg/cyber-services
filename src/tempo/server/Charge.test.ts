@@ -228,7 +228,7 @@ describe('tempo', () => {
       const server = Mpay_server.create({
         methods: [
           Methods_server.charge({
-            getClient(chainId: number) {
+            getClient({ chainId }: { chainId?: number | undefined }) {
               if (chainId === chain.id) return client
               throw new Error('not found')
             },

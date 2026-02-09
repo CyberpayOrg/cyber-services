@@ -148,7 +148,7 @@ export function stream(parameters: stream.Parameters = {}) {
       | { chainId?: number; escrowContract?: string; channelId?: string; feePayer?: boolean }
       | undefined
     const chainId = md?.chainId ?? 0
-    const client = await getClient(chainId)
+    const client = await getClient({ chainId })
     const escrowContract = resolveEscrow(challenge, chainId)
     const payee = challenge.request.recipient as Address
     const currency = challenge.request.currency as Address
@@ -298,7 +298,7 @@ export function stream(parameters: stream.Parameters = {}) {
       | { chainId?: number; escrowContract?: string; channelId?: string }
       | undefined
     const chainId = md?.chainId ?? 0
-    const client = await getClient(chainId)
+    const client = await getClient({ chainId })
 
     const action = context.action!
     const {
