@@ -3,6 +3,9 @@
 import { Receipt } from "mpay";
 import { Fetch, tempo } from "mpay/client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createClient, http } from "viem";
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+import { tempoModerato } from "viem/chains";
 import { AsciiLogo } from "./AsciiLogo";
 
 // Terminal line types
@@ -288,22 +291,20 @@ export function CliDemo() {
 		}
 	}, [status]);
 
-	// Show menu after initialization
-	const showMenu = useCallback(() => {
-		addLines([
+	// Build menu lines for query selection
+	const buildMenuLines = useCallback(
+		(header = "Select a query to run:"): TerminalLine[] => [
 			{ type: "blank", content: "" },
-			{ type: "header", content: "Select a query to run:" },
+			{ type: "header", content: header },
 			{ type: "blank", content: "" },
-		]);
-
-		QUERY_PRESETS.forEach((query, index) => {
-			addLine({
-				type: "menu",
+			...QUERY_PRESETS.map((query, index) => ({
+				type: "menu" as const,
 				content: `  [${index + 1}] ${query.prompt}`,
 				menuIndex: index,
-			});
-		});
-	}, [addLine, addLines]);
+			})),
+		],
+		[],
+	);
 
 	// Initialize wallet and fund it
 	useEffect(() => {
@@ -314,19 +315,10 @@ export function CliDemo() {
 
 		const init = async () => {
 			try {
-				// Dynamic imports to avoid SSR issues
-				const { privateKeyToAccount, generatePrivateKey } = await import(
-					"viem/accounts"
-				);
-				const { createClient, http } = await import("viem");
-				const { tempoModerato } = await import("viem/chains");
-
-				// Initial terminal output
 				addLines([
 					{ type: "info", content: "Initializing payment-enabled agent..." },
 				]);
 
-				// Check for cached wallet in sessionStorage
 				let acc!: ReturnType<typeof privateKeyToAccount>;
 				let privateKey!: `0x${string}`;
 				let needsFunding = true;
@@ -338,11 +330,20 @@ export function CliDemo() {
 						privateKey = cachedKey as `0x${string}`;
 						acc = privateKeyToAccount(privateKey);
 
-						// Check if wallet still has balance
+						addLines([
+							{
+								type: "info",
+								content: `Wallet: ${acc.address.slice(0, 10)}...${acc.address.slice(-8)}`,
+							},
+						]);
+
 						const balRes = await fetch("/api/wallet", {
 							method: "POST",
 							headers: { "Content-Type": "application/json" },
-							body: JSON.stringify({ action: "balance", address: acc.address }),
+							body: JSON.stringify({
+								action: "balance",
+								address: acc.address,
+							}),
 						});
 
 						if (balRes.ok) {
@@ -353,45 +354,38 @@ export function CliDemo() {
 								const balNum = Number(bal) / 1e6;
 								setBalance(balNum);
 								needsFunding = false;
-
-								addLines([
-									{
-										type: "info",
-										content: `Wallet: ${acc.address.slice(0, 10)}...${acc.address.slice(-8)}`,
-									},
-									{
-										type: "success",
-										content: `✓ Restored: $${formatBalance(balNum)} aUSD`,
-									},
-								]);
+								addLine({
+									type: "success",
+									content: `✓ Restored: $${formatBalance(balNum)} aUSD`,
+								});
 							}
 						}
 					} catch {
-						// Invalid cache, will create new wallet
+						// Invalid cache, fall through to create new wallet
 					}
 				}
 
 				// Create new wallet if no valid cache
-				if (needsFunding) {
+				if (needsFunding && !acc) {
 					privateKey = generatePrivateKey();
 					acc = privateKeyToAccount(privateKey);
 
-					// Save to sessionStorage
 					sessionStorage.setItem(
 						WALLET_STORAGE_KEY,
 						JSON.stringify({ privateKey }),
 					);
 
-					addLines([
-						{
-							type: "info",
-							content: `Wallet: ${acc.address.slice(0, 10)}...${acc.address.slice(-8)}`,
-						},
-						{ type: "info", content: "Requesting testnet funds..." },
-					]);
+					addLine({
+						type: "info",
+						content: `Wallet: ${acc.address.slice(0, 10)}...${acc.address.slice(-8)}`,
+					});
+				}
+
+				// Fund and poll for balance
+				if (needsFunding) {
+					addLine({ type: "info", content: "Requesting testnet funds..." });
 					setStatus("funding");
 
-					// Fund the wallet via our faucet endpoint
 					const fundRes = await fetch("/api/wallet", {
 						method: "POST",
 						headers: { "Content-Type": "application/json" },
@@ -403,13 +397,12 @@ export function CliDemo() {
 						throw new Error(err.error || "Faucet request failed");
 					}
 
-					// Poll for balance
 					let retries = 0;
-					const maxRetries = 20;
+					const maxRetries = 60;
 					let funded = false;
 
 					while (retries < maxRetries && !funded) {
-						await new Promise((r) => setTimeout(r, 1500));
+						await new Promise((r) => setTimeout(r, 250));
 
 						const balRes = await fetch("/api/wallet", {
 							method: "POST",
@@ -456,9 +449,11 @@ export function CliDemo() {
 				});
 				fetchRef.current = customFetch;
 
-				addLine({ type: "success", content: "✓ Agent ready" });
+				addLines([
+					{ type: "success", content: "✓ Agent ready" },
+					...buildMenuLines(),
+				]);
 				setStatus("selecting");
-				showMenu();
 
 				// Focus input after a short delay
 				setTimeout(() => inputRef.current?.focus(), 100);
@@ -473,7 +468,7 @@ export function CliDemo() {
 		};
 
 		init();
-	}, [addLine, addLines, showMenu]);
+	}, [addLine, addLines, buildMenuLines]);
 
 	// Run a query by index
 	const runQuery = useCallback(
@@ -588,9 +583,7 @@ export function CliDemo() {
 
 					// Update balance display
 					setTotalSpent(spent);
-					if (balance !== null) {
-						setBalance(balance - spent);
-					}
+					setBalance((prev) => (prev !== null ? prev - call.priceNum : null));
 
 					// Delay between calls to allow on-chain nonce settlement
 					await new Promise((r) => setTimeout(r, 1500));
@@ -620,28 +613,16 @@ export function CliDemo() {
 				addLine({ type: "output", content: `  ${line}` });
 			}
 
-			// Delay before showing menu again so user can read the response
-			await new Promise((r) => setTimeout(r, 5000));
+			// Brief pause before showing menu again
+			await new Promise((r) => setTimeout(r, 1500));
 
 			// Show menu again for another query
-			addLines([
-				{ type: "blank", content: "" },
-				{ type: "header", content: "Run another query:" },
-			]);
-
-			QUERY_PRESETS.forEach((q, index) => {
-				addLine({
-					type: "menu",
-					content: `  [${index + 1}] ${q.prompt}`,
-					menuIndex: index,
-				});
-			});
-
+			addLines(buildMenuLines("Run another query:"));
 			setHighlightedIndex(0);
 			setStatus("selecting");
 			setTimeout(() => inputRef.current?.focus(), 100);
 		},
-		[status, account, balance, addLine, addLines],
+		[status, account, addLine, addLines, buildMenuLines],
 	);
 
 	// Handle keyboard input

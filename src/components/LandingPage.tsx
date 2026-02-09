@@ -1,6 +1,10 @@
+import { lazy, Suspense } from "react";
 import { AgentTabs } from "./AgentTabs";
 import { AsciiLogo } from "./AsciiLogo";
-import { CliDemo } from "./CliDemo";
+
+const CliDemo = lazy(() =>
+	import("./CliDemo").then((m) => ({ default: m.CliDemo })),
+);
 
 function TempoLogo({
 	className,
@@ -160,7 +164,9 @@ export function LandingPage() {
 
 					{/* Left pane — interactive demo */}
 					<div className="flex-11 w-full min-w-0 flex flex-col order-last lg:order-first max-w-[574px] lg:max-w-none">
-						<CliDemo />
+						<Suspense>
+							<CliDemo />
+						</Suspense>
 					</div>
 				</div>
 			</section>
