@@ -166,13 +166,12 @@ export function Panel({
 	return (
 		<div
 			ref={scrollRef}
-			className={cx(
-				"p-4 overflow-y-auto bg-surface flex flex-col",
-				className,
-			)}
+			className={cx("p-4 overflow-y-auto bg-surface flex flex-col", className)}
 			style={height ? { height } : undefined}
 		>
-			<div ref={contentRef} className="flex flex-col gap-6">{children}</div>
+			<div ref={contentRef} className="flex flex-col gap-6">
+				{children}
+			</div>
 		</div>
 	);
 }
