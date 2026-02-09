@@ -54,13 +54,28 @@ Mpay.create({
 const res = await fetch('https://api.example.com/resource')
 ```
 
+## Examples
+
+| Example | Description |
+|---------|-------------|
+| [basic](./examples/basic/) | Bun server with pay-per-request fortune API |
+| [stream](./examples/stream/) | Streaming payment channels with per-token LLM metering |
+
+```bash
+npx gitpick wevm/mpay/examples/basic
+```
+
 ## CLI
 
-mpay includes a basic CLI for making HTTP requests with automatic 402 payment handling.
+mpay includes a basic CLI for making HTTP requests with automatic payment handling.
 
 ```
-mpay --help
+npm run mpay example.com
 ```
+
+<details>
+<summary><code>mpay --help</code></summary>
+
 ```
 mpay/0.1.0
 
@@ -99,23 +114,9 @@ Options:
   -M, --mainnet          Use mainnet
   -V, --version          Display version number
   -h, --help             Display this message
-
-Examples:
-mpay example.com/foo/bar/baz --accept markdown
-mpay example.com/test -A claude
-mpay example.com/api -X POST --json '{"key":"value"}'
 ```
 
-## Examples
-
-| Example | Description |
-|---------|-------------|
-| [basic](./examples/basic/) | Bun server with pay-per-request fortune API |
-| [stream](./examples/stream/) | Streaming payment channels with per-token LLM metering |
-
-```bash
-npx gitpick wevm/mpay/examples/basic
-```
+</details>
 
 ## Protocol
 
