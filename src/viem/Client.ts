@@ -28,8 +28,6 @@ export function getResolver(
 export declare namespace getResolver {
   type Parameters = {
     /** Function that returns a client for the given chain ID. */
-    getClient?:
-      | ((parameters: { chainId?: number | undefined }) => MaybePromise<Client>)
-      | undefined
+    getClient?: ((parameters: { chainId?: number | undefined }) => MaybePromise<Client>) | undefined
   }
 }
