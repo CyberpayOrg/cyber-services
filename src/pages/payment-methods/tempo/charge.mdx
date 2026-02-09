@@ -89,17 +89,16 @@ import { privateKeyToAccount } from 'viem/accounts'
 
 const account = privateKeyToAccount('0x...')
 
-const mpay = Mpay.create({
-  polyfill: false,
+Mpay.create({
   methods: [tempo.charge({ account })],
 })
 
-const response = await mpay.fetch('https://api.example.com/resource')
+const response = await fetch('https://api.example.com/resource')
 ```
 
-### With polyfill
+### Without polyfill
 
-For a drop-in replacement that patches `globalThis.fetch`:
+If you don't want to patch `globalThis.fetch`, use `mpay.fetch` directly:
 
 ```ts twoslash
 // @noErrors
@@ -108,11 +107,12 @@ import { privateKeyToAccount } from 'viem/accounts'
 
 const account = privateKeyToAccount('0x...')
 
-Mpay.create({
+const mpay = Mpay.create({
+  polyfill: false,
   methods: [tempo.charge({ account })],
 })
 
-const response = await fetch('https://api.example.com/resource')
+const response = await mpay.fetch('https://api.example.com/resource')
 ```
 
 :::info

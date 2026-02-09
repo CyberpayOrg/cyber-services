@@ -166,15 +166,11 @@ export default defineConfig({
 										collapsed: true,
 										items: [
 											{
-												text: ".tempo",
-												link: "/sdk/typescript/client/Method.tempo",
-											},
-											{
-												text: ".tempo.charge",
+												text: "tempo.charge",
 												link: "/sdk/typescript/client/Method.tempo.charge",
 											},
 											{
-												text: ".tempo.stream",
+												text: "tempo.stream",
 												link: "/sdk/typescript/client/Method.tempo.stream",
 											},
 										],
@@ -225,15 +221,11 @@ export default defineConfig({
 										collapsed: true,
 										items: [
 											{
-												text: ".tempo",
-												link: "/sdk/typescript/server/Method.tempo",
-											},
-											{
-												text: ".tempo.charge",
+												text: "tempo.charge",
 												link: "/sdk/typescript/server/Method.tempo.charge",
 											},
 											{
-												text: ".tempo.stream",
+												text: "tempo.stream",
 												link: "/sdk/typescript/server/Method.tempo.stream",
 											},
 										],

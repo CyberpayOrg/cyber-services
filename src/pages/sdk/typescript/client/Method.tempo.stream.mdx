@@ -11,8 +11,7 @@ import { privateKeyToAccount } from 'viem/accounts'
 
 const account = privateKeyToAccount('0x...')
 
-const mpay = Mpay.create({
-  polyfill: false,
+Mpay.create({
   methods: [
     // [!code focus:start]
     tempo.stream({ account }),
@@ -32,8 +31,7 @@ import { privateKeyToAccount } from 'viem/accounts'
 
 const account = privateKeyToAccount('0x...')
 
-const mpay = Mpay.create({
-  polyfill: false,
+Mpay.create({
   methods: [
     tempo.charge({ account }),
     tempo.stream({ account }),
