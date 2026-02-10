@@ -6,7 +6,7 @@ import { Badge, Card, Cards } from 'vocs'
 
 This quickstart demonstrates how to plug MPP into any server framework to accept payments for protected resources.
 
-## Framework middleware
+## Framework mode
 
 Use the framework-specific middleware from `mpay` to integrate payment into your server. Each middleware handles the `402` challenge/credential flow and attaches receipts automatically.
 
@@ -94,6 +94,18 @@ app.get(
 
 ::::
 
+:::tip
+You can also override `currency` and `recipient` per call if different routes need different payment configurations.
+
+```ts
+mpay.charge({ 
+  amount: '0.1', 
+  currency: '0x…', // [!code ++]
+  recipient: '0x…', // [!code ++]
+})
+```
+:::
+
 :::note
 Don't see your framework? `mpay` is designed to be framework-agnostic. See [Manual mode](#manual-mode) below.
 :::
@@ -102,50 +114,8 @@ Don't see your framework? `mpay` is designed to be framework-agnostic. See [Manu
 
 If you prefer full control over the payment flow, use `mpay/server` directly with the Fetch API.
 
-:::::steps
-
-### Create an `Mpay` instance
-
-Create an `Mpay` instance to request payment for protected resources.
-
-```ts [create-mpay.ts]
-import { Mpay, tempo } from 'mpay/server'
-
-const mpay = Mpay.create({
-  methods: [tempo.charge({
-    currency: '0x20c0000000000000000000000000000000000000',
-    recipient: '0xa726a1CD723409074DF9108A2187cfA19899aCF8',
-  })],
-})
-```
-
-:::tip
-It is highly recommended to also set a `secretKey` to bind challenges to their contents, 
-and allow the server to verify that incoming credentials match challenges it issued.
-
 ```ts
-// .env // [!code focus]
-MPAY_SECRET_KEY="random-secret-key" // [!code focus]
-
-// config.ts // [!code focus]
-const mpay = Mpay.create({
-  methods: [tempo.charge({
-    currency: '0x20c0000000000000000000000000000000000000',
-    recipient: '0xa726a1CD723409074DF9108A2187cfA19899aCF8',
-  })],
-  secretKey: process.env.MPAY_SECRET_KEY!, // [!code focus]
-})
-```
-:::
-
-[See `Mpay.create` reference](/sdk/typescript/server/Mpay.create)
-
-### Use in request handlers
-
-Use the `mpay.charge(){:ts}` method to request payment from the client within your request handler.
-
-```ts [charge-handler.ts]
-import { Mpay, tempo } from 'mpay/server' // [!code collapse:7 collapsed]
+import { Mpay, tempo } from 'mpay/server'
 
 const mpay = Mpay.create({
   methods: [tempo.charge({
