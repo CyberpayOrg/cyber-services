@@ -38,7 +38,7 @@ import {
 } from '../stream/Chain.js'
 import { createStreamReceipt } from '../stream/Receipt.js'
 import type { ChannelState, Storage } from '../stream/Storage.js'
-import { deductFromChannel, updateChannel } from '../stream/Storage.js'
+import { deductFromChannel } from '../stream/Storage.js'
 import type { SignedVoucher, StreamCredentialPayload, StreamReceipt } from '../stream/Types.js'
 import { parseVoucherFromPayload, verifyVoucher } from '../stream/Voucher.js'
 
@@ -236,12 +236,9 @@ export async function settle(
   const settledAmount = channel.highestVoucher.cumulativeAmount
   const txHash = await settleOnChain(client, escrowContract, channel.highestVoucher)
 
-  await updateChannel(storage, channelId, (current) => {
-    if (!current) return null
-    const nextSettled =
-      settledAmount > current.settledOnChain ? settledAmount : current.settledOnChain
-    return { ...current, settledOnChain: nextSettled }
-  })
+  const nextSettled =
+    settledAmount > channel.settledOnChain ? settledAmount : channel.settledOnChain
+  await storage.set(channelId, { ...channel, settledOnChain: nextSettled })
 
   return txHash
 }
@@ -369,19 +366,16 @@ async function verifyAndAcceptVoucher(parameters: {
     throw new InvalidSignatureError({ reason: 'invalid voucher signature' })
   }
 
-  const updated = await updateChannel(storage, channelId, (current) => {
-    if (!current) throw new ChannelNotFoundError({ reason: 'channel not found' })
-    if (voucher.cumulativeAmount > current.highestVoucherAmount) {
-      return {
-        ...current,
-        deposit: onChain.deposit,
-        highestVoucherAmount: voucher.cumulativeAmount,
-        highestVoucher: voucher,
-      }
-    }
-    return current
-  })
-  if (!updated) throw new ChannelNotFoundError({ reason: 'channel not found' })
+  const updated =
+    voucher.cumulativeAmount > channel.highestVoucherAmount
+      ? {
+          ...channel,
+          deposit: onChain.deposit,
+          highestVoucherAmount: voucher.cumulativeAmount,
+          highestVoucher: voucher,
+        }
+      : { ...channel, deposit: onChain.deposit }
+  await storage.set(channelId, updated)
 
   return createStreamReceipt({
     challengeId: challenge.id,
@@ -451,30 +445,32 @@ async function handleOpen(
     throw new InvalidSignatureError({ reason: 'invalid voucher signature' })
   }
 
-  const updated = await updateChannel(storage, payload.channelId, (existing) => {
-    if (existing) {
-      if (voucher.cumulativeAmount < existing.settledOnChain) {
-        throw new VerificationFailedError({
-          reason: 'voucher amount is below settled on-chain amount',
-        })
-      }
+  const existing = await storage.get(payload.channelId)
 
-      if (voucher.cumulativeAmount > existing.highestVoucherAmount) {
-        return {
-          ...existing,
-          deposit: onChain.deposit,
-          highestVoucherAmount: voucher.cumulativeAmount,
-          highestVoucher: voucher,
-          authorizedSigner,
-        }
-      }
-      return {
-        ...existing,
-        deposit: onChain.deposit,
-        authorizedSigner,
-      }
+  let updated: ChannelState
+  if (existing) {
+    if (voucher.cumulativeAmount < existing.settledOnChain) {
+      throw new VerificationFailedError({
+        reason: 'voucher amount is below settled on-chain amount',
+      })
     }
-    return {
+
+    updated =
+      voucher.cumulativeAmount > existing.highestVoucherAmount
+        ? {
+            ...existing,
+            deposit: onChain.deposit,
+            highestVoucherAmount: voucher.cumulativeAmount,
+            highestVoucher: voucher,
+            authorizedSigner,
+          }
+        : {
+            ...existing,
+            deposit: onChain.deposit,
+            authorizedSigner,
+          }
+  } else {
+    updated = {
       channelId: payload.channelId,
       payer: onChain.payer,
       payee: onChain.payee,
@@ -489,9 +485,8 @@ async function handleOpen(
       finalized: false,
       createdAt: new Date(),
     }
-  })
-
-  if (!updated) throw new VerificationFailedError({ reason: 'failed to create channel' })
+  }
+  await storage.set(payload.channelId, updated)
 
   return createStreamReceipt({
     challengeId: challenge.id,
@@ -534,17 +529,15 @@ async function handleTopUp(
     feePayer,
   })
 
-  const updated = await updateChannel(storage, payload.channelId, (current) => {
-    if (!current) throw new ChannelNotFoundError({ reason: 'channel not found' })
-    return { ...current, deposit: onChainDeposit }
-  })
+  const updated = { ...channel, deposit: onChainDeposit }
+  await storage.set(payload.channelId, updated)
 
   return createStreamReceipt({
     challengeId: challenge.id,
     channelId: payload.channelId,
-    acceptedCumulative: updated?.highestVoucherAmount ?? channel.highestVoucherAmount,
-    spent: updated?.spent ?? 0n,
-    units: updated?.units ?? 0,
+    acceptedCumulative: updated.highestVoucherAmount,
+    spent: updated.spent,
+    units: updated.units,
   })
 }
 
@@ -651,23 +644,21 @@ async function handleClose(
     txHash = await closeOnChain(client, methodDetails.escrowContract, voucher)
   }
 
-  const updated = await updateChannel(storage, payload.channelId, (current) => {
-    if (!current) return null
-    return {
-      ...current,
-      deposit: onChain.deposit,
-      highestVoucherAmount: voucher.cumulativeAmount,
-      highestVoucher: voucher,
-      finalized: true,
-    }
-  })
+  const updated = {
+    ...channel,
+    deposit: onChain.deposit,
+    highestVoucherAmount: voucher.cumulativeAmount,
+    highestVoucher: voucher,
+    finalized: true,
+  }
+  await storage.set(payload.channelId, updated)
 
   return createStreamReceipt({
     challengeId: challenge.id,
     channelId: payload.channelId,
     acceptedCumulative: voucher.cumulativeAmount,
-    spent: updated?.spent ?? channel.spent,
-    units: updated?.units ?? channel.units,
+    spent: updated.spent,
+    units: updated.units,
     ...(txHash !== undefined && { txHash }),
   })
 }

@@ -15,7 +15,7 @@ import {
   InvalidSignatureError,
 } from '../../Errors.js'
 import type { ChannelState, Storage } from '../stream/Storage.js'
-import { memoryStorage, updateChannel } from '../stream/Storage.js'
+import { memoryStorage } from '../stream/Storage.js'
 import type { StreamReceipt } from '../stream/Types.js'
 import { signVoucher } from '../stream/Voucher.js'
 import { charge, settle, stream } from './Stream.js'
@@ -250,9 +250,8 @@ describe('stream server Method', () => {
         request: makeRequest(),
       })
 
-      await updateChannel(storage, channelId, (ch) =>
-        ch ? { ...ch, settledOnChain: 5000000n } : null,
-      )
+      const ch = await storage.get(channelId)
+      if (ch) await storage.set(channelId, { ...ch, settledOnChain: 5000000n })
 
       await expect(
         server.verify({
@@ -925,8 +924,11 @@ describe('stream server Method', () => {
 describe('monotonicity and TOCTOU (unit tests)', () => {
   const testChannelId = '0x0000000000000000000000000000000000000000000000000000000000000001' as Hex
 
-  function seedChannel(storage: Storage<ChannelState>, overrides: Partial<ChannelState> = {}) {
-    return updateChannel(storage, testChannelId, () => ({
+  async function seedChannel(
+    storage: Storage<ChannelState>,
+    overrides: Partial<ChannelState> = {},
+  ) {
+    const state: ChannelState = {
       channelId: testChannelId,
       payer: '0x0000000000000000000000000000000000000001' as Address,
       payee: '0x0000000000000000000000000000000000000002' as Address,
@@ -945,7 +947,9 @@ describe('monotonicity and TOCTOU (unit tests)', () => {
       finalized: false,
       createdAt: new Date(),
       ...overrides,
-    }))
+    }
+    await storage.set(testChannelId, state)
+    return state
   }
 
   test('charge does not allow highestVoucherAmount to decrease', async () => {
@@ -961,13 +965,13 @@ describe('monotonicity and TOCTOU (unit tests)', () => {
     const storage = memoryStorage()
     await seedChannel(storage, { settledOnChain: 3000000n })
 
-    await updateChannel(storage, testChannelId, (current) => {
-      if (!current) return null
+    const current = await storage.get(testChannelId)
+    if (current) {
       const settledAmount = 2000000n
       const nextSettled =
         settledAmount > current.settledOnChain ? settledAmount : current.settledOnChain
-      return { ...current, settledOnChain: nextSettled }
-    })
+      await storage.set(testChannelId, { ...current, settledOnChain: nextSettled })
+    }
 
     const ch = await storage.get(testChannelId)
     expect(ch!.settledOnChain).toBe(3000000n)
@@ -977,13 +981,13 @@ describe('monotonicity and TOCTOU (unit tests)', () => {
     const storage = memoryStorage()
     await seedChannel(storage, { settledOnChain: 1000000n })
 
-    await updateChannel(storage, testChannelId, (current) => {
-      if (!current) return null
+    const current = await storage.get(testChannelId)
+    if (current) {
       const settledAmount = 5000000n
       const nextSettled =
         settledAmount > current.settledOnChain ? settledAmount : current.settledOnChain
-      return { ...current, settledOnChain: nextSettled }
-    })
+      await storage.set(testChannelId, { ...current, settledOnChain: nextSettled })
+    }
 
     const ch = await storage.get(testChannelId)
     expect(ch!.settledOnChain).toBe(5000000n)
@@ -993,13 +997,14 @@ describe('monotonicity and TOCTOU (unit tests)', () => {
     const storage = memoryStorage()
     await seedChannel(storage, { highestVoucherAmount: 5000000n, spent: 2000000n, units: 3 })
 
-    const channel = await updateChannel(storage, testChannelId, (existing) => {
-      if (!existing) return null
+    const existing = await storage.get(testChannelId)
+    if (existing) {
       const nextHighest =
         3000000n > existing.highestVoucherAmount ? 3000000n : existing.highestVoucherAmount
-      return { ...existing, highestVoucherAmount: nextHighest }
-    })
+      await storage.set(testChannelId, { ...existing, highestVoucherAmount: nextHighest })
+    }
 
+    const channel = await storage.get(testChannelId)
     expect(channel!.highestVoucherAmount).toBe(5000000n)
     expect(channel!.spent).toBe(2000000n)
     expect(channel!.units).toBe(3)

@@ -56,31 +56,6 @@ export interface Storage<value> {
   delete(key: string): Promise<void>
 }
 
-/** @deprecated Use `Storage<ChannelState>` instead. */
-export type ChannelStorage = Storage<ChannelState>
-
-/**
- * Atomic read-modify-write helper for channel state.
- *
- * Reads the current value, passes it to `fn`, and writes the result.
- * Return `null` from `fn` to delete the entry.
- *
- * For single-threaded runtimes (in-memory, Durable Objects) this is
- * naturally atomic. SQL-backed implementations should wrap calls in
- * a transaction externally.
- */
-export async function updateChannel(
-  storage: Storage<ChannelState>,
-  channelId: Hex,
-  fn: (current: ChannelState | null) => ChannelState | null,
-): Promise<ChannelState | null> {
-  const current = await storage.get(channelId)
-  const next = fn(current)
-  if (next) await storage.set(channelId, next)
-  else if (current) await storage.delete(channelId)
-  return next
-}
-
 export type DeductResult =
   | { ok: true; channel: ChannelState }
   | { ok: false; channel: ChannelState }
@@ -97,20 +72,17 @@ export async function deductFromChannel(
   channelId: Hex,
   amount: bigint,
 ): Promise<DeductResult> {
-  const before = await storage.get(channelId)
-  if (!before) throw new Error('channel not found')
-  if (before.finalized) throw new Error('channel is finalized')
-
-  const channel = await updateChannel(storage, channelId, (current) => {
-    if (!current) return null
-    if (current.finalized) return current
-    if (current.highestVoucherAmount - current.spent >= amount) {
-      return { ...current, spent: current.spent + amount, units: current.units + 1 }
-    }
-    return current
-  })
+  const channel = await storage.get(channelId)
   if (!channel) throw new Error('channel not found')
-  return { ok: channel.spent >= before.spent + amount, channel }
+  if (channel.finalized) throw new Error('channel is finalized')
+
+  if (channel.highestVoucherAmount - channel.spent < amount) {
+    return { ok: false, channel }
+  }
+
+  const updated = { ...channel, spent: channel.spent + amount, units: channel.units + 1 }
+  await storage.set(channelId, updated)
+  return { ok: true, channel: updated }
 }
 
 /** In-memory storage backed by a simple Map. Useful for development and testing. */

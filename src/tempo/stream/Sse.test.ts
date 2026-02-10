@@ -2,7 +2,6 @@ import type { Address, Hex } from 'viem'
 import { describe, expect, test } from 'vitest'
 import { formatNeedVoucherEvent, formatReceiptEvent, parseEvent, serve } from './Sse.js'
 import type { ChannelState, Storage } from './Storage.js'
-import { updateChannel } from './Storage.js'
 import type { NeedVoucherEvent, StreamReceipt } from './Types.js'
 
 const channelId = '0x0000000000000000000000000000000000000000000000000000000000000001' as Hex
@@ -204,11 +203,11 @@ describe('serve', () => {
     for (const v of values) yield v
   }
 
-  function seedChannel(
+  async function seedChannel(
     storage: Storage<ChannelState>,
     balance: bigint,
-  ): Promise<ChannelState | null> {
-    return updateChannel(storage, channelId, () => ({
+  ): Promise<ChannelState> {
+    const state: ChannelState = {
       channelId,
       payer: '0x0000000000000000000000000000000000000001' as Address,
       payee: '0x0000000000000000000000000000000000000002' as Address,
@@ -222,7 +221,9 @@ describe('serve', () => {
       units: 0,
       finalized: false,
       createdAt: new Date(),
-    }))
+    }
+    await storage.set(channelId, state)
+    return state
   }
 
   test('emits message events for each generated value', async () => {
@@ -280,10 +281,12 @@ describe('serve', () => {
 
     await new Promise((r) => setTimeout(r, 30))
 
-    await updateChannel(storage, channelId, (current) => {
-      if (!current) return null
-      return { ...current, highestVoucherAmount: current.highestVoucherAmount + 2000000n }
-    })
+    const current = await storage.get(channelId)
+    if (current)
+      await storage.set(channelId, {
+        ...current,
+        highestVoucherAmount: current.highestVoucherAmount + 2000000n,
+      })
 
     const secondChunk = await readNext
     expect(secondChunk).toContain('event: mpay-need-voucher\n')

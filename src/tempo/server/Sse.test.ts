@@ -3,7 +3,6 @@ import { describe, expect, test } from 'vitest'
 import type { Challenge } from '../../Challenge.js'
 import * as Credential from '../../Credential.js'
 import type { ChannelState, Storage } from '../stream/Storage.js'
-import { updateChannel } from '../stream/Storage.js'
 import { from } from './Sse.js'
 
 const channelId = '0x0000000000000000000000000000000000000000000000000000000000000001' as Hex
@@ -24,11 +23,8 @@ function memoryStorage(): Storage<ChannelState> {
   }
 }
 
-function seedChannel(
-  storage: Storage<ChannelState>,
-  balance: bigint,
-): Promise<ChannelState | null> {
-  return updateChannel(storage, channelId, () => ({
+async function seedChannel(storage: Storage<ChannelState>, balance: bigint): Promise<ChannelState> {
+  const state: ChannelState = {
     channelId,
     payer: '0x0000000000000000000000000000000000000001' as Address,
     payee: '0x0000000000000000000000000000000000000002' as Address,
@@ -42,7 +38,9 @@ function seedChannel(
     units: 0,
     finalized: false,
     createdAt: new Date(),
-  }))
+  }
+  await storage.set(channelId, state)
+  return state
 }
 
 function createRequestWithCredential(): Request {
@@ -160,10 +158,12 @@ describe('Sse.from', () => {
 
     await new Promise((r) => setTimeout(r, 30))
 
-    await updateChannel(storage, channelId, (current) => {
-      if (!current) return null
-      return { ...current, highestVoucherAmount: current.highestVoucherAmount + 2000000n }
-    })
+    const current = await storage.get(channelId)
+    if (current)
+      await storage.set(channelId, {
+        ...current,
+        highestVoucherAmount: current.highestVoucherAmount + 2000000n,
+      })
 
     const secondChunk = await readNext
     expect(secondChunk).toContain('event: mpay-need-voucher\n')
