@@ -7,15 +7,12 @@ Creates a Tempo payment session method for server-side voucher verification and 
 ```ts twoslash
 import { Mpay, tempo } from 'mpay/server'
 
-declare const storage: tempo.ChannelStorage
-
 const mpay = Mpay.create({
   // [!code focus:start]
   methods: [
     tempo.session({
       currency: '0x20c0000000000000000000000000000000000000',
       recipient: '0xa726a1CD723409074DF9108A2187cfA19899aCF8',
-      storage,
     }),
   ],
   // [!code focus:end]
@@ -29,14 +26,10 @@ Register both intents on a single server.
 ```ts twoslash
 import { Mpay, tempo } from 'mpay/server'
 
-declare const storage: tempo.ChannelStorage
-
 const mpay = Mpay.create({
   methods: [
     tempo.charge(),
-    tempo({
-      storage,
-    }),
+    tempo.session(),
   ],
 })
 ```
@@ -113,7 +106,7 @@ Default recipient address for payments.
 
 Storage backend for persisting channel and session state. Implements atomic read-modify-write operations for concurrency safety.
 
-```ts twoslash
+```ts
 import { tempo } from 'mpay/server'
 
 declare const storage: tempo.ChannelStorage

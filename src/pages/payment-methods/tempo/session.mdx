@@ -101,14 +101,11 @@ Use [`tempo`](/sdk/typescript/server/Method.tempo) to accept payment sessions. T
 ```ts twoslash
 import { Mpay, tempo } from 'mpay/server'
 
-declare const storage: tempo.ChannelStorage
-
 const mpay = Mpay.create({
   methods: [
     tempo({
       currency: '0x20c0000000000000000000000000000000000000',
       recipient: '0xa726a1CD723409074DF9108A2187cfA19899aCF8',
-      storage,
     }),
   ],
 })
@@ -121,14 +118,11 @@ Use `mpay.stream` in your request handler to meter access:
 ```ts twoslash
 import { Mpay, tempo } from 'mpay/server'
 
-declare const storage: tempo.ChannelStorage
-
 const mpay = Mpay.create({
   methods: [
     tempo.session({
       currency: '0x20c0000000000000000000000000000000000000',
       recipient: '0xa726a1CD723409074DF9108A2187cfA19899aCF8',
-      storage,
     }),
   ],
 })
@@ -154,14 +148,10 @@ For example, to accept both charge and payment sessions:
 ```ts twoslash
 import { Mpay, tempo } from 'mpay/server'
 
-declare const storage: tempo.ChannelStorage
-
 const mpay = Mpay.create({
   methods: [
     tempo.charge(),
-    tempo.session({
-      storage,
-    }),
+    tempo.session(),
   ],
 })
 ```

@@ -35,8 +35,8 @@ importers:
         specifier: ^11.12.2
         version: 11.12.2
       mpay:
-        specifier: https://pkg.pr.new/wevm/mpay@8a4f705
-        version: https://pkg.pr.new/wevm/mpay@8a4f705(@modelcontextprotocol/sdk@1.25.3(hono@4.11.7)(zod@4.3.6))(express@5.2.1)(hono@4.11.7)(typescript@5.9.3)(viem@2.45.0(typescript@5.9.3)(zod@4.3.6))
+        specifier: https://pkg.pr.new/wevm/mpay@1a1dfdd
+        version: https://pkg.pr.new/wevm/mpay@1a1dfdd(@modelcontextprotocol/sdk@1.25.3(hono@4.11.7)(zod@4.3.6))(express@5.2.1)(hono@4.11.7)(typescript@5.9.3)(viem@2.45.0(typescript@5.9.3)(zod@4.3.6))
       react:
         specifier: ^19
         version: 19.2.4
@@ -3022,8 +3022,8 @@ packages:
   mlly@1.8.0:
     resolution: {integrity: sha512-l8D9ODSRWLe2KHJSifWGwBqpTZXIXTeo8mlKjY+E2HAakaTeNpqAyBZ8GSqLzHgw4XmHmC8whvpjJNMbFZN7/g==}
 
-  mpay@https://pkg.pr.new/wevm/mpay@8a4f705:
-    resolution: {integrity: sha512-TBWQ7+ajjsWpgWDH7KVAlL5r/Jd8NNMuQmtoJ4lkNaEuVYH3vS9iZg+y0Wmr0l2ViSlb0Y1BY+4ZAxmx6miOyQ==, tarball: https://pkg.pr.new/wevm/mpay@8a4f705}
+  mpay@https://pkg.pr.new/wevm/mpay@1a1dfdd:
+    resolution: {integrity: sha512-WhBhus6TEJkjgF0nATkWPpWUAVm/tj68Cz7Zw2kvS0lHWZkkHhv37t9LKyxonBnwXmkIZmzncnp59cQ0ZjX3wQ==, tarball: https://pkg.pr.new/wevm/mpay@1a1dfdd}
     version: 0.1.0
     hasBin: true
     peerDependencies:
@@ -7191,7 +7191,7 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.3
 
-  mpay@https://pkg.pr.new/wevm/mpay@8a4f705(@modelcontextprotocol/sdk@1.25.3(hono@4.11.7)(zod@4.3.6))(express@5.2.1)(hono@4.11.7)(typescript@5.9.3)(viem@2.45.0(typescript@5.9.3)(zod@4.3.6)):
+  mpay@https://pkg.pr.new/wevm/mpay@1a1dfdd(@modelcontextprotocol/sdk@1.25.3(hono@4.11.7)(zod@4.3.6))(express@5.2.1)(hono@4.11.7)(typescript@5.9.3)(viem@2.45.0(typescript@5.9.3)(zod@4.3.6)):
     dependencies:
       '@remix-run/fetch-proxy': 0.7.1
       '@remix-run/node-fetch-server': 0.13.0
