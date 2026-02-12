@@ -100,19 +100,17 @@ Minimum voucher delta to accept. Rejects vouchers where the increment over the p
 
 Default recipient address for payments.
 
-### storage
+### store
 
-- **Type:** `ChannelStorage`
+- **Type:** `Store`
 
 Storage backend for persisting channel and session state. Implements atomic read-modify-write operations for concurrency safety.
 
-```ts
-import { tempo } from 'mpay/server'
-
-declare const storage: tempo.ChannelStorage
+```ts twoslash
+import { Store, tempo } from 'mpay/server'
 
 const method = tempo({
-  storage, // [!code focus]
+  store: Store.memory(), // [!code focus]
 })
 ```
 

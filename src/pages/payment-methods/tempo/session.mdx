@@ -99,13 +99,14 @@ Tempo handles payments at scale and has properties that make it a uniquely good 
 Use [`tempo`](/sdk/typescript/server/Method.tempo) to accept payment sessions. The server needs an RPC URL for on-chain verification during channel open/close, and a storage backend for channel state.
 
 ```ts twoslash
-import { Mpay, tempo } from 'mpay/server'
+import { Mpay, Store, tempo } from 'mpay/server'
 
 const mpay = Mpay.create({
   methods: [
     tempo({
       currency: '0x20c0000000000000000000000000000000000000',
       recipient: '0xa726a1CD723409074DF9108A2187cfA19899aCF8',
+      store: Store.memory(),
     }),
   ],
 })
