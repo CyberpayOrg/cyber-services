@@ -320,4 +320,4 @@ export function SidebarHeader() {
 When testing changes, you should *always* make sure the site builds and types check:
 
 1. `pnpm check:types` — Must pass with no errors
-2. `pnpm build` — Must complete successfully (this runs twoslash on all code blocks, catching any API drift between docs and the installed `mppx` package)
+2. `pnpm build` — Must complete successfully
