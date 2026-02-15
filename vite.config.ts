@@ -21,9 +21,5 @@ export default defineConfig({
 	optimizeDeps: {
 		include: ["@braintree/sanitize-url", "dayjs", "mermaid"],
 	},
-	plugins: [
-		Icons({ compiler: "jsx", jsx: "react" }),
-		react(),
-		vocs(),
-	],
+	plugins: [Icons({ compiler: "jsx", jsx: "react" }), react(), vocs()],
 });
