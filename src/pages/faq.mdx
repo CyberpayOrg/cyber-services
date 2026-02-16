@@ -20,13 +20,12 @@ With Stripe, you can use traditional cards and bank transfers without stablecoin
 
 Both MPP and x402 use HTTP `402` to signal that a request requires payment. The key differences:
 
-- **Multiple payment methods.** MPP supports any payment rail (Tempo, Stripe, custom). x402 is limited to a single on-chain method.
-- **Payment intents.** MPP defines distinct intents—charge, session, authorize—each with its own flow. x402 supports only one-shot charges.
-- **Cryptographic security.** MPP binds Challenges to requests with unique IDs and expiration, preventing replay attacks. x402 lacks this binding.
-- **Streaming payments.** MPP's session intent enables pay-as-you-go streaming with off-chain vouchers. x402 has no equivalent.
-- **Standards-track.** MPP's core scheme is on the IETF standards track. x402 is a proprietary protocol.
-
-More flexibility. More security. More functionality. MPP is designed as a universal protocol that any payment network can plug into. The extension model is permissive by default—anyone can propose a new payment method or intent.
+- **Payment-method agnostic.** MPP supports stablecoins, cards, bank transfers, and custom rails through extensible payment method specifications. x402 supports a single on-chain method tied to EIP-3009—which excludes USDT and most stablecoins outside USDC.
+- **Streaming payments.** MPP's session intent enables pay-as-you-go streaming with off-chain vouchers—clients pay only for what they consume. Streaming payments require blockchain settlement; card rails lack the speed and granularity. x402 has no equivalent.
+- **No relay dependency.** MPP settles directly between client and server. x402 routes payments through third-party relayers that bear gas costs with no protocol-level compensation—an architecture that struggles to scale.
+- **Replay protection.** MPP binds every Challenge to a specific request with a unique ID and expiration. x402 payment signatures lack this binding, meaning a signed authorization can be replayed.
+- **Multiple intents.** MPP defines distinct payment intents—charge, session, authorize—each with its own flow. x402 supports only one-shot charges.
+- **Permissionless extension.** Anyone can author and publish a new payment method or intent specification without approval from a foundation or intermediary. Extensions compete on adoption, not governance.
 
 ## Why build MPP on Tempo?
 
@@ -42,6 +41,8 @@ These properties make Tempo well-suited as a settlement layer for machine paymen
 ## What are sessions?
 
 Sessions are a Tempo-specific payment intent that enables streaming, pay-as-you-go payments. Instead of paying per request, a client opens a session (depositing funds into an escrow contract), then makes many requests by issuing signed vouchers off-chain. The server periodically settles the accumulated vouchers on-chain. See the [session documentation](/payment-methods/tempo/session) for details.
+
+Because sessions bypass consensus for individual interactions, they achieve client-to-server latency (low double-digit milliseconds), near-zero per-request fees, and horizontally scalable throughput. The bottleneck is CPU, not blockchain TPS.
 
 ## How much does it cost?
 
@@ -73,7 +74,7 @@ The service returns an error with details following RFC 9457 (Problem Details fo
 
 ## What happens if the service fails after I pay?
 
-Payments at this scale are designed to be cheap enough that occasional failures are economically insignificant—agents route away from unreliable providers rather than requiring refund infrastructure. Over time, the protocol's composable design allows dispute and refund extensions to be introduced as separate specifications.
+For session-based payments, you pay only for what you consumed—unspent funds remain in the escrow contract. For individual charges, the per-request cost is low enough that agents route away from unreliable providers rather than requiring refund infrastructure. The protocol's composable design allows dispute and refund extensions to be introduced as separate specifications.
 
 ## Can I accept MPP payments for my own service?
 
@@ -89,12 +90,20 @@ Yes. MPP includes an [MCP transport binding](/protocol/transports/mcp) that maps
 
 ## Is MPP compatible with x402?
 
-MPP is a superset of x402's functionality. Basic x402 charge flows map directly onto MPP's charge intent. The SDKs are designed so that existing x402 services can be consumed through MPP clients, and MPP extends beyond what x402 supports with sessions, authorization flows, and multi-rail payment methods.
+Yes. Basic x402 charge flows map directly onto MPP's charge intent. MPP clients can consume existing x402 services, and MPP extends beyond what x402 supports with sessions, authorization flows, and multi-rail payment methods.
 
 ## Who is building MPP?
 
-MPP is co-authored by Tempo and Stripe. The core specification is developed in the open and designed to be extended by any payment network or provider.
+MPP is co-authored by Tempo and Stripe. The core specification is developed in the open and designed to be extended by any payment network or provider. The [Payment HTTP Authentication Scheme](https://datatracker.ietf.org/doc/draft-ryan-httpauth-payment/) is submitted to the IETF.
 
 ## Do I need to sign every request?
 
 For individual charge payments, yes—each request includes a signed Credential. For session-based payments, the initial session open requires an on-chain deposit, but subsequent requests use lightweight signed vouchers that do not require on-chain transactions. This makes sessions ideal for high-frequency use cases like streaming LLM tokens.
+
+## Why not just use Stripe directly?
+
+Stripe requires a KYC'd account, a dashboard, and API keys before you can make a single payment. AI agents do not have bank accounts or identities. With MPP over Tempo, an agent needs only a private key—it can start paying for services immediately with no signup, no account, and no human in the loop. MPP still supports Stripe as a payment method for use cases where traditional rails make sense.
+
+## When is x402 the better choice?
+
+If you only need one-shot USDC charges on Base and your service already integrates with an x402 relayer, x402 works. Choose MPP when you need streaming payments, card rails, support for stablecoins beyond USDC, replay protection, or the ability to extend the protocol with new payment methods.
