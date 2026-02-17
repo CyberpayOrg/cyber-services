@@ -166,18 +166,18 @@ export function AgentTabs() {
           })}
         </div>
 
-        {/* Setup + prompt as terminal-style block — click anywhere to copy */}
-        <button
-          type="button"
-          className="px-4 py-3 font-mono text-sm whitespace-pre-wrap break-words text-left cursor-pointer w-full"
+        {/* biome-ignore lint/a11y/useSemanticElements: code block with divs can't be a button */}
+        {/* biome-ignore lint/a11y/useKeyWithClickEvents: keyboard copy via Cmd+C is standard */}
+        <div
+          role="button"
+          tabIndex={0}
+          className="px-4 py-3 font-mono text-sm whitespace-pre-wrap break-words text-left cursor-pointer"
           onClick={copy}
           style={{
             userSelect: "text",
             WebkitUserSelect: "text",
             lineHeight: 1.7,
             background: "var(--vocs-background-color-primary)",
-            border: "none",
-            appearance: "none",
           }}
         >
           <div style={{ color: "var(--vocs-text-color-muted)", opacity: 0.7 }}>
@@ -263,7 +263,7 @@ export function AgentTabs() {
               {copied ? "Copied!" : "Click to copy"}
             </span>
           </div>
-        </button>
+        </div>
       </div>
     </div>
   );
