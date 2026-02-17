@@ -14,6 +14,7 @@ export default defineConfig({
   colorScheme: "light dark",
   baseUrl,
   redirects: [
+    { source: "/setup", destination: "/setup.md" },
     { source: "/docs", destination: "/overview" },
     { source: "/specifications", destination: "/specs" },
     { source: "/quickstart/pget", destination: "/quickstart/presto" },

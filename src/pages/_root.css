@@ -319,16 +319,10 @@ a[data-v-sidebar-item]:not([data-active="true"]):not(:hover) {
   /* Accent button text - always white since accent bg is near-black */
   --accent-button-text: white;
 
-  /* Inline code background — brighter on dark mode for readability */
+  /* Inline code background — kept for reference, actual override is on the element */
   --background-color-inline-code: light-dark(
     var(--vocs-color-gray12),
-    var(--vocs-color-gray6)
-  );
-
-  /* Inline code text — brighter on dark mode */
-  --text-color-inline-code: light-dark(
-    var(--vocs-color-gray3),
-    var(--vocs-color-gray12)
+    var(--vocs-color-gray5)
   );
 
   --font-pilat:
@@ -390,9 +384,16 @@ code,
   font-family: var(--font-mono) !important;
 }
 
-/* Inline code text — use brighter color for dark mode readability */
+/* Inline code — brighter bg and text for dark mode readability */
 :not(pre) > code[data-v]:not(.twoslash-popup-code) {
-  color: var(--text-color-inline-code) !important;
+  background-color: light-dark(
+    var(--vocs-color-gray12),
+    var(--vocs-color-gray6)
+  ) !important;
+  color: light-dark(
+    var(--vocs-color-gray3),
+    var(--vocs-color-gray12)
+  ) !important;
 }
 
 [data-empty-line] {
@@ -455,6 +456,14 @@ pre[data-v] {
 [data-v-content] table td:nth-child(2) code {
   display: inline-block;
   margin-top: 0.5rem;
+}
+
+/* Inline code — 1px less padding each side, 1px margin each side so background isn’t tight to surrounding text */
+[data-v-content] :not(pre) > code {
+  margin-left: 1px !important;
+  margin-right: 1px !important;
+  padding-left: calc(0.375rem - 1px) !important;
+  padding-right: calc(0.375rem - 1px) !important;
 }
 
 /* Service logo hover — icon turns accent color (set via --accent inline) */
@@ -590,6 +599,14 @@ aside[data-v-callout] a:hover {
   text-decoration: underline !important;
 }
 
+/* TOC a bit narrower — 80% of gutter width, left edge unchanged */
+[data-v-outline][data-v-gutter-right] {
+  left: calc(100vw - var(--spacing-gutter)) !important;
+  right: auto !important;
+  width: calc(var(--spacing-gutter) * 0.8) !important;
+  max-width: calc(var(--spacing-gutter) * 0.8) !important;
+}
+
 /* More space between main content and TOC */
 [data-v-outline-nav] {
   margin-left: 1.5rem !important;
@@ -603,14 +620,14 @@ aside[data-v-callout] a:hover {
 /* Move Ask AI to bottom-right corner instead of centered over content */
 [data-v-ask-ai-container] {
   left: auto !important;
-  right: 1.5rem !important;
+  right: 1rem !important;
   bottom: 1.5rem !important;
   transform: none !important;
 }
 
 @media (min-width: 1280px) {
   [data-v-ask-ai-container] {
-    right: 1.25rem !important;
+    right: 0.75rem !important;
     bottom: 2rem !important;
   }
 }
