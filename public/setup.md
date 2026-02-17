@@ -105,6 +105,18 @@ Understanding this helps agents debug payment issues:
 
 `presto` handles this entire flow automatically. If a request returns `402`, it pays and retries. If it returns `200`, it passes through unchanged.
 
+## Payment intents
+Challenges specify a payment intent that determines the payment model:
+
+| Intent | Description | Example services |
+|--------|-------------|------------------|
+| **charge** | One-time payment per request. Each request is independently priced. | OpenAI, Anthropic, fal.ai, Firecrawl, ElevenLabs, Exa, Twilio, X |
+| **session** | Opens a payment channel. First request pays on-chain; subsequent requests use off-chain vouchers for lower cost and latency. | OpenRouter, Tempo RPC |
+| **authorize** | Pre-authorizes a maximum amount. Server draws against it as needed, settling the final amount later. | Spec-defined, no proxy services yet |
+| **subscription** | Recurring payments on a schedule (daily, weekly, monthly). Server charges automatically at each interval. | Spec-defined, no proxy services yet |
+
+`presto` handles all intents automatically — you don't need to specify which one to use. The server's Challenge declares the intent and `presto` responds accordingly.
+
 ## Available services
 Every service is accessed via `https://{service}.payments.tempo.xyz`. Query `https://payments.tempo.xyz/services` for the live list with full pricing.
 
