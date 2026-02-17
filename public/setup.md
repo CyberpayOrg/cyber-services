@@ -2,19 +2,16 @@
 name: mpp
 description: "Machine Payments Protocol — install presto CLI, discover paid API services, make HTTP requests with automatic stablecoin payment on Tempo. No API keys needed."
 ---
-
 # MPP Setup
 
 > Machine Payments Protocol — an open standard for HTTP-native machine payments using the `402 Payment Required` status code. Payment-method agnostic (Tempo stablecoins today, Stripe coming soon), designed as an IETF standard. Flow: Challenge → Credential → Receipt via `WWW-Authenticate` / `Authorization` headers.
 
 ## Install presto
-
 ```bash
 curl -fsSL https://raw.githubusercontent.com/tempoxyz/presto/main/install.sh | bash
 presto login     # Connect Tempo wallet via browser
 presto whoami    # Verify wallet + balances
 ```
-
 - Binary installs to `/usr/local/bin/presto`
 - Wallet config saved to `~/.presto/config.toml` (one-time setup)
 - Install auto-bundles the AI skill to `~/.claude/skills/presto/`
@@ -22,9 +19,7 @@ presto whoami    # Verify wallet + balances
 Fund your wallet with pathUSD on Tempo. For testnet, use the faucet at https://faucet.tempo.xyz.
 
 ## Service discovery
-
 The live service directory at `payments.tempo.xyz` is the source of truth. Always query it for the latest services and pricing rather than relying on a hardcoded list.
-
 ```bash
 # Machine-readable JSON — all services with routes, pricing, descriptions
 curl -s https://payments.tempo.xyz/services | jq '.[].id'
@@ -35,13 +30,10 @@ curl -s https://payments.tempo.xyz/services/openai | jq
 # LLM-friendly plain-text listing
 curl -s https://payments.tempo.xyz/llms.txt
 ```
-
 Each service is accessed at `https://{service}.payments.tempo.xyz`, replacing the upstream API domain. Use the same API paths as the upstream service.
 
 ## Making paid requests
-
 `presto` is wget for payments. It detects `402 Payment Required` responses, fulfills payment, and retries automatically.
-
 ```bash
 # Simple GET — presto auto-handles 402 + payment
 presto query https://openai.payments.tempo.xyz/v1/models
@@ -65,7 +57,6 @@ presto balance
 ```
 
 ### Key flags
-
 | Flag | Description |
 |------|-------------|
 | `-D` | Dry run — preview cost without paying |
@@ -80,7 +71,6 @@ presto balance
 | `-n <network>` | Filter to specific network (tempo, tempo-moderato) |
 
 ### Environment variables
-
 | Variable | Description |
 |----------|-------------|
 | `PRESTO_PRIVATE_KEY` | Private key for signing (alternative to `presto login`) |
@@ -89,9 +79,7 @@ presto balance
 | `PRESTO_RPC_URL` | Override RPC endpoint |
 
 ## Payment sessions
-
 Some services (OpenRouter, Tempo RPC) use session-based payments. The first request opens an on-chain payment channel; subsequent requests reuse off-chain vouchers for lower latency and cost.
-
 ```bash
 # First request opens channel, subsequent requests reuse it
 presto query -X POST --json '{"model":"claude-sonnet-4-20250514","messages":[{"role":"user","content":"Hello"}]}' \
@@ -109,9 +97,7 @@ presto session close https://openrouter.payments.tempo.xyz
 ```
 
 ## How the 402 flow works
-
 Understanding this helps agents debug payment issues:
-
 1. Agent sends request → server returns `402 Payment Required` with `WWW-Authenticate: Payment ...` containing a Challenge (amount, recipient, currency, network)
 2. `presto` parses the Challenge and signs a Credential (on-chain transaction or off-chain voucher)
 3. `presto` retries with `Authorization: Payment <credential>`
@@ -120,11 +106,9 @@ Understanding this helps agents debug payment issues:
 `presto` handles this entire flow automatically. If a request returns `402`, it pays and retries. If it returns `200`, it passes through unchanged.
 
 ## Available services
-
 Every service is accessed via `https://{service}.payments.tempo.xyz`. Query `https://payments.tempo.xyz/services` for the live list with full pricing.
 
 ### AI & LLMs
-
 | Service | Endpoint | Description |
 |---------|----------|-------------|
 | OpenRouter | `openrouter.payments.tempo.xyz` | 100+ LLM models (Claude, GPT-4o, Llama, etc.) |
@@ -134,7 +118,6 @@ Every service is accessed via `https://{service}.payments.tempo.xyz`. Query `htt
 | ElevenLabs | `elevenlabs.payments.tempo.xyz` | Text-to-speech, speech-to-text, voice cloning |
 
 ### Web & Data
-
 | Service | Endpoint | Description |
 |---------|----------|-------------|
 | Firecrawl | `firecrawl.payments.tempo.xyz` | Web scraping, crawling, search, extraction |
@@ -142,7 +125,6 @@ Every service is accessed via `https://{service}.payments.tempo.xyz`. Query `htt
 | Exa | `exa.payments.tempo.xyz` | AI-native search, content retrieval, answers |
 
 ### Blockchain & Data
-
 | Service | Endpoint | Description |
 |---------|----------|-------------|
 | Codex | `codex.payments.tempo.xyz` | GraphQL blockchain data (tokens, trades, NFTs) |
@@ -150,22 +132,18 @@ Every service is accessed via `https://{service}.payments.tempo.xyz`. Query `htt
 | Tempo RPC | `rpc.payments.tempo.xyz` | Tempo network JSON-RPC |
 
 ### Communications
-
 | Service | Endpoint | Description |
 |---------|----------|-------------|
 | Twilio | `twilio.payments.tempo.xyz` | SMS and MMS messaging |
 | X (Twitter) | `twitter.payments.tempo.xyz` | Tweets, users, search |
 
 ### Infrastructure
-
 | Service | Endpoint | Description |
 |---------|----------|-------------|
 | Object Storage | `storage.payments.tempo.xyz` | S3-compatible object storage |
 
 ## Example requests
-
 All proxy endpoints use the same API as the upstream service. Replace the upstream base URL with the proxy endpoint.
-
 ```bash
 # OpenAI chat completion
 presto query https://openai.payments.tempo.xyz/v1/chat/completions \
@@ -201,7 +179,6 @@ presto query "https://twitter.payments.tempo.xyz/2/tweets/search/recent?query=MP
 ```
 
 ## SDK integration
-
 For building services or custom clients, use an SDK.
 
 | SDK | Language | Install | Repo |
@@ -211,7 +188,6 @@ For building services or custom clients, use an SDK.
 | mpay-rs | Rust | `cargo add mpay` | [tempoxyz/mpay-rs](https://github.com/tempoxyz/mpay-rs) |
 
 ### TypeScript client
-
 ```typescript
 import { Mppx, tempo } from 'mppx/client'
 import { privateKeyToAccount } from 'viem/accounts'
@@ -232,7 +208,6 @@ const response = await fetch('https://openai.payments.tempo.xyz/v1/chat/completi
 ```
 
 ### TypeScript server
-
 ```typescript
 import { Mppx, tempo } from 'mppx/hono'
 import { Hono } from 'hono'
@@ -251,7 +226,6 @@ app.get('/resource', mppx.charge({ amount: '0.1' }), (c) =>
 ```
 
 ### Python client
-
 ```python
 from pympay.client import Client
 from pympay.methods.tempo import tempo
@@ -264,7 +238,6 @@ response = client.fetch("https://openai.payments.tempo.xyz/v1/chat/completions",
 ```
 
 ## Full documentation & MCP server
-
 ```bash
 # Full docs in one file (paste into agent context)
 curl https://mpp.tempo.xyz/llms-full.txt
@@ -277,13 +250,11 @@ npx skills install wevm/mppx -g
 ```
 
 ## IETF specs
-
 - Core: [Payment HTTP Authentication Scheme](https://github.com/tempoxyz/payment-auth-spec)
 - Charge intent, Tempo method, Session method specs in the same repo
 - Conformance test vectors: [tempoxyz/mpay-sdks](https://github.com/tempoxyz/mpay-sdks)
 
 ## Resources
-
 - Documentation: https://mpp.tempo.xyz
 - Full docs for LLMs: https://mpp.tempo.xyz/llms-full.txt
 - Service directory (JSON): https://payments.tempo.xyz/services
