@@ -130,6 +130,10 @@ function LandingStyles() {
 			[data-v-main] article[data-v-content] > * { margin-top: 0 !important; }
 			[data-v-gutter-top] { position: fixed !important; z-index: 50 !important; user-select: none !important; -webkit-user-select: none !important; }
 
+			.landing-hero {
+				min-height: calc(100dvh - var(--vocs-spacing-topNav, 64px) - var(--vocs-spacing-banner, 0px));
+			}
+
 			.lockup-wide { display: none; }
 			.lockup-stacked { display: block; }
 
@@ -150,13 +154,27 @@ function LandingStyles() {
 				}
 			}
 
+			@media (min-width: 1280px) {
+				.landing-hero {
+					height: calc(100dvh - var(--vocs-spacing-topNav, 64px) - var(--vocs-spacing-banner, 0px));
+					min-height: auto;
+					overflow: hidden;
+				}
+			}
+
 			@media (max-width: 1023px) {
-				.lockup-stacked { max-width: 320px; margin: 0 auto; }
-				.hero-right { align-items: center !important; }
+				.hero-right .lockup-wide { display: none !important; }
+				.hero-right .lockup-stacked { display: block !important; }
 				.co-designed-by { padding-top: 64px; }
 			}
 
 			@media (max-width: 767px) {
+				.lockup-stacked { max-width: 320px; margin: 0 auto; }
+				.hero-right {
+					align-items: center !important;
+					text-align: center !important;
+				}
+				.cli-demo-pane { margin: 0 auto; }
 				[data-v-gutter-top] {
 					background: var(--vocs-background-color-primary) !important;
 					background-color: var(--vocs-background-color-primary) !important;
@@ -246,10 +264,8 @@ function HeaderLogo() {
 function Hero({ shouldAnimate }: { shouldAnimate: boolean }) {
   return (
     <section
-      className="flex flex-col items-center px-6"
+      className="landing-hero flex flex-col items-center px-6"
       style={{
-        minHeight:
-          "calc(100dvh - var(--vocs-spacing-topNav, 64px) - var(--vocs-spacing-banner, 0px))",
         position: "relative",
         zIndex: 2,
       }}
@@ -260,13 +276,14 @@ function Hero({ shouldAnimate }: { shouldAnimate: boolean }) {
           maxWidth: 1200,
           marginTop: "auto",
           marginBottom: "auto",
+          paddingTop: 24,
         }}
       >
         {/* Two-column layout: CLI left, hero right */}
         <div className="w-full flex flex-col lg:flex-row gap-12 lg:gap-16 items-stretch">
           {/* Left pane — interactive CLI demo (animates in first) */}
           <div
-            className="flex-[11] w-full min-w-0 flex flex-col order-last lg:order-first max-w-[574px] lg:max-w-none"
+            className="cli-demo-pane flex-[11] w-full min-w-0 flex flex-col order-last lg:order-first max-w-[574px] lg:max-w-none"
             style={anim(shouldAnimate, 200, 900)}
           >
             <Cli.Demo
@@ -283,7 +300,7 @@ function Hero({ shouldAnimate }: { shouldAnimate: boolean }) {
           </div>
 
           {/* Right pane — hero content (staggers in after CLI) */}
-          <div className="hero-right flex-[9] min-w-0 order-first lg:order-last text-center lg:text-left flex flex-col items-start justify-center gap-6">
+          <div className="hero-right flex-[9] min-w-0 order-first lg:order-last text-center md:text-left flex flex-col items-center md:items-start justify-center gap-6">
             {/* Co-designed by */}
             <div style={anim(shouldAnimate, 800, 800)}>
               <CoDesignedBy shouldAnimate={false} />
@@ -301,26 +318,19 @@ function Hero({ shouldAnimate }: { shouldAnimate: boolean }) {
             </div>
 
             {/* Tagline */}
-            <p
-              className="text-base leading-relaxed max-w-xl font-normal"
-              style={{
-                color: "var(--vocs-text-color-secondary)",
-                ...anim(shouldAnimate, 1400, 700),
-              }}
-            >
-              Supercharge your agent with seamless paid API calls.
-              <br className="hidden md:block" />
-              No more manually creating accounts, or copy-pasting keys.
-            </p>
+            <Tagline shouldAnimate={shouldAnimate} />
 
             {/* Agent prompt tabs */}
-            <div className="w-full" style={anim(shouldAnimate, 1800, 700)}>
+            <div
+              className="w-full max-w-xl mx-auto md:mx-0"
+              style={anim(shouldAnimate, 1800, 700)}
+            >
               <AgentTabs />
             </div>
 
             {/* CTA buttons */}
             <div
-              className="flex flex-col lg:items-start items-center gap-4"
+              className="flex flex-col items-center md:items-start gap-4"
               style={anim(shouldAnimate, 2100, 700)}
             >
               <CTAButtons />
@@ -329,11 +339,30 @@ function Hero({ shouldAnimate }: { shouldAnimate: boolean }) {
         </div>
 
         {/* Service logos — full width below both columns */}
-        <div className="w-full" style={{ marginTop: 72, paddingBottom: 96 }}>
+        <div className="w-full" style={{ marginTop: 40, paddingBottom: 24 }}>
           <ServiceLogos shouldAnimate={shouldAnimate} />
         </div>
       </div>
     </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Tagline — extracted to avoid JSX whitespace indent issues
+// ---------------------------------------------------------------------------
+
+function Tagline({ shouldAnimate }: { shouldAnimate: boolean }) {
+  return (
+    <div
+      className="text-base leading-relaxed max-w-xl font-normal"
+      style={{
+        color: "var(--vocs-text-color-secondary)",
+        ...anim(shouldAnimate, 1400, 700),
+      }}
+    >
+      <div>Supercharge your agent with seamless paid API calls.</div>
+      <div>No more manually creating accounts, or copy-pasting keys.</div>
+    </div>
   );
 }
 
