@@ -576,7 +576,7 @@ function AgentTabs() {
       bin: "codex",
       args: null,
       icon: OpenAILogo,
-      prompt: `"Read https://mpp.sh/overview.md and charge agents 0.01 USD for reading my site"`,
+      prompt: `"Read https://mpp.sh/overview.md and charge agents 0.01 USD for reading my blog"`,
     },
     {
       label: "Amp",
