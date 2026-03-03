@@ -25,14 +25,23 @@ $ presto whoami
 
 Check `ready` is `true` and `key.balance` is sufficient. If not, run `presto login`.
 
-:::tip[Agent config]
-Set `output_format = "json"` in config (`~/Library/Application Support/presto/config.toml` on macOS, `~/.config/presto/config.toml` on Linux) to avoid passing `--output-format json` on every call.
-:::
-
 ## Available services
 
 ```bash [services.sh]
-$ curl -s https://mpp.tempo.xyz/services | jq '.[].id'
+$ presto services
+```
+
+Browse and search the service directory:
+
+```bash [services-search.sh]
+# Filter by category
+$ presto services --category ai
+
+# Search by name or description
+$ presto services --search "image generation"
+
+# Show detailed info for a service
+$ presto services info openai
 ```
 
 Pattern: `<service>.mpp.tempo.xyz`. Examples:
@@ -84,23 +93,29 @@ On `Spending limit exceeded` or `Insufficient balance`: report to user.
 | `presto login` | Log in (opens browser) |
 | `presto logout [--yes]` | Log out |
 | `presto whoami` | Wallet status, balances, keys |
-| `presto session close --all` | Reclaim funds from all payment sessions |
+| `presto services` | Browse the MPP service directory |
+| `presto services info <ID>` | Show detailed info for a service |
+| `presto sessions list` | List sessions (active/orphaned/closing) |
+| `presto sessions info <URL\|channel_id>` | Show details for a session or channel |
+| `presto sessions close [--all\|--orphaned\|<URL>]` | Close sessions or channels |
+| `presto sessions recover <URL>` | Re-sync a local session from chain |
+| `presto sessions sync` | Remove stale local sessions |
+| `presto update` | Update presto to the latest version |
 
 ### Options
 
 | Flag | Description |
 |------|-------------|
-| `-q` | Quiet (suppress logs, recommended for agents) |
-| `--output-format json` | JSON output |
+| `-s` | Silent mode (suppress logs) |
+| `-j` | JSON output |
+| `-t` | TOON output (compact, token-efficient) |
 | `-X <METHOD>` | HTTP method |
 | `--json <DATA>` | JSON body (sets Content-Type) |
 | `-d <DATA>` | POST data (`@file` or `@-` for stdin) |
 | `-H <HEADER>` | Custom header (repeatable) |
-| `--dry-run` | Preview payment without executing |
-| `-m <SECONDS>` | Timeout |
-| `-i` | Include response headers |
 | `-o <FILE>` | Write output to file |
-| `-v` | Verbose (`-vv` debug, `-vvv` trace) |
+| `--dry-run` | Preview payment without executing |
+| `--max-pay <AMOUNT>` | Cap the maximum amount to pay |
 
 ## Learn more
 
