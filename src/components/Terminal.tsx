@@ -1364,7 +1364,9 @@ function StripeSteps({
         setStep(confirmIdx + 1);
         await new Promise((r) => setTimeout(r, 600));
 
-        const data = (await res.json()) as { lines?: string[] };
+        const data = (await res.json()) as {
+          lines?: string[];
+        };
         onContentReceived?.(data.lines ?? []);
 
         const req200Idx = steps.findIndex((s) => s.key === "req200");
