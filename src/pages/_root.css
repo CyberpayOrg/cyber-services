@@ -131,22 +131,15 @@ html {
   margin-inline: 0.25rem;
 }
 
-/* Green dot on "Services" top nav link */
-[data-v-gutter-top] nav a[href="/services"] {
-  position: relative;
-}
-[data-v-gutter-top] nav a[href="/services"][data-v-active="true"]::after {
-  display: none;
-}
-[data-v-gutter-top] nav a[href="/services"]::after {
-  content: "";
-  position: absolute;
-  top: 20px;
-  right: 2px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #22c55e;
+/* Subtle highlight on "Services" top nav link */
+[data-v-gutter-top] nav a[href="/services"]:not([data-v-active="true"]) {
+  background: light-dark(
+    oklch(0.87 0.06 155 / 0.4),
+    oklch(0.40 0.06 155 / 0.3)
+  );
+  border-radius: 6px;
+  padding: 2px 8px;
+  margin: -2px 0;
 }
 
 /* No underline on hover inside buttons or button-like links */
