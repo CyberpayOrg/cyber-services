@@ -1687,6 +1687,7 @@ function Wizard({
 
   useEffect(() => {
     if (chosen || quit || waitingForUrl) return;
+    const terminal = document.querySelector("[data-terminal]");
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowUp") {
         e.preventDefault();
@@ -1694,20 +1695,20 @@ function Wizard({
       } else if (e.key === "ArrowDown") {
         e.preventDefault();
         setSelected((s) => (s + 1) % currentItems.length);
-      } else if (e.key === "Tab" || e.key === "Enter") {
-        e.preventDefault();
+      } else if (e.key === "Tab") {
+        if (terminal?.contains(document.activeElement) || document.activeElement === document.body) {
+          e.preventDefault();
+          confirm();
+        }
+      } else if (e.key === "Enter") {
         confirm();
       }
     };
-    document
-      .querySelector("[data-terminal]")
-      ?.setAttribute("data-wizard-ready", "");
+    terminal?.setAttribute("data-wizard-ready", "");
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      document
-        .querySelector("[data-terminal]")
-        ?.removeAttribute("data-wizard-ready");
+      terminal?.removeAttribute("data-wizard-ready");
     };
   });
 
@@ -2126,6 +2127,7 @@ function GalleryStep({
       return () => window.removeEventListener("keydown", handler);
     }
     if (phase === "picker") {
+      const terminal = document.querySelector("[data-terminal]");
       const handler = (e: KeyboardEvent) => {
         if (e.key === "ArrowUp") {
           e.preventDefault();
@@ -2133,8 +2135,17 @@ function GalleryStep({
         } else if (e.key === "ArrowDown") {
           e.preventDefault();
           setSelected((s) => (s + 1) % pickerItems.length);
-        } else if (e.key === "Tab" || e.key === "Enter") {
-          e.preventDefault();
+        } else if (e.key === "Tab") {
+          if (terminal?.contains(document.activeElement) || document.activeElement === document.body) {
+            e.preventDefault();
+            const item = pickerItems[selected];
+            if (item.value === "done") {
+              setPhase("closing");
+            } else {
+              pickCount(item.value);
+            }
+          }
+        } else if (e.key === "Enter") {
           const item = pickerItems[selected];
           if (item.value === "done") {
             setPhase("closing");
@@ -2143,15 +2154,11 @@ function GalleryStep({
           }
         }
       };
-      document
-        .querySelector("[data-terminal]")
-        ?.setAttribute("data-demo-ready", "");
+      terminal?.setAttribute("data-demo-ready", "");
       window.addEventListener("keydown", handler);
       return () => {
         window.removeEventListener("keydown", handler);
-        document
-          .querySelector("[data-terminal]")
-          ?.removeAttribute("data-demo-ready");
+        terminal?.removeAttribute("data-demo-ready");
       };
     }
     if (phase === "restart") {
