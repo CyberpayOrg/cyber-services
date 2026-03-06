@@ -1893,7 +1893,11 @@ function Wizard({
                 value={urlInput}
                 onChange={(e) => setUrlInput(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Tab") {
+                  if (e.key === "Escape") {
+                    e.preventDefault();
+                    setWaitingForUrl(false);
+                    setUrlInput("");
+                  } else if (e.key === "Tab") {
                     e.preventDefault();
                     const placeholder =
                       (currentItems[selected] as PaymentStepConfig).prompt
