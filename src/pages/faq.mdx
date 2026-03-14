@@ -1,9 +1,5 @@
 # Frequently asked questions [Common questions about the Machine Payments Protocol]
 
-## What is MPP?
-
-The Machine Payments Protocol (MPP) is an internet-native protocol that lets any client—agents, software, or humans—pay for services inline over HTTP. The protocol is payment-method agnostic, open by design, and engineered for extensibility, performance, and security.
-
 ## Is MPP only for stablecoins?
 
 No. MPP is payment-method agnostic—the protocol works with any payment rail.
@@ -12,7 +8,7 @@ Today, [Tempo](/payment-methods/tempo) stablecoin payments, [Stripe](/payment-me
 
 ## Do I need a stablecoin wallet?
 
-No. Stripe supports cards and numerous fiat methods. Lightning supports Bitcoin. MPP is payment-method agnostic—any rail can be integrated.
+No. With Stripe, you can pay with cards without stablecoins. With Lightning, you can pay with Bitcoin.
 
 For Tempo payments, you need a stablecoin wallet to sign transactions. The SDK and the `tempo wallet` CLI handle key management for you.
 
@@ -32,9 +28,11 @@ Yes. The core x402 "exact" flows map directly onto MPP's charge intent. MPP clie
 
 ## Why build MPP on Tempo?
 
-High-throughput, low-value transactions require specific properties from the settlement layer:
+MPP works with any payment rail—Stripe for cards, Lightning for Bitcoin, or any custom method. You don't have to use Tempo.
 
-- **Fast, deterministic finality**—Tempo consensus provides certainty that a payment has settled, not probabilistic confirmation.
+That said, high-throughput, low-value transactions benefit from specific properties that Tempo provides:
+
+- **Fast, deterministic finality**—Certainty that a payment has settled, not probabilistic confirmation.
 - **Low, predictable cost**—Transaction fees stay stable regardless of global network congestion.
 - **Payment lanes**—Dedicated transaction routing for payment traffic, ensuring reliability even under heavy load.
 - **Stablecoin-native**—TIP-20 stablecoins (USDC, USDT) are first-class citizens, so payments are denominated in familiar currency.
@@ -58,12 +56,6 @@ The protocol itself is free and open. There are no licensing fees for implementi
 MPP requires TLS 1.2+ for all connections. Challenge IDs are cryptographically bound to prevent replay attacks. The protocol never performs side effects on unpaid requests—your client only pays after verifying what it is paying for.
 
 Payments use the same security model as the underlying payment method. For Tempo, that means cryptographic signatures over every transaction. For Stripe, it means Stripe's existing fraud and dispute infrastructure.
-
-## Can any agent use MPP?
-
-Yes. Any agent can interact with MPP services via a compatible CLI or SDK. The [quickstart guide](/quickstart/agent) has copy-paste setup instructions for Claude, Codex, and Amp.
-
-For programmatic integration, the [TypeScript](/sdk/typescript), [Python](/sdk/python), and [Rust](/sdk/rust) SDKs provide native support.
 
 ## What happens if a payment fails?
 
