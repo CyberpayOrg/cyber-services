@@ -118,6 +118,13 @@ html {
   padding-bottom: 0;
 }
 
+/* Ensure content clears the fixed Ask AI bar on mobile */
+@media (max-width: 767px) {
+  [data-v-main] {
+    padding-bottom: 4rem;
+  }
+}
+
 /* Add vertical spacing inside tab panels so content breathes */
 [data-v-content] [role="tabpanel"] > *:not(:last-child) {
   margin-bottom: 1.25rem;
@@ -1005,6 +1012,16 @@ a[href*="/payment-methods/tempo"][class*="vocs:rounded-md"]
 :has(.landing-page) [data-v-main]::after,
 [data-layout="minimal"] [data-v-main]::after {
   display: none;
+}
+
+/* Ask AI popup — keep anchored near the trigger on mobile so it doesn't
+   jump to the top of the viewport (iOS Lockdown Mode disables some JS
+   positioning). Cap the popup height so it stays within the safe area. */
+@media (max-width: 767px) {
+  [data-v-ask-ai-container] [role="menu"] {
+    max-height: 70vh;
+    overflow-y: auto;
+  }
 }
 
 /* ---- Mobile navigation ----
