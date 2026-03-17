@@ -1,0 +1,192 @@
+import { Cards } from 'vocs'
+import { SpecCard } from '../../../components/SpecCard'
+
+# EVM charge [One-time ERC-20 transfers via Permit2]
+
+The EVM implementation of the [charge](/intents/charge) intent.
+
+The client signs a Permit2 `PermitTransferFrom` message authorizing a token transfer. The server calls `permitTransferFrom` on the Permit2 contract to execute the transfer on-chain. Settlement time depends on the target chain's finality.
+
+Use this method for single API calls, content access, or one-off purchases where you want to accept any ERC-20 on any EVM chain.
+
+## Server
+
+Use `evm.charge` to gate an endpoint behind a one-time ERC-20 payment. The method handles Challenge generation, Credential verification, Permit2 transaction submission, and Receipt creation.
+
+```ts twoslash
+// @noErrors
+import { Mppx, evm } from 'mppx/server'
+
+const mppx = Mppx.create({
+  methods: [
+    evm.charge({
+      chainId: 8453, // Base
+      permit2Address: '0x000000000022D473030F116dDEE9F6B43aC78BA3',
+      rpcUrl: process.env.BASE_RPC_URL!,
+    }),
+  ],
+})
+
+export async function handler(request: Request) {
+  const result = await mppx.charge({
+    amount: '1000000', // 1 USDC (6 decimals)
+    currency: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base
+    recipient: '0xa726a1CD723409074DF9108A2187cfA19899aCF8',
+  })(request)
+
+  if (result.status === 402) return result.challenge
+
+  return result.withReceipt(Response.json({ data: '...' }))
+}
+```
+
+### With expiry
+
+```ts twoslash
+// @noErrors
+import { Expires } from 'mppx'
+import { Mppx, evm } from 'mppx/server'
+
+const mppx = Mppx.create({
+  methods: [
+    evm.charge({
+      chainId: 8453,
+      permit2Address: '0x000000000022D473030F116dDEE9F6B43aC78BA3',
+      rpcUrl: process.env.BASE_RPC_URL!,
+    }),
+  ],
+})
+
+export async function handler(request: Request) {
+  const result = await mppx.charge({
+    amount: '1000000',
+    currency: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+    expires: Expires.minutes(10), // [!code hl]
+    recipient: '0xa726a1CD723409074DF9108A2187cfA19899aCF8',
+  })(request)
+
+  if (result.status === 402) return result.challenge
+  return result.withReceipt(Response.json({ data: '...' }))
+}
+```
+
+### With facilitator
+
+Offload Permit2 transaction submission to a third-party facilitator instead of submitting on-chain directly from the server.
+
+```ts twoslash
+// @noErrors
+import { Mppx, evm } from 'mppx/server'
+
+const mppx = Mppx.create({
+  methods: [
+    evm.charge({
+      chainId: 8453,
+      facilitatorUrl: 'https://facilitator.example.com', // [!code hl]
+      permit2Address: '0x000000000022D473030F116dDEE9F6B43aC78BA3',
+    }),
+  ],
+})
+```
+
+When `facilitatorUrl` is set, the server forwards the signed Permit2 data to the facilitator for on-chain settlement instead of calling the Permit2 contract directly.
+
+## Client
+
+Use `evm.charge` with `Mppx.create` to automatically handle `402` responses. The client parses the Challenge, signs a Permit2 `PermitTransferFrom` message, and retries with the Credential.
+
+```ts twoslash
+// @noErrors
+import { Mppx, evm } from 'mppx/client'
+import { privateKeyToAccount } from 'viem/accounts'
+
+const account = privateKeyToAccount('0xabc…123')
+
+Mppx.create({
+  methods: [
+    evm.charge({
+      account,
+    }),
+  ],
+})
+
+const response = await fetch('https://api.example.com/resource')
+```
+
+### With a wallet client
+
+Use a viem wallet client for browser-based or injected wallet signing:
+
+```ts twoslash
+// @noErrors
+import { createWalletClient, http } from 'viem'
+import { base } from 'viem/chains'
+import { Mppx, evm } from 'mppx/client'
+
+const walletClient = createWalletClient({
+  chain: base,
+  transport: http(),
+})
+
+Mppx.create({
+  methods: [
+    evm.charge({
+      walletClient, // [!code hl]
+    }),
+  ],
+})
+```
+
+### Without polyfill
+
+If you don't want to patch `globalThis.fetch`, use `mppx.fetch` directly:
+
+```ts twoslash
+// @noErrors
+import { Mppx, evm } from 'mppx/client'
+import { privateKeyToAccount } from 'viem/accounts'
+
+const account = privateKeyToAccount('0xabc…123')
+
+const mppx = Mppx.create({
+  methods: [evm.charge({ account })],
+  polyfill: false,
+})
+
+const response = await mppx.fetch('https://api.example.com/resource')
+```
+
+## Challenge request fields
+
+The Challenge request includes chain and Permit2 details alongside the base charge fields.
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `amount` | `string` | Required | Amount in the token's smallest unit (for example, `1000000` for 1 USDC) |
+| `chainId` | `number` | Required | EIP-155 chain ID of the target network |
+| `currency` | `string` | Required | ERC-20 token contract address |
+| `expires` | `string` | Optional | ISO 8601 expiration timestamp |
+| `permit2Address` | `string` | Required | Address of the Permit2 contract on the target chain |
+| `recipient` | `string` | Required | Recipient address for the token transfer |
+
+## Credential payload
+
+The Credential payload contains the Permit2 signature and transfer details.
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `deadline` | `string` | Required | Unix timestamp after which the permit signature expires |
+| `nonce` | `string` | Required | Unique Permit2 nonce for replay protection |
+| `signature` | `string` | Required | EIP-712 signature over the `PermitTransferFrom` struct |
+
+## Supported chains
+
+The EVM payment method works on any chain where the [Permit2 contract](https://github.com/Uniswap/permit2) is deployed. Common chains include:
+
+| Chain | Chain ID | Permit2 address |
+| --- | --- | --- |
+| Ethereum | `1` | `0x000000000022D473030F116dDEE9F6B43aC78BA3` |
+| Base | `8453` | `0x000000000022D473030F116dDEE9F6B43aC78BA3` |
+| Arbitrum | `42161` | `0x000000000022D473030F116dDEE9F6B43aC78BA3` |
+| Optimism | `10` | `0x000000000022D473030F116dDEE9F6B43aC78BA3` |
+| Polygon | `137` | `0x000000000022D473030F116dDEE9F6B43aC78BA3` |

@@ -264,6 +264,28 @@ export function StripeMethodCard() {
   );
 }
 
+export function EvmMethodCard() {
+  return (
+    <Card
+      description="Any ERC-20 on any EVM chain via Permit2"
+      icon="lucide:blocks"
+      title="EVM"
+      to="/payment-methods/evm"
+    />
+  );
+}
+
+export function EvmChargeCard() {
+  return (
+    <Card
+      description="One-time ERC-20 transfers via Permit2"
+      icon="lucide:blocks"
+      title="EVM charge"
+      to="/payment-methods/evm/charge"
+    />
+  );
+}
+
 export function CustomMethodCard() {
   return (
     <Card

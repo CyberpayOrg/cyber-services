@@ -1,0 +1,73 @@
+import { Badge, Cards } from 'vocs'
+import { EvmChargeCard } from '../../../components/cards'
+import { MermaidDiagram } from '../../../components/MermaidDiagram'
+
+# EVM [Any ERC-20 on any EVM chain via Permit2]
+
+The EVM payment method enables payments using any ERC-20 token on any EVM-compatible blockchain through [Permit2](https://github.com/Uniswap/permit2). This extends MPP beyond Tempo to Ethereum, Base, Arbitrum, Optimism, Polygon, and every chain where Permit2 is deployed.
+
+Permit2's `SignatureTransfer` contract lets clients authorize token transfers with an off-chain signature—no per-spender approval transactions required. The server (or a facilitator) submits the signed transfer on-chain.
+
+## How it works
+
+<MermaidDiagram chart={`sequenceDiagram
+    participant Client
+    participant Server
+    participant Permit2
+    participant ERC20
+    Client->>Server: (1) GET /resource
+    Server-->>Client: (2) 402 + Challenge
+    Client->>Client: (3) Sign Permit2 transfer
+    Client->>Server: (4) GET /resource + Credential
+    Server->>Permit2: (5) permitTransferFrom(signed)
+    Permit2->>ERC20: (6) transferFrom(client, recipient)
+    Server-->>Client: (7) 200 OK + Receipt
+`} />
+
+1. **Client** requests a resource. The **server** responds with `402` and a Challenge containing the amount, token address, chain ID, and recipient.
+2. **Client** signs a Permit2 `PermitTransferFrom` message (EIP-712 typed data) authorizing the transfer.
+3. **Client** sends a Credential containing the signature and permit details.
+4. **Server** calls `permitTransferFrom` on the Permit2 contract to execute the transfer.
+5. **Server** returns the resource with a Receipt referencing the transaction hash.
+
+## Prerequisites
+
+Before a client can pay via the EVM method, they need a one-time ERC-20 approval to the Permit2 contract:
+
+```solidity
+USDC.approve(PERMIT2_ADDRESS, type(uint256).max);
+```
+
+This is a standard pattern—most wallets and applications already have Permit2 approvals in place from interacting with Uniswap and other protocols.
+
+:::info
+The Permit2 contract is deployed at `0x000000000022D473030F116dDEE9F6B43aC78BA3` on all major EVM chains. See [Permit2 deployments](https://github.com/Uniswap/permit2#deployments) for the full list.
+:::
+
+## Payments on EVM chains
+
+The EVM payment method brings several properties to MPP:
+
+- **Any ERC-20 token**—Pay with USDC, USDT, DAI, or any ERC-20 on any supported chain
+- **Any EVM chain**—Works on Ethereum, Base, Arbitrum, Optimism, Polygon, and every chain with Permit2
+- **Signature-based transfers**—Clients sign an off-chain message instead of submitting a transaction, reducing client-side complexity
+- **Single approval**—One Permit2 approval per token covers all MPP interactions, unlike per-spender ERC-20 approvals
+- **Replay protection**—Permit2 uses unique nonces per signature, preventing double-spend
+
+## Gasless extensions
+
+Two approaches eliminate gas costs for clients:
+
+### Facilitator-submitted transactions
+
+The server or a third-party facilitator submits the `permitTransferFrom` transaction on behalf of the client. The client signs, the facilitator pays gas and submits. This is the default pattern in MPP—the server already holds the signature and submits it as part of Credential verification.
+
+### EIP-3009 (transferWithAuthorization)
+
+For tokens that natively support [EIP-3009](https://eips.ethereum.org/EIPS/eip-3009) (such as USDC and USDT on most chains), the server can use `transferWithAuthorization` directly—bypassing Permit2 entirely. This removes the one-time approval step, making the flow fully gasless from the client's perspective.
+
+## Intents
+
+<Cards>
+  <EvmChargeCard />
+</Cards>
