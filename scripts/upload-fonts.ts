@@ -1,6 +1,6 @@
-import { put, list } from "@vercel/blob";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { list, put } from "@vercel/blob";
 
 const BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
 if (!BLOB_TOKEN) {
@@ -28,8 +28,13 @@ async function main() {
     });
     console.log(`${file} -> ${blob.url}`);
   }
-  const { blobs } = await list({ prefix: "fonts/", limit: 1, token: BLOB_TOKEN });
-  if (blobs[0]) console.log("\nBlob base:", blobs[0].url.replace(/\/fonts\/.*$/, ""));
+  const { blobs } = await list({
+    prefix: "fonts/",
+    limit: 1,
+    token: BLOB_TOKEN,
+  });
+  if (blobs[0])
+    console.log("\nBlob base:", blobs[0].url.replace(/\/fonts\/.*$/, ""));
 }
 
 main().catch(console.error);

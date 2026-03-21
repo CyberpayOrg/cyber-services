@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 const OUT_DIR = resolve(process.env.HOME!, "Desktop/og-images");
