@@ -17,43 +17,38 @@
  *   PR_NUMBER:         pull request number
  */
 
-export interface LabelRule {
-  label: string;
+export interface Rule {
   paths: string[];
-}
-
-export interface TokenRule {
-  label: string;
   tokens: string[];
 }
 
 /**
- * File-path label rules. Checked first.
- * Patterns use minimatch-style globs (evaluated with simple matching).
+ * Label rules. Each key is the label name.
+ * `paths` are glob patterns matched against changed files (primary).
+ * `tokens` are matched case-insensitively against PR title + body (fallback).
  */
-export const PATH_RULES: LabelRule[] = [
-  {
-    label: "service-directory",
+export const RULES: Record<string, Rule> = {
+  "service-directory": {
     paths: ["schemas/services.ts", "schemas/discovery.*"],
+    tokens: ["[service]", "service directory", "add service"],
   },
-  {
-    label: "docs",
+  docs: {
     paths: ["src/pages/**"],
+    tokens: ["[docs]", "documentation"],
   },
-  {
-    label: "sdk-docs",
+  "sdk-docs": {
     paths: ["src/pages/sdk/**"],
+    tokens: ["[sdk]", "sdk docs"],
   },
-  {
-    label: "components",
+  components: {
     paths: ["src/components/**"],
+    tokens: ["[component]", "[ui]"],
   },
-  {
-    label: "infra",
+  infra: {
     paths: [".github/**", "scripts/**"],
+    tokens: ["[infra]", "[ci]", "workflow", "github action"],
   },
-  {
-    label: "config",
+  config: {
     paths: [
       "biome.json",
       "package.json",
@@ -63,26 +58,13 @@ export const PATH_RULES: LabelRule[] = [
       "vite.config.*",
       "vitest.config.*",
     ],
+    tokens: ["[config]"],
   },
-  {
-    label: "llms",
+  llms: {
     paths: ["**/llms*", "src/snippets/**"],
+    tokens: ["[llms]", "llms.txt"],
   },
-];
-
-/**
- * Token fallback rules. Only checked when no path-based labels matched.
- * Tokens are matched case-insensitively against PR title and body.
- */
-export const TOKEN_RULES: TokenRule[] = [
-  { label: "service-directory", tokens: ["[service]", "service directory", "add service"] },
-  { label: "docs", tokens: ["[docs]", "documentation"] },
-  { label: "sdk-docs", tokens: ["[sdk]", "sdk docs"] },
-  { label: "infra", tokens: ["[infra]", "[ci]", "workflow", "github action"] },
-  { label: "components", tokens: ["[component]", "[ui]"] },
-  { label: "config", tokens: ["[config]"] },
-  { label: "llms", tokens: ["[llms]", "llms.txt"] },
-];
+};
 
 /**
  * Simple glob matcher supporting:
@@ -107,9 +89,9 @@ export function matchesGlob(filePath: string, pattern: string): boolean {
 export function labelsFromPaths(files: string[]): string[] {
   const matched = new Set<string>();
   for (const file of files) {
-    for (const rule of PATH_RULES) {
+    for (const [label, rule] of Object.entries(RULES)) {
       if (rule.paths.some((pattern) => matchesGlob(file, pattern))) {
-        matched.add(rule.label);
+        matched.add(label);
       }
     }
   }
@@ -122,9 +104,9 @@ export function labelsFromPaths(files: string[]): string[] {
 export function labelsFromTokens(title: string, body: string): string[] {
   const text = `${title}\n${body}`.toLowerCase();
   const matched = new Set<string>();
-  for (const rule of TOKEN_RULES) {
+  for (const [label, rule] of Object.entries(RULES)) {
     if (rule.tokens.some((token) => text.includes(token.toLowerCase()))) {
-      matched.add(rule.label);
+      matched.add(label);
     }
   }
   return [...matched];
@@ -192,13 +174,10 @@ async function addLabels(
   pr: number,
   labels: string[],
 ): Promise<void> {
-  await fetchJSON(
-    `https://api.github.com/repos/${repo}/issues/${pr}/labels`,
-    {
-      method: "POST",
-      body: JSON.stringify({ labels }),
-    },
-  );
+  await fetchJSON(`https://api.github.com/repos/${repo}/issues/${pr}/labels`, {
+    method: "POST",
+    body: JSON.stringify({ labels }),
+  });
 }
 
 async function main() {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  RULES,
   getLabels,
   labelsFromPaths,
   labelsFromTokens,
@@ -32,7 +33,10 @@ describe("matchesGlob", () => {
       true,
     );
     expect(
-      matchesGlob("src/pages/sdk/typescript/client/Fetch.from.mdx", "src/pages/sdk/**"),
+      matchesGlob(
+        "src/pages/sdk/typescript/client/Fetch.from.mdx",
+        "src/pages/sdk/**",
+      ),
     ).toBe(true);
     expect(matchesGlob("src/components/Terminal.tsx", "src/pages/**")).toBe(
       false,
@@ -132,21 +136,13 @@ describe("labelsFromTokens", () => {
 
 describe("getLabels", () => {
   it("uses path labels when files match", () => {
-    const labels = getLabels(
-      ["schemas/services.ts"],
-      "[docs] something",
-      "",
-    );
+    const labels = getLabels(["schemas/services.ts"], "[docs] something", "");
     expect(labels).toContain("service-directory");
     expect(labels).not.toContain("docs");
   });
 
   it("falls back to tokens when no path matches", () => {
-    const labels = getLabels(
-      ["README.md"],
-      "[docs] Fix readme",
-      "",
-    );
+    const labels = getLabels(["README.md"], "[docs] Fix readme", "");
     expect(labels).toContain("docs");
   });
 
