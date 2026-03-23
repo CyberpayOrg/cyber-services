@@ -990,7 +990,7 @@ export const services: ServiceDef[] = [
       {
         route: "POST /v1/embeddings",
         desc: "Create embeddings",
-        amount: "100",
+        amount: "200",
       },
       {
         route: "POST /v1/images/generations",
@@ -1006,6 +1006,11 @@ export const services: ServiceDef[] = [
         route: "POST /v1/audio/speech",
         desc: "Text-to-speech",
         amount: "20000",
+      },
+      {
+        route: "POST /v1/moderations",
+        desc: "Classify text for content policy violations",
+        amount: "50",
       },
     ],
   },
@@ -1865,51 +1870,7 @@ export const services: ServiceDef[] = [
     ],
   },
 
-  // ── StablePhone ────────────────────────────────────────────────────────
-  {
-    id: "stablephone",
-    name: "StablePhone",
-    url: "https://stablephone.dev",
-    serviceUrl: "https://stablephone.dev",
-    description:
-      "AI phone calls, dedicated phone numbers, and iMessage/FaceTime lookup — pay per request.",
-    categories: ["ai", "social"],
-    integration: "first-party",
-    tags: ["phone", "call", "voice", "ai-call", "imessage"],
-    docs: {
-      homepage: "https://stablephone.dev",
-      llmsTxt: "https://stablephone.dev/llms.txt",
-    },
-    provider: { name: "Merit Systems", url: "https://stablephone.dev" },
-    realm: "stablephone.dev",
-    intent: "charge",
-    payment: TEMPO_PAYMENT,
-    endpoints: [
-      {
-        route: "POST /api/call",
-        desc: "Make an AI phone call",
-        amount: "540000",
-      },
-      { route: "GET /api/call/:id", desc: "Get call status and transcript" },
-      {
-        route: "POST /api/number",
-        desc: "Buy a phone number (30 days)",
-        amount: "20000000",
-      },
-      {
-        route: "POST /api/number/topup",
-        desc: "Extend a phone number 30 days",
-        amount: "15000000",
-      },
-      { route: "GET /api/numbers", desc: "List your phone numbers" },
-      {
-        route: "POST /api/lookup",
-        desc: "iMessage/FaceTime lookup",
-        amount: "50000",
-      },
-      { route: "GET /api/lookup/status", desc: "Poll lookup results" },
-    ],
-  },
+
 
   // ── StableSocial ───────────────────────────────────────────────────────
   {
@@ -4325,6 +4286,32 @@ export const services: ServiceDef[] = [
         desc: "Create a climate contribution",
         dynamic: true,
         amountHint: "$0.01+",
+      },
+    ],
+  },
+
+  // ── TestWidget (fake for testing) ──────────────────────────────────────
+  {
+    id: "testwidget",
+    name: "TestWidget",
+    url: "https://testwidget.example.com",
+    serviceUrl: "https://testwidget.mpp.tempo.xyz",
+    description: "A fake test service to exercise the changed-services workflow.",
+    categories: ["data"],
+    integration: "first-party",
+    tags: ["test"],
+    realm: "mpp.tempo.xyz",
+    intent: "charge",
+    payment: TEMPO_PAYMENT,
+    endpoints: [
+      {
+        route: "GET /api/widgets",
+        desc: "List widgets",
+      },
+      {
+        route: "POST /api/widgets",
+        desc: "Create a widget",
+        amount: "5000",
       },
     ],
   },

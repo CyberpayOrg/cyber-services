@@ -1990,7 +1990,7 @@
             "currency": "0x20c000000000000000000000b9537d11c60e8b50",
             "decimals": 6,
             "description": "Create embeddings",
-            "amount": "100"
+            "amount": "200"
           },
           "docs": "https://context7.com/websites/platform_openai/llms.txt?topic=POST%20%2Fv1%2Fembeddings"
         },
@@ -2035,6 +2035,19 @@
             "amount": "20000"
           },
           "docs": "https://context7.com/websites/platform_openai/llms.txt?topic=POST%20%2Fv1%2Faudio%2Fspeech"
+        },
+        {
+          "method": "POST",
+          "path": "/v1/moderations",
+          "description": "Classify text for content policy violations",
+          "payment": {
+            "intent": "charge",
+            "method": "tempo",
+            "currency": "0x20c000000000000000000000b9537d11c60e8b50",
+            "decimals": 6,
+            "description": "Classify text for content policy violations",
+            "amount": "50"
+          }
         }
       ]
     },
@@ -4012,117 +4025,7 @@
         }
       ]
     },
-    {
-      "id": "stablephone",
-      "name": "StablePhone",
-      "url": "https://stablephone.dev",
-      "serviceUrl": "https://stablephone.dev",
-      "description": "AI phone calls, dedicated phone numbers, and iMessage/FaceTime lookup — pay per request.",
-      "categories": [
-        "ai",
-        "social"
-      ],
-      "integration": "first-party",
-      "tags": [
-        "phone",
-        "call",
-        "voice",
-        "ai-call",
-        "imessage"
-      ],
-      "status": "active",
-      "docs": {
-        "homepage": "https://stablephone.dev",
-        "llmsTxt": "https://stablephone.dev/llms.txt"
-      },
-      "methods": {
-        "tempo": {
-          "intents": [
-            "charge"
-          ],
-          "assets": [
-            "0x20c000000000000000000000b9537d11c60e8b50"
-          ]
-        }
-      },
-      "realm": "stablephone.dev",
-      "provider": {
-        "name": "Merit Systems",
-        "url": "https://stablephone.dev"
-      },
-      "endpoints": [
-        {
-          "method": "POST",
-          "path": "/api/call",
-          "description": "Make an AI phone call",
-          "payment": {
-            "intent": "charge",
-            "method": "tempo",
-            "currency": "0x20c000000000000000000000b9537d11c60e8b50",
-            "decimals": 6,
-            "description": "Make an AI phone call",
-            "amount": "540000"
-          }
-        },
-        {
-          "method": "GET",
-          "path": "/api/call/:id",
-          "description": "Get call status and transcript",
-          "payment": null
-        },
-        {
-          "method": "POST",
-          "path": "/api/number",
-          "description": "Buy a phone number (30 days)",
-          "payment": {
-            "intent": "charge",
-            "method": "tempo",
-            "currency": "0x20c000000000000000000000b9537d11c60e8b50",
-            "decimals": 6,
-            "description": "Buy a phone number (30 days)",
-            "amount": "20000000"
-          }
-        },
-        {
-          "method": "POST",
-          "path": "/api/number/topup",
-          "description": "Extend a phone number 30 days",
-          "payment": {
-            "intent": "charge",
-            "method": "tempo",
-            "currency": "0x20c000000000000000000000b9537d11c60e8b50",
-            "decimals": 6,
-            "description": "Extend a phone number 30 days",
-            "amount": "15000000"
-          }
-        },
-        {
-          "method": "GET",
-          "path": "/api/numbers",
-          "description": "List your phone numbers",
-          "payment": null
-        },
-        {
-          "method": "POST",
-          "path": "/api/lookup",
-          "description": "iMessage/FaceTime lookup",
-          "payment": {
-            "intent": "charge",
-            "method": "tempo",
-            "currency": "0x20c000000000000000000000b9537d11c60e8b50",
-            "decimals": 6,
-            "description": "iMessage/FaceTime lookup",
-            "amount": "50000"
-          }
-        },
-        {
-          "method": "GET",
-          "path": "/api/lookup/status",
-          "description": "Poll lookup results",
-          "payment": null
-        }
-      ]
-    },
+
     {
       "id": "stablesocial",
       "name": "StableSocial",
@@ -9526,6 +9429,53 @@
             "description": "Create a climate contribution",
             "dynamic": true,
             "amountHint": "$0.01+"
+          }
+        }
+      ]
+    },
+    {
+      "id": "testwidget",
+      "name": "TestWidget",
+      "url": "https://testwidget.example.com",
+      "serviceUrl": "https://testwidget.mpp.tempo.xyz",
+      "description": "A fake test service to exercise the changed-services workflow.",
+      "categories": [
+        "data"
+      ],
+      "integration": "first-party",
+      "tags": [
+        "test"
+      ],
+      "status": "active",
+      "methods": {
+        "tempo": {
+          "intents": [
+            "charge"
+          ],
+          "assets": [
+            "0x20c000000000000000000000b9537d11c60e8b50"
+          ]
+        }
+      },
+      "realm": "mpp.tempo.xyz",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/widgets",
+          "description": "List widgets",
+          "payment": null
+        },
+        {
+          "method": "POST",
+          "path": "/api/widgets",
+          "description": "Create a widget",
+          "payment": {
+            "intent": "charge",
+            "method": "tempo",
+            "currency": "0x20c000000000000000000000b9537d11c60e8b50",
+            "decimals": 6,
+            "description": "Create a widget",
+            "amount": "5000"
           }
         }
       ]
