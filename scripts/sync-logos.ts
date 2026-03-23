@@ -40,6 +40,9 @@ if (!LOGODEV_PK) {
   process.exit(1);
 }
 
+const DRY_RUN = process.argv.includes("--dry-run");
+if (DRY_RUN) console.log("[dry-run] No uploads will be performed\n");
+
 const DOMAIN_OVERRIDES: Record<string, string> = {
   stableemail: "stablestudio.dev",
   stableenrich: "stablestudio.dev",
@@ -213,13 +216,17 @@ async function main() {
       // No domain – upload letter SVG fallback
       console.log(`[${svc.id}] no domain – using letter fallback`);
       const svg = letterSvg(svc.name);
-      await put(`logos/${svc.id}.svg`, svg, {
-        access: "public",
-        contentType: "image/svg+xml",
-        addRandomSuffix: false,
-        allowOverwrite: true,
-        token: BLOB_TOKEN,
-      });
+      if (DRY_RUN) {
+        console.log(`[dry-run] would upload logos/${svc.id}.svg`);
+      } else {
+        await put(`logos/${svc.id}.svg`, svg, {
+          access: "public",
+          contentType: "image/svg+xml",
+          addRandomSuffix: false,
+          allowOverwrite: true,
+          token: BLOB_TOKEN,
+        });
+      }
       placeholders++;
       continue;
     }
@@ -245,13 +252,17 @@ async function main() {
       // Fetch failed – upload letter SVG fallback
       console.log(`[${svc.id}] logo fetch failed – using letter fallback`);
       const svg = letterSvg(svc.name);
-      await put(`logos/${svc.id}.svg`, svg, {
-        access: "public",
-        contentType: "image/svg+xml",
-        addRandomSuffix: false,
-        allowOverwrite: true,
-        token: BLOB_TOKEN,
-      });
+      if (DRY_RUN) {
+        console.log(`[dry-run] would upload logos/${svc.id}.svg`);
+      } else {
+        await put(`logos/${svc.id}.svg`, svg, {
+          access: "public",
+          contentType: "image/svg+xml",
+          addRandomSuffix: false,
+          allowOverwrite: true,
+          token: BLOB_TOKEN,
+        });
+      }
       placeholders++;
       failed++;
       continue;
@@ -262,31 +273,41 @@ async function main() {
     if (pngHasLightBg(logoBuf)) lightBgIds.push(svc.id);
 
     // Upload PNG to Vercel Blob
-    try {
-      await put(`logos/${svc.id}.png`, Buffer.from(logoBuf), {
-        access: "public",
-        contentType: "image/png",
-        addRandomSuffix: false,
-        allowOverwrite: true,
-        token: BLOB_TOKEN,
-      });
+    if (DRY_RUN) {
+      console.log(`[dry-run] would upload logos/${svc.id}.png`);
       console.log(`[${svc.id}] ✓ synced (${domain})`);
       synced++;
-    } catch (err) {
-      console.error(`[${svc.id}] upload failed:`, err);
-      failed++;
+    } else {
+      try {
+        await put(`logos/${svc.id}.png`, Buffer.from(logoBuf), {
+          access: "public",
+          contentType: "image/png",
+          addRandomSuffix: false,
+          allowOverwrite: true,
+          token: BLOB_TOKEN,
+        });
+        console.log(`[${svc.id}] ✓ synced (${domain})`);
+        synced++;
+      } catch (err) {
+        console.error(`[${svc.id}] upload failed:`, err);
+        failed++;
+      }
     }
   }
 
   // Write manifest
   const manifest = { transparent: transparentIds, lightBg: lightBgIds };
-  await put(`logos/_manifest.json`, JSON.stringify(manifest, null, 2), {
-    access: "public",
-    contentType: "application/json",
-    addRandomSuffix: false,
-    allowOverwrite: true,
-    token: BLOB_TOKEN,
-  });
+  if (DRY_RUN) {
+    console.log(`[dry-run] would upload logos/_manifest.json`);
+  } else {
+    await put(`logos/_manifest.json`, JSON.stringify(manifest, null, 2), {
+      access: "public",
+      contentType: "application/json",
+      addRandomSuffix: false,
+      allowOverwrite: true,
+      token: BLOB_TOKEN,
+    });
+  }
 
   // Summary
   console.log("\n--- sync-logos summary ---");
@@ -294,6 +315,17 @@ async function main() {
   console.log(`  synced:       ${synced}`);
   console.log(`  failed:       ${failed}`);
   console.log(`  placeholders: ${placeholders}`);
+
+  const summary = {
+    total: services.length,
+    synced,
+    failed,
+    placeholders,
+    transparent: transparentIds.length,
+    lightBg: lightBgIds.length,
+    dryRun: DRY_RUN,
+  };
+  console.log(`\n${JSON.stringify(summary)}`);
 }
 
 main().catch((err) => {
