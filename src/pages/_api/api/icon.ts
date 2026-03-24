@@ -58,9 +58,7 @@ export async function GET(request: Request) {
     const domain = url.searchParams.get("domain");
     if (domain) {
       try {
-        const res = await fetch(
-          logoDevUrl(domain, { token: LOGODEV_PK }),
-        );
+        const res = await fetch(logoDevUrl(domain, { token: LOGODEV_PK }));
         if (res.ok) {
           return new Response(await res.arrayBuffer(), {
             headers: { "Content-Type": "image/png", ...CACHE_HEADERS },

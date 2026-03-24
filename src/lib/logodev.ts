@@ -10,7 +10,13 @@ export interface LogoDevOptions {
 
 export function logoDevUrl(
   domain: string,
-  { token, size = 256, greyscale = true, theme = "dark", retina = true }: LogoDevOptions,
+  {
+    token,
+    size = 256,
+    greyscale = true,
+    theme = "dark",
+    retina = true,
+  }: LogoDevOptions,
 ): string {
   const params = new URLSearchParams({
     token,

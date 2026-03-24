@@ -3,17 +3,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "vocs";
 import type { Category, Endpoint, Service } from "../data/registry";
-import { fetchServices, iconUrl } from "../data/registry";
+import { fetchServices } from "../data/registry";
 import { ServiceDiscovery } from "./ServiceDiscovery";
-
-function domainFrom(s: Service): string | undefined {
-  if (!s.provider?.url) return undefined;
-  try {
-    return new URL(s.provider.url).hostname;
-  } catch {
-    return undefined;
-  }
-}
+import { ServiceLogo } from "./ServiceLogo";
 
 export const CATEGORY_LABELS: Record<Category, string> = {
   ai: "AI",
@@ -2952,38 +2944,8 @@ function BorderlessBadge({ children }: { children: React.ReactNode }) {
 // Service icon with optional first-party overlay
 // ---------------------------------------------------------------------------
 
-function FallbackIcon({ name }: { name: string }) {
-  const initials = name
-    .split(/[\s-]+/)
-    .slice(0, 2)
-    .map((w) => w.charAt(0).toUpperCase())
-    .join("");
-  return (
-    <div
-      style={{
-        width: 28,
-        height: 28,
-        borderRadius: 6,
-        background: "light-dark(rgba(0,0,0,0.06), rgba(255,255,255,0.10))",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: initials.length > 1 ? 10 : 13,
-        fontWeight: 600,
-        letterSpacing: "-0.02em",
-        color: "var(--vocs-text-color-secondary)",
-        border:
-          "1px solid light-dark(rgba(0,0,0,0.08), rgba(255,255,255,0.08))",
-      }}
-    >
-      {initials || "?"}
-    </div>
-  );
-}
-
 function ServiceIcon({ service: s }: { service: Service }) {
   const isFirstParty = s.integration !== "third-party";
-  const [imgError, setImgError] = useState(false);
   return (
     <div
       className="svc-icon"
@@ -2995,18 +2957,7 @@ function ServiceIcon({ service: s }: { service: Service }) {
         marginRight: 6,
       }}
     >
-      {s.id && !imgError ? (
-        <img
-          src={iconUrl(s.id, domainFrom(s))}
-          alt=""
-          width={28}
-          height={28}
-          className="svc-icon-img"
-          onError={() => setImgError(true)}
-        />
-      ) : (
-        <FallbackIcon name={s.name} />
-      )}
+      <ServiceLogo service={s} size={28} className="svc-icon-img" />
       {isFirstParty && (
         <span
           style={{
