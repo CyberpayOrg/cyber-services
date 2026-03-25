@@ -1,0 +1,36 @@
+import { generate } from "mppx/discovery";
+import { mppx } from "../../../mppx.server";
+
+const USDC = "0x20c000000000000000000000b9537d11c60e8b50";
+
+export function GET() {
+  const doc = generate(mppx, {
+    info: { title: "mpp.dev", version: "1.0.0" },
+    routes: [
+      {
+        handler: mppx.charge({
+          amount: "0.1",
+          currency: USDC,
+          description: "Ping endpoint access",
+        }),
+        method: "get",
+        path: "/api/ping/paid",
+        summary: "Paid ping — returns a greeting after payment",
+      },
+    ],
+    serviceInfo: {
+      categories: ["web"],
+      docs: {
+        homepage: "https://mpp.dev",
+        llms: "https://mpp.dev/llms.txt",
+      },
+    },
+  });
+
+  return Response.json(doc, {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Cache-Control": "public, max-age=3600",
+    },
+  });
+}
