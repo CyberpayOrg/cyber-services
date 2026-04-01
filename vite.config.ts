@@ -8,7 +8,10 @@ import { vocs } from "vocs/vite";
 
 const commitSha = (() => {
   try {
-    return child_process.execSync("git rev-parse --short HEAD").toString().trim();
+    return child_process
+      .execSync("git rev-parse --short HEAD")
+      .toString()
+      .trim();
   } catch {
     return process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "unknown";
   }
