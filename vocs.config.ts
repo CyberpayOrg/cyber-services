@@ -232,7 +232,7 @@ export default defineConfig({
     { source: "/directory", destination: "/services" },
   ],
   description:
-    "MPP (Machine Payments Protocol) is the open standard for machine-to-machine payments via HTTP 402.",
+    "NanoPay Services — Gas-free USDT nanopayments for AI agents on TON. Discover and use paid APIs with sub-cent micropayments.",
   checkDeadlinks: true,
   editLink: {
     link: "https://github.com/tempoxyz/mpp/edit/main/src/pages/:path",
@@ -777,11 +777,11 @@ export default defineConfig({
     ],
   },
   socials: [
-    { icon: "x", link: "https://x.com/mpp" },
-    { icon: "github", link: "https://github.com/tempoxyz/mpp" },
+    { icon: "x", link: "https://x.com/CyberpayOrg" },
+    { icon: "github", link: "https://github.com/CyberpayOrg/NanoPay" },
   ],
-  title: "MPP — Machine Payments Protocol",
-  titleTemplate: "%s | MPP",
+  title: "NanoPay — Gas-Free Nanopayment Services",
+  titleTemplate: "%s | NanoPay",
   twoslash: {
     twoslashOptions: {
       compilerOptions: {
@@ -792,14 +792,6 @@ export default defineConfig({
   topNav: [
     { text: "Docs", link: "/overview", match: (path) => path !== "/" },
     { text: "Services", link: "/services" },
-    { text: "IETF Specs", link: "https://paymentauth.org" },
-    {
-      text: "GitHub",
-      items: [
-        { text: "mppx (TypeScript)", link: "https://github.com/wevm/mppx" },
-        { text: "mpp-rs (Rust)", link: "https://github.com/tempoxyz/mpp-rs" },
-        { text: "pympp (Python)", link: "https://github.com/tempoxyz/pympp" },
-      ],
-    },
+    { text: "GitHub", link: "https://github.com/CyberpayOrg/NanoPay" },
   ],
 });
