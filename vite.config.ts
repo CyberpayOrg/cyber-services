@@ -6,14 +6,20 @@ import { defineConfig, loadEnv } from "vite";
 import { configDefaults } from "vitest/config";
 import { vocs } from "vocs/vite";
 
-const commitSha = child_process
-  .execSync("git rev-parse --short HEAD")
-  .toString()
-  .trim();
-const commitTimestamp = child_process
-  .execSync("git log -1 --format=%cI")
-  .toString()
-  .trim();
+const commitSha = (() => {
+  try {
+    return child_process.execSync("git rev-parse --short HEAD").toString().trim();
+  } catch {
+    return process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "unknown";
+  }
+})();
+const commitTimestamp = (() => {
+  try {
+    return child_process.execSync("git log -1 --format=%cI").toString().trim();
+  } catch {
+    return new Date().toISOString();
+  }
+})();
 
 // Preload only the fonts needed above the fold to avoid competing for
 // bandwidth with other critical resources. Geist-Regular covers body text

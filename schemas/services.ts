@@ -104,7 +104,14 @@ export const services: ServiceDef[] = [
       "Disposable inboxes, verification code extraction, agent email, and custom domain sending for AI agents.",
     categories: ["social"],
     integration: "first-party",
-    tags: ["email", "inbox", "verification", "disposable", "agent-email", "resend"],
+    tags: [
+      "email",
+      "inbox",
+      "verification",
+      "disposable",
+      "agent-email",
+      "resend",
+    ],
     status: "beta",
     docs: { homepage: "https://github.com/CyberpayOrg/cyber-email" },
     provider: { name: "CyberPay", url: "https://cyberpay.org" },
@@ -114,17 +121,49 @@ export const services: ServiceDef[] = [
     endpoints: [
       // Mail.tm — disposable inboxes
       { route: "GET /api/email/domains", desc: "List available email domains" },
-      { route: "POST /api/email/account", desc: "Create disposable email account", amount: "5000" },
+      {
+        route: "POST /api/email/account",
+        desc: "Create disposable email account",
+        amount: "5000",
+      },
       { route: "POST /api/email/login", desc: "Login to email account" },
-      { route: "GET /api/email/messages", desc: "List inbox messages", amount: "1000" },
-      { route: "GET /api/email/messages/:id", desc: "Read a specific message", amount: "1000" },
-      { route: "GET /api/email/extract-code/:id", desc: "Extract verification code from email", amount: "2000" },
+      {
+        route: "GET /api/email/messages",
+        desc: "List inbox messages",
+        amount: "1000",
+      },
+      {
+        route: "GET /api/email/messages/:id",
+        desc: "Read a specific message",
+        amount: "1000",
+      },
+      {
+        route: "GET /api/email/extract-code/:id",
+        desc: "Extract verification code from email",
+        amount: "2000",
+      },
       // AgentMail — professional agent email
-      { route: "POST /api/agentmail/inbox", desc: "Create agent inbox", amount: "10000" },
-      { route: "POST /api/agentmail/send", desc: "Send email from agent inbox", amount: "5000" },
-      { route: "GET /api/agentmail/messages", desc: "List agent inbox messages", amount: "1000" },
+      {
+        route: "POST /api/agentmail/inbox",
+        desc: "Create agent inbox",
+        amount: "10000",
+      },
+      {
+        route: "POST /api/agentmail/send",
+        desc: "Send email from agent inbox",
+        amount: "5000",
+      },
+      {
+        route: "GET /api/agentmail/messages",
+        desc: "List agent inbox messages",
+        amount: "1000",
+      },
       // Resend — custom domain
-      { route: "POST /api/resend/send", desc: "Send email from custom domain", amount: "5000" },
+      {
+        route: "POST /api/resend/send",
+        desc: "Send email from custom domain",
+        amount: "5000",
+      },
     ],
   },
 
@@ -138,7 +177,14 @@ export const services: ServiceDef[] = [
       "Virtual phone numbers, SMS verification codes, and two-way messaging for AI agents.",
     categories: ["social"],
     integration: "first-party",
-    tags: ["sms", "phone", "verification", "virtual-number", "twilio", "messaging"],
+    tags: [
+      "sms",
+      "phone",
+      "verification",
+      "virtual-number",
+      "twilio",
+      "messaging",
+    ],
     status: "beta",
     docs: { homepage: "https://github.com/CyberpayOrg/cyber-sms" },
     provider: { name: "CyberPay", url: "https://cyberpay.org" },
@@ -147,15 +193,43 @@ export const services: ServiceDef[] = [
     payment: NANOPAY_PAYMENT,
     endpoints: [
       // One-time verification
-      { route: "POST /api/sms/number", desc: "Get a virtual number for verification", amount: "20000" },
-      { route: "GET /api/sms/status/:id", desc: "Check SMS status / get code", amount: "1000" },
-      { route: "POST /api/sms/number-and-wait", desc: "Get number and wait for verification code", amount: "25000" },
+      {
+        route: "POST /api/sms/number",
+        desc: "Get a virtual number for verification",
+        amount: "20000",
+      },
+      {
+        route: "GET /api/sms/status/:id",
+        desc: "Check SMS status / get code",
+        amount: "1000",
+      },
+      {
+        route: "POST /api/sms/number-and-wait",
+        desc: "Get number and wait for verification code",
+        amount: "25000",
+      },
       // Long-term rental
-      { route: "POST /api/sms/rent", desc: "Rent a phone number (long-term)", amount: "100000" },
-      { route: "GET /api/sms/rent/:id/messages", desc: "Get messages for rented number", amount: "1000" },
+      {
+        route: "POST /api/sms/rent",
+        desc: "Rent a phone number (long-term)",
+        amount: "100000",
+      },
+      {
+        route: "GET /api/sms/rent/:id/messages",
+        desc: "Get messages for rented number",
+        amount: "1000",
+      },
       // Twilio — two-way SMS
-      { route: "POST /api/twilio/send", desc: "Send SMS via Twilio", amount: "10000" },
-      { route: "GET /api/twilio/messages", desc: "List received messages", amount: "1000" },
+      {
+        route: "POST /api/twilio/send",
+        desc: "Send SMS via Twilio",
+        amount: "10000",
+      },
+      {
+        route: "GET /api/twilio/messages",
+        desc: "List received messages",
+        amount: "1000",
+      },
       { route: "GET /api/sms/balance", desc: "Check SMS provider balance" },
     ],
   },
@@ -170,7 +244,15 @@ export const services: ServiceDef[] = [
       "KYC-free decentralized compute for AI agents. Deploy containers on Akash, Fly, Railway, or Phala with USDT.",
     categories: ["compute"],
     integration: "first-party",
-    tags: ["compute", "deploy", "container", "gpu", "akash", "serverless", "hosting"],
+    tags: [
+      "compute",
+      "deploy",
+      "container",
+      "gpu",
+      "akash",
+      "serverless",
+      "hosting",
+    ],
     status: "beta",
     docs: { homepage: "https://github.com/CyberpayOrg/cyber-host" },
     provider: { name: "CyberPay", url: "https://cyberpay.org" },
@@ -180,14 +262,30 @@ export const services: ServiceDef[] = [
     endpoints: [
       { route: "POST /auth/register", desc: "Register and get API token" },
       { route: "GET /auth/me", desc: "Current user info" },
-      { route: "POST /deploy", desc: "Create a deployment", dynamic: true, amountHint: "$0.01–$1.00/hr" },
+      {
+        route: "POST /deploy",
+        desc: "Create a deployment",
+        dynamic: true,
+        amountHint: "$0.01–$1.00/hr",
+      },
       { route: "GET /deployments", desc: "List deployments" },
       { route: "GET /deployments/:id", desc: "Deployment details" },
-      { route: "GET /deployments/:id/logs", desc: "Stream deployment logs", amount: "1000" },
+      {
+        route: "GET /deployments/:id/logs",
+        desc: "Stream deployment logs",
+        amount: "1000",
+      },
       { route: "DELETE /deployments/:id", desc: "Destroy deployment" },
       { route: "GET /balance", desc: "Check compute balance" },
-      { route: "POST /balance/topup", desc: "Top up with NanoPay", dynamic: true },
-      { route: "GET /templates", desc: "List deployment templates (Desktop, Agent, GPU, Web)" },
+      {
+        route: "POST /balance/topup",
+        desc: "Top up with NanoPay",
+        dynamic: true,
+      },
+      {
+        route: "GET /templates",
+        desc: "List deployment templates (Desktop, Agent, GPU, Web)",
+      },
     ],
   },
 
@@ -201,7 +299,15 @@ export const services: ServiceDef[] = [
       "Multi-chain transaction relayer. Submit, sign, and monitor transactions on Solana, EVM, and Stellar.",
     categories: ["blockchain"],
     integration: "first-party",
-    tags: ["relayer", "transaction", "solana", "evm", "stellar", "gasless", "signing"],
+    tags: [
+      "relayer",
+      "transaction",
+      "solana",
+      "evm",
+      "stellar",
+      "gasless",
+      "signing",
+    ],
     status: "beta",
     docs: { homepage: "https://docs.openzeppelin.com/relayer/" },
     provider: { name: "CyberPay", url: "https://cyberpay.org" },
@@ -209,11 +315,27 @@ export const services: ServiceDef[] = [
     intent: "charge",
     payment: NANOPAY_PAYMENT,
     endpoints: [
-      { route: "POST /api/v1/relayers/:id/transactions", desc: "Submit a transaction", amount: "10000" },
-      { route: "GET /api/v1/relayers/:id/transactions/:txId", desc: "Get transaction status", amount: "1000" },
+      {
+        route: "POST /api/v1/relayers/:id/transactions",
+        desc: "Submit a transaction",
+        amount: "10000",
+      },
+      {
+        route: "GET /api/v1/relayers/:id/transactions/:txId",
+        desc: "Get transaction status",
+        amount: "1000",
+      },
       { route: "GET /api/v1/relayers", desc: "List relayers" },
-      { route: "POST /api/v1/relayers/:id/sign", desc: "Sign a transaction", amount: "5000" },
-      { route: "POST /api/v1/relayers/:id/estimate", desc: "Estimate transaction fee", amount: "1000" },
+      {
+        route: "POST /api/v1/relayers/:id/sign",
+        desc: "Sign a transaction",
+        amount: "5000",
+      },
+      {
+        route: "POST /api/v1/relayers/:id/estimate",
+        desc: "Estimate transaction fee",
+        amount: "1000",
+      },
     ],
   },
 
@@ -237,8 +359,14 @@ export const services: ServiceDef[] = [
     endpoints: [
       { route: "POST /verify", desc: "Verify a NanoPay payment authorization" },
       { route: "GET /balance/:address", desc: "Check NanoPay balance" },
-      { route: "GET /attestation", desc: "TEE remote attestation report (Intel TDX)" },
-      { route: "GET /receipts/:address", desc: "Payment receipts for an address" },
+      {
+        route: "GET /attestation",
+        desc: "TEE remote attestation report (Intel TDX)",
+      },
+      {
+        route: "GET /receipts/:address",
+        desc: "Payment receipts for an address",
+      },
       { route: "GET /receipt/:id", desc: "Single TEE-signed payment receipt" },
       { route: "GET /stats", desc: "Global protocol statistics" },
       { route: "POST /flush", desc: "Trigger batch settlement on-chain" },
@@ -263,7 +391,11 @@ export const services: ServiceDef[] = [
     intent: "charge",
     payment: NANOPAY_PAYMENT,
     endpoints: [
-      { route: "POST /v1/chat/completions", desc: "Chat completions with local model", amount: "1000" },
+      {
+        route: "POST /v1/chat/completions",
+        desc: "Chat completions with local model",
+        amount: "1000",
+      },
       { route: "GET /v1/models", desc: "List loaded models" },
     ],
   },
