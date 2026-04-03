@@ -2233,7 +2233,7 @@ function WalletCardFull() {
           marginBottom: "1.25rem",
         }}
       >
-        Install Tempo CLI and its wallet to fund your agents use of MPP
+        Install NanoPay SDK to fund your agents use of CyberPay
         services.
       </p>
       <WalletSteps />
@@ -2298,8 +2298,8 @@ function HeaderCards({
             <TerminalIcon />
           </span>
           <div>
-            <div style={titleS}>Use with Tempo</div>
-            <div style={descS}>CLI & wallet for agents</div>
+            <div style={titleS}>Use with NanoPay</div>
+            <div style={descS}>SDK & CLI for agents</div>
           </div>
         </button>
         <a
@@ -2567,17 +2567,16 @@ function WalletSteps() {
       }}
     >
       <CliSnippet
-        label="Install Tempo tools"
-        desc="Install the CLI. You will be asked to sign in or create a passkey-based wallet in your browser."
+        label="Install NanoPay SDK"
+        desc="Install the SDK. Create a wallet and deposit USDT to start paying for services."
       >
-        curl -L https://tempo.xyz/install | bash && tempo add request && tempo
-        wallet login
+        npm install @cyberpay/nano-sdk && nanopay account create && nanopay deposit 10000000
       </CliSnippet>
       <CliSnippet
         label="Prompt your agent"
-        desc="Tell Claude (or Codex, Amp, etc) to use a Tempo service."
+        desc="Tell Claude (or Codex, Amp, etc) to use a NanoPay service."
       >
-        {`claude "Summarize https://stripe.com/docs using parallel.ai search via Tempo"`}
+        {`claude "Summarize https://nano.cyberpay.org/docs using NanoPay services"`}
       </CliSnippet>
       <div
         style={{

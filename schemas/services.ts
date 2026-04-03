@@ -339,67 +339,6 @@ export const services: ServiceDef[] = [
     ],
   },
 
-  // ── NanoPay ────────────────────────────────────────────────────────────
-  {
-    id: "nanopay",
-    name: "NanoPay",
-    url: "https://nano.cyberpay.org",
-    serviceUrl: "https://nano.cyberpay.org",
-    description:
-      "Gas-free nanopayment infrastructure on TON. Deposit, pay, and settle USDT micropayments via TEE.",
-    categories: ["blockchain"],
-    integration: "first-party",
-    tags: ["payments", "micropayments", "ton", "usdt", "tee", "nanopay"],
-    status: "beta",
-    docs: { homepage: "https://github.com/CyberpayOrg/NanoPay" },
-    provider: { name: "CyberPay", url: "https://cyberpay.org" },
-    realm: "nano.cyberpay.org",
-    intent: "charge",
-    payment: NANOPAY_PAYMENT,
-    endpoints: [
-      { route: "POST /verify", desc: "Verify a NanoPay payment authorization" },
-      { route: "GET /balance/:address", desc: "Check NanoPay balance" },
-      {
-        route: "GET /attestation",
-        desc: "TEE remote attestation report (Intel TDX)",
-      },
-      {
-        route: "GET /receipts/:address",
-        desc: "Payment receipts for an address",
-      },
-      { route: "GET /receipt/:id", desc: "Single TEE-signed payment receipt" },
-      { route: "GET /stats", desc: "Global protocol statistics" },
-      { route: "POST /flush", desc: "Trigger batch settlement on-chain" },
-    ],
-  },
-
-  // ── LM Studio Proxy ────────────────────────────────────────────────────
-  {
-    id: "lmstudio",
-    name: "LM Studio",
-    url: "https://lmstudio.ai",
-    serviceUrl: `https://lm.${NANOPAY_REALM}`,
-    description:
-      "Local LLM inference (Gemma, Llama, Mistral, etc.) via OpenAI-compatible API. Pay per request.",
-    categories: ["ai"],
-    integration: "third-party",
-    tags: ["llm", "local", "gemma", "llama", "inference", "openai-compatible"],
-    status: "beta",
-    docs: { homepage: "https://lmstudio.ai/docs" },
-    provider: { name: "CyberPay", url: "https://cyberpay.org" },
-    realm: NANOPAY_REALM,
-    intent: "charge",
-    payment: NANOPAY_PAYMENT,
-    endpoints: [
-      {
-        route: "POST /v1/chat/completions",
-        desc: "Chat completions with local model",
-        amount: "1000",
-      },
-      { route: "GET /v1/models", desc: "List loaded models" },
-    ],
-  },
-
   // ── Cyber API — LLM Gateway ────────────────────────────────────────────
   {
     id: "lumioapi",
